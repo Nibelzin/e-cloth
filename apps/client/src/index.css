@@ -12,7 +12,4 @@
   body {
     @apply bg-background h-full
   }
-  :root {
-    --background: #F4F4F4
-  }
 }
