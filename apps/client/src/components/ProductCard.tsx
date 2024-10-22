@@ -14,13 +14,19 @@ const ProductCard = ({ product }: ProductCardProps) => {
                     <img src={product.imgs[0]} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div className="p-4">
-                    <div className="min-w-48 max-w-72">
-                        <h1 className="text-lg uppercase truncate">{product.name}</h1>
+                    <div className="">
+                        <h1 className="text-lg uppercase truncate" title={product.name}>{product.name}</h1>
                         <p className="text-neutral-700">{product.category.name}</p>
                     </div>
                     <div className="flex gap-2 items-center">
-                        <p className="font-bold text-xl">{getFormettedPrice(product.price)}</p>
-                        <p className="text-sm line-through">R$ 69,90</p>
+                        {product.promotionPrice ? (
+                            <>
+                                <p className="font-bold text-xl">{getFormettedPrice(product.promotionPrice)}</p>
+                                <p className="text-sm line-through">{getFormettedPrice(product.price)}</p>
+                            </>
+                        ) : (
+                            <p className="font-bold text-xl">{getFormettedPrice(product.price)}</p>
+                        )}
                     </div>
                 </div>
             </div>

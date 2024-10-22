@@ -3,7 +3,7 @@ import { HiMenu, HiOutlineSearch } from "react-icons/hi";
 import { HiChevronRight, HiOutlineShoppingBag, HiOutlineUserCircle } from "react-icons/hi2";
 import CategoryBar from "./CategoryBar";
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const categoriesMock = [
     "Todos os Produtos",
@@ -16,9 +16,10 @@ const categoriesMock = [
 const Header = () => {
     const [openSearchBar, setOpenSearchBar] = useState(false)
     const [openMenuSheet, setOpenMenuSheet] = useState(false)
-    const [detectClickOustide, setdetectClickOustide] = useState(false);
+    const [detectClickOustide, setdetectClickOustide] = useState(false)
 
     const searchRef = useRef<HTMLInputElement>(null)
+    const navigate = useNavigate()
 
 
     const handleSearchBarButtonClick = () => {
@@ -43,6 +44,12 @@ const Header = () => {
         setOpenSearchBar(false)
     }
 
+    const handleRedirect = (page: string) => {
+        setOpenMenuSheet(false)
+        setOpenSearchBar(false)
+        navigate(page)
+    }
+
     useEffect(() => {
         if (openMenuSheet) {
             setdetectClickOustide(true);
@@ -62,16 +69,16 @@ const Header = () => {
 
     return (
         <>
-            <header className={`w-full  fixed top-0 z-20 bg-white transition-transform ${!openSearchBar && "border-b"}`}>
+            <header className={`w-full  fixed top-0 z-30 bg-white transition-transform ${!openSearchBar && "border-b"}`}>
                 <div className="h-16 flex items-center justify-between px-6 md:px-16 lg:px-32 xl:px-64 py-4">
                     <div className="flex gap-4 items-center">
                         <button className="lg:hidden hover:bg-neutral-100 p-2 rounded-sm transition-colors" onClick={handleMenuButtonClick}>
                             <HiMenu size={30} />
                         </button>
-                        <Link to="/">
+                        <button onClick={() => handleRedirect("/")}>
                             <img src="/logo-icon.svg" alt="E-Cloth Logo" className="cursor-pointer md:hidden" />
                             <img src="/logo-text.svg" alt="E-Cloth Logo" className="cursor-pointer hidden md:block" />
-                        </Link>
+                        </button>
                     </div>
                     <div className="flex items-center gap-12">
                         <div className="hidden bg-gray-200 px-4 lg:flex gap-2 w-64 items-center">
@@ -88,11 +95,9 @@ const Header = () => {
                             <button className="lg:hidden hover:bg-neutral-100 p-2 rounded-sm transition-colors" onClick={handleSearchBarButtonClick}>
                                 <HiOutlineSearch size={25} />
                             </button>
-                            <Link to="/cart">
-                                <button className="hover:bg-neutral-100 p-2 rounded-sm transition-colors">
-                                    <HiOutlineShoppingBag size={28} />
-                                </button>
-                            </Link>
+                            <button className="hover:bg-neutral-100 p-2 rounded-sm transition-colors" onClick={() => handleRedirect("/cart")}>
+                                <HiOutlineShoppingBag size={28} />
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -111,7 +116,7 @@ const Header = () => {
             </div>
             <CategoryBar categories={categoriesMock} />
             <nav>
-                <div className={`h-full fixed bg-white w-5/6 border-r z-10 py-16 transition-transform ${openMenuSheet ? 'translate-x-0' : '-translate-x-full'}`}>
+                <div className={`h-full fixed bg-white w-5/6 border-r z-20 py-16 transition-transform ${openMenuSheet ? 'translate-x-0' : '-translate-x-full'}`}>
                     <div className="p-4">
                         <button className="flex gap-4 hover:bg-neutral-100 px-2 py-4 w-full rounded-sm transition-colors">
                             <HiOutlineUserCircle size={50} />
@@ -131,7 +136,7 @@ const Header = () => {
                         </div>
                     </div>
                 </div>
-                <div className={`fixed h-full w-full bg-black z-0 transition-opacity 
+                <div className={`fixed h-full w-full bg-black z-10 transition-opacity 
                     ${openMenuSheet ? "opacity-10" : "opacity-0"}
                     ${detectClickOustide ? "visible" : "invisible"}
                     `} onClick={() => setOpenMenuSheet(false)}>
