@@ -3,6 +3,7 @@ import { HiMenu, HiOutlineSearch } from "react-icons/hi";
 import { HiChevronRight, HiOutlineShoppingBag, HiOutlineUserCircle } from "react-icons/hi2";
 import CategoryBar from "./CategoryBar";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
 const categoriesMock = [
     "Todos os Produtos",
@@ -67,8 +68,10 @@ const Header = () => {
                         <button className="lg:hidden hover:bg-neutral-100 p-2 rounded-sm transition-colors" onClick={handleMenuButtonClick}>
                             <HiMenu size={30} />
                         </button>
-                        <img src="/logo-icon.svg" alt="E-Cloth Logo" className="cursor-pointer md:hidden" />
-                        <img src="/logo-text.svg" alt="E-Cloth Logo" className="cursor-pointer hidden md:block" />
+                        <Link to="/">
+                            <img src="/logo-icon.svg" alt="E-Cloth Logo" className="cursor-pointer md:hidden" />
+                            <img src="/logo-text.svg" alt="E-Cloth Logo" className="cursor-pointer hidden md:block" />
+                        </Link>
                     </div>
                     <div className="flex items-center gap-12">
                         <div className="hidden bg-gray-200 px-4 lg:flex gap-2 w-64 items-center">
@@ -85,9 +88,11 @@ const Header = () => {
                             <button className="lg:hidden hover:bg-neutral-100 p-2 rounded-sm transition-colors" onClick={handleSearchBarButtonClick}>
                                 <HiOutlineSearch size={25} />
                             </button>
-                            <button className="hover:bg-neutral-100 p-2 rounded-sm transition-colors">
-                                <HiOutlineShoppingBag size={28} />
-                            </button>
+                            <Link to="/cart">
+                                <button className="hover:bg-neutral-100 p-2 rounded-sm transition-colors">
+                                    <HiOutlineShoppingBag size={28} />
+                                </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
