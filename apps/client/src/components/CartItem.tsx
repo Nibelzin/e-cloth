@@ -1,3 +1,4 @@
+import { HiOutlineTrash } from "react-icons/hi2";
 import { getFormettedPrice } from "../lib/utils";
 import { useCartStore } from "../store/cartStore";
 import { ProductInCart } from "../types/interfaces";
@@ -21,29 +22,35 @@ const CartItem = ({ item }: CartItemProps) => {
                         </div>
                         <div className="h-full">
                             <h1 className="uppercase font-semibold">{item.name}</h1>
-                            <p>Tamanho: GG</p>
+                            <p>Tamanho: {item.size.size}</p>
                         </div>
                     </div>
                     <div className="flex flex-col md:flex-row items-center gap-12">
                         <div className="border flex">
-                            <button className="border-r flex w-8 justify-center p-2" onClick={() => removeItem(item.id)}>
-                                <p className="font-semibold">-</p>
+                            <button className="border-r flex items-center w-8 justify-center p-2" onClick={() => removeItem(item, item.size)}>
+                                {item.quantity > 1 ? (
+                                    <p className="font-semibold">-</p>
+                                ) : (
+                                    <div>
+                                        <HiOutlineTrash size={15} color="red" />
+                                    </div>
+                                )}
                             </button>
                             <div className="flex justify-center p-2 w-8">
                                 <p className="font-semibold">{item.quantity}</p>
                             </div>
-                            <button className="border-l flex w-8 justify-center p-2" onClick={() => addItem(item)}>
+                            <button className="border-l flex w-8 justify-center p-2" onClick={() => addItem(item, item.size)}>
                                 <p className="font-semibold">+</p>
                             </button>
                         </div>
                         <div className="text-end">
-                            {item.promotionPrice ? (
+                            {item.promotionPrice && item.quantity === 1 ? (
                                 <>
                                     <p className="line-through">{getFormettedPrice(item.price)}</p>
                                     <h1 className="text-xl font-semibold">{getFormettedPrice(item.promotionPrice)}</h1>
                                 </>
                             ) : (
-                                <h1 className="text-xl font-semibold">{getFormettedPrice(item.price)}</h1>
+                                <h1 className="text-xl font-semibold">{getFormettedPrice(item.price * item.quantity)}</h1>
                             )}
                         </div>
                     </div>

@@ -3,13 +3,27 @@ import ProductCard from "../components/ProductCard";
 import { productsMock } from "../lib/mock";
 import { getFormettedPrice } from "../lib/utils";
 import { useCartStore } from "../store/cartStore";
+import { useState } from "react";
+
 
 
 const ProductDetail = () => {
+    const [selectedSizeId, setSelectedSizeId] = useState<string | null>(null)
+
     const { id: productId } = useParams();
     const product = productsMock.find(product => product.id === productId)
 
     const addItemToCart = useCartStore((state) => state.addItem);
+
+    const handleAddToCartButtonClick = () => {
+        console.log("teste")
+        const selectedSize = product?.category.sizes.find(size => size.id === selectedSizeId)
+        if(selectedSize && product) {
+            addItemToCart(product, selectedSize)
+        } else {
+            alert("SELECIONE UM TAMANHO")
+        }
+    }
 
 
     return (
@@ -25,7 +39,7 @@ const ProductDetail = () => {
                             <h1 className="uppercase text-2xl font-semibold mb-4">{product?.name}</h1>
                             <p>{product?.description}</p>
                         </div>
-                        <div className="flex items-center gap-4 mb-4">
+                        <div className="flex items-center gap-4 mb-4 flex-wrap">
                             {product?.promotionPrice ? (
                                 <>
                                     <p className="text-2xl font-bold">{getFormettedPrice(product?.promotionPrice)}</p>
@@ -35,8 +49,18 @@ const ProductDetail = () => {
                                 <p className="text-2xl font-bold">{getFormettedPrice(product?.price)}</p>
                             )}
                         </div>
+                        <div>
+                            <p className="mb-2">Tamanho</p>
+                            <div className="flex gap-2 mb-6 flex-wrap">
+                                {product?.category.sizes.map(size => (
+                                    <button key={size.id} className={`flex p-2 w-14 justify-center border rounded-full hover:border-black transition-all ${selectedSizeId === size.id ? "border-black ring-2" : ""}`} onClick={() => setSelectedSizeId(size.id)}>
+                                        <p>{size.size}</p>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
-                    <button className="bg-black p-4 rounded-full text-white" onClick={() => product && addItemToCart(product)}>Adicionar ao carrinho</button>
+                    <button className="bg-black p-4 hover:bg-neutral-800 rounded-full transition-all text-white" onClick={handleAddToCartButtonClick}>Adicionar ao carrinho</button>
                 </div>
             </div>
             <div>

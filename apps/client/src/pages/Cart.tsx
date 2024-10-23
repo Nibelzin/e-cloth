@@ -1,9 +1,13 @@
 import CartItem from "../components/CartItem";
+import { getFormettedPrice } from "../lib/utils";
 import { useCartStore } from "../store/cartStore";
 
 const Cart = () => {
 
     const cartItems = useCartStore((state) => state.cart)
+
+    const totalProductprice = cartItems.reduce((value, product) => product.promotionPrice && product.quantity === 1 ? value += product.promotionPrice : value += product.price * product.quantity
+        , 0)
 
     return (
         <div className="px-6 md:px-16 lg:px-32 xl:px-64 py-16">
@@ -11,13 +15,13 @@ const Cart = () => {
             <div className="flex flex-col lg:flex-row gap-12 justify-end">
                 <div className="flex flex-col gap-4 flex-1">
                     {cartItems.map(product => (
-                        <CartItem item={product}/>
+                        <CartItem item={product} />
                     ))}
                 </div>
                 <div className="border w-full lg:w-96 p-6 space-y-4 h-fit">
                     <div className="flex justify-between">
                         <p>Valor dos produtos:</p>
-                        <p>R$ 1200,00</p>
+                        <p>{getFormettedPrice(totalProductprice)}</p>
                     </div>
                     <hr />
                     <div className="flex justify-between">

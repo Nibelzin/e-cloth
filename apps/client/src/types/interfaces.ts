@@ -9,10 +9,17 @@ export interface Product {
 }
 
 export interface ProductInCart extends Product {
+  size: Size,
   quantity: number;
 }
 
 export interface Category {
     id: string,
-    name: string
+    name: string,
+    sizes: Size[]
+}
+
+export interface Size {
+  id: string,
+  size: string
 }

@@ -19,7 +19,8 @@ const Header = () => {
     const [openMenuSheet, setOpenMenuSheet] = useState(false)
     const [detectClickOustide, setdetectClickOustide] = useState(false)
 
-    const numOfCartItems = useCartStore((state) => state.cart.length)
+    const cartItems = useCartStore((state) => state.cart)
+    const numOfCartItems = cartItems.reduce((quantity, product) => quantity += product.quantity , 0)
 
     const searchRef = useRef<HTMLInputElement>(null)
     const navigate = useNavigate()
