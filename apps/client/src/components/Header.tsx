@@ -4,6 +4,7 @@ import { HiChevronRight, HiOutlineShoppingBag, HiOutlineUserCircle } from "react
 import CategoryBar from "./CategoryBar";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCartStore } from "../store/cartStore";
 
 const categoriesMock = [
     "Todos os Produtos",
@@ -17,6 +18,8 @@ const Header = () => {
     const [openSearchBar, setOpenSearchBar] = useState(false)
     const [openMenuSheet, setOpenMenuSheet] = useState(false)
     const [detectClickOustide, setdetectClickOustide] = useState(false)
+
+    const numOfCartItems = useCartStore((state) => state.cart.length)
 
     const searchRef = useRef<HTMLInputElement>(null)
     const navigate = useNavigate()
@@ -96,7 +99,14 @@ const Header = () => {
                                 <HiOutlineSearch size={25} />
                             </button>
                             <button className="hover:bg-neutral-100 p-2 rounded-sm transition-colors" onClick={() => handleRedirect("/cart")}>
-                                <HiOutlineShoppingBag size={28} />
+                                <div className="relative">
+                                    <HiOutlineShoppingBag size={28} />
+                                    {numOfCartItems > 0 && (
+                                        <div className="absolute -top-1 -right-1 rounded-full bg-red-400 w-4 h-4 flex items-center justify-center outline outline-1 outline-white">
+                                            <p className="text-white text-xs">{numOfCartItems}</p>
+                                        </div>
+                                    )}
+                                </div>
                             </button>
                         </div>
                     </div>
@@ -128,7 +138,7 @@ const Header = () => {
                         <hr className="my-4" />
                         <div className="flex flex-col">
                             {categoriesMock.map(category => (
-                                <a href="" className="font-medium p-2 hover:bg-neutral-100 transition-colors flex items-center justify-between">
+                                <a href="" key={category} className="font-medium p-2 hover:bg-neutral-100 transition-colors flex items-center justify-between">
                                     <p>{category}</p>
                                     <HiChevronRight />
                                 </a>

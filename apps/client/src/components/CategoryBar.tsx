@@ -33,7 +33,7 @@ const CategoryBar = ({ categories }: CategoryBarProps) => {
         <div className={`hidden lg:flex fixed w-full mt-16 z-10 bg-white py-4 border-b justify-center items-center transition-transform duration-300 ${show ? 'translate-y-0' : '-translate-y-full'}`}>
             <div className="flex gap-12">
                 {categories.map(category => (
-                    <a href="" className="font-medium">{category}</a>
+                    <a href="" key={category} className="font-medium">{category}</a>
                 ))}
             </div>
         </div>

@@ -1,14 +1,18 @@
 import CartItem from "../components/CartItem";
+import { useCartStore } from "../store/cartStore";
 
 const Cart = () => {
+
+    const cartItems = useCartStore((state) => state.cart)
+
     return (
         <div className="px-6 md:px-16 lg:px-32 xl:px-64 py-16">
             <h2 className="text-2xl font-semibold mb-4">Carrinho</h2>
             <div className="flex flex-col lg:flex-row gap-12 justify-end">
                 <div className="flex flex-col gap-4 flex-1">
-                    <CartItem />
-                    <CartItem />
-                    <CartItem />
+                    {cartItems.map(product => (
+                        <CartItem item={product}/>
+                    ))}
                 </div>
                 <div className="border w-full lg:w-96 p-6 space-y-4 h-fit">
                     <div className="flex justify-between">

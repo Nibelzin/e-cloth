@@ -2,12 +2,14 @@ import { useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import { productsMock } from "../lib/mock";
 import { getFormettedPrice } from "../lib/utils";
+import { useCartStore } from "../store/cartStore";
 
 
 const ProductDetail = () => {
     const { id: productId } = useParams();
-
     const product = productsMock.find(product => product.id === productId)
+
+    const addItemToCart = useCartStore((state) => state.addItem);
 
 
     return (
@@ -34,14 +36,14 @@ const ProductDetail = () => {
                             )}
                         </div>
                     </div>
-                    <button className="bg-black p-4 rounded-full text-white">Adicionar ao carrinho</button>
+                    <button className="bg-black p-4 rounded-full text-white" onClick={() => product && addItemToCart(product)}>Adicionar ao carrinho</button>
                 </div>
             </div>
             <div>
                 <h2 className="text-2xl font-semibold mb-4">Você Também pode gostar</h2>
                 <div className="flex overflow-x-auto gap-4">
                     {productsMock.map(product => (
-                        <ProductCard product={product} />
+                        <ProductCard key={product.id} product={product} />
                     ))}
                 </div>
             </div>
