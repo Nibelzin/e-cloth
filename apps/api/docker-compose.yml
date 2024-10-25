@@ -1,0 +1,12 @@
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: ecloth-ecommerce
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: ecloth
+    ports:
+      - "5432:5432"
+  

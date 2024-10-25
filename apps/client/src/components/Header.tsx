@@ -1,11 +1,12 @@
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { HiMenu, HiOutlineSearch } from "react-icons/hi";
-import { HiChevronRight, HiOutlineShoppingBag, HiOutlineUserCircle } from "react-icons/hi2";
+import { HiChevronRight, HiOutlineShoppingBag } from "react-icons/hi2";
 import CategoryBar from "./CategoryBar";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignInButton, SignOutButton, useClerk, UserButton, useUser } from "@clerk/clerk-react";
+import { TbLogout } from "react-icons/tb";
 
 const categoriesMock = [
     "Todos os Produtos",
@@ -17,6 +18,10 @@ const categoriesMock = [
 
 const Header = () => {
 
+    const user = useUser()
+
+    const { openUserProfile } = useClerk()
+
     const [openSearchBar, setOpenSearchBar] = useState(false)
     const [openMenuSheet, setOpenMenuSheet] = useState(false)
     const [detectClickOustide, setdetectClickOustide] = useState(false)
@@ -26,6 +31,7 @@ const Header = () => {
 
     const searchRef = useRef<HTMLInputElement>(null)
     const navigate = useNavigate()
+
 
 
     const handleSearchBarButtonClick = () => {
@@ -94,12 +100,18 @@ const Header = () => {
                             <input type="text" className="bg-gray-200 p-2 font-semibold focus:outline-none focus:ring-0" placeholder="O que você deseja?" />
                         </div>
                         <div className="flex items-center gap-4">
-                            <SignedOut>
-                                <SignInButton />
-                            </SignedOut>
-                            <SignedIn>
-                                    <UserButton showName/>
-                            </SignedIn>
+                            <div className="hidden lg:block">
+                                <SignedOut>
+                                    <SignInButton>
+                                        <button className=" p-2 hover:bg-neutral-100 rounded-sm transition-colors h-10">
+                                            <p className="text-sm font-semibold">Fazer Login</p>
+                                        </button>
+                                    </SignInButton>
+                                </SignedOut>
+                                <SignedIn>
+                                    <UserButton showName />
+                                </SignedIn>
+                            </div>
                             <button className="lg:hidden hover:bg-neutral-100 p-2 rounded-sm transition-colors" onClick={handleSearchBarButtonClick}>
                                 <HiOutlineSearch size={25} />
                             </button>
@@ -133,13 +145,32 @@ const Header = () => {
             <nav>
                 <div className={`h-full fixed bg-white w-5/6 border-r z-20 py-16 transition-transform ${openMenuSheet ? 'translate-x-0' : '-translate-x-full'}`}>
                     <div className="p-4">
-                        <button className="flex gap-4 hover:bg-neutral-100 px-2 py-4 w-full rounded-sm transition-colors">
-                            <HiOutlineUserCircle size={50} />
-                            <div className="text-left">
-                                <p className="font-semibold text-2xl">Luan Santos</p>
-                                <p className="text-sm font-semibold text-neutral-700">Meu perfil</p>
+                        <SignedOut>
+                            <SignInButton>
+                                <button className="p-2 hover:bg-neutral-100 rounded-sm transition-colors text-left w-full">
+                                    <p className="font-semibold">Fazer Login</p>
+                                </button>
+                            </SignInButton>
+                        </SignedOut>
+                        <SignedIn>
+                            <div>
+                                <button className="flex gap-4 hover:bg-neutral-100 px-2 py-4 w-full rounded-sm transition-colors" onClick={() => openUserProfile()}>
+                                    <div className="rounded-full overflow-hidden h-16 w-16">
+                                        <img src={user.user?.imageUrl} alt="" />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="font-semibold text-2xl">{user.user?.firstName} {user.user?.lastName}</p>
+                                        <p className="text-sm font-semibold text-neutral-700">{user.user?.emailAddresses[0].toString()}</p>
+                                    </div>
+                                </button>
+                                <SignOutButton>
+                                    <button className="flex items-center gap-2 p-2 hover:bg-neutral-100 transition-colors w-full mt-4">
+                                        <TbLogout />
+                                        <p className="font-semibold">Sair</p>
+                                    </button>
+                                </SignOutButton>
                             </div>
-                        </button>
+                        </SignedIn>
                         <hr className="my-4" />
                         <div className="flex flex-col">
                             {categoriesMock.map(category => (
