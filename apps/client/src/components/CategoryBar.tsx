@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface CategoryBarProps{
     categories: string[]
@@ -7,18 +7,18 @@ interface CategoryBarProps{
 const CategoryBar = ({ categories }: CategoryBarProps) => {
 
     const [show, setShow] = useState(true);
-    let lastScroll = 0;
+    const lastScroll = useRef(0);
 
     useEffect(() => {
         const handleScroll = () => {
             const currentScroll = document.documentElement.scrollTop;
-            if (currentScroll > lastScroll) {
+            if (currentScroll > lastScroll.current) {
                 setShow(false);
             } else {
                 setShow(true);
             }
 
-            lastScroll = currentScroll <= 0 ? 0 : currentScroll;
+            lastScroll.current = currentScroll <= 0 ? 0 : currentScroll;
         }
 
         window.addEventListener("scroll", handleScroll);

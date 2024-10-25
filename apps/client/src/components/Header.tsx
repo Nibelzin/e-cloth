@@ -5,6 +5,7 @@ import CategoryBar from "./CategoryBar";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 
 const categoriesMock = [
     "Todos os Produtos",
@@ -15,12 +16,13 @@ const categoriesMock = [
 
 
 const Header = () => {
+
     const [openSearchBar, setOpenSearchBar] = useState(false)
     const [openMenuSheet, setOpenMenuSheet] = useState(false)
     const [detectClickOustide, setdetectClickOustide] = useState(false)
 
     const cartItems = useCartStore((state) => state.cart)
-    const numOfCartItems = cartItems.reduce((quantity, product) => quantity += product.quantity , 0)
+    const numOfCartItems = cartItems.reduce((quantity, product) => quantity += product.quantity, 0)
 
     const searchRef = useRef<HTMLInputElement>(null)
     const navigate = useNavigate()
@@ -92,10 +94,12 @@ const Header = () => {
                             <input type="text" className="bg-gray-200 p-2 font-semibold focus:outline-none focus:ring-0" placeholder="O que você deseja?" />
                         </div>
                         <div className="flex items-center gap-4">
-                            <button className="hidden gap-2 items-center lg:flex ">
-                                <p className="font-semibold">Olá, Luan</p>
-                                <HiOutlineUserCircle size={30} />
-                            </button>
+                            <SignedOut>
+                                <SignInButton />
+                            </SignedOut>
+                            <SignedIn>
+                                    <UserButton showName/>
+                            </SignedIn>
                             <button className="lg:hidden hover:bg-neutral-100 p-2 rounded-sm transition-colors" onClick={handleSearchBarButtonClick}>
                                 <HiOutlineSearch size={25} />
                             </button>
