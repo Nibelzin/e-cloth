@@ -34,6 +34,7 @@ model User {
   email     String
   phone     String?
   orders    Order[]
+  addresses Address[]
 }
 
 model Order {
@@ -44,10 +45,13 @@ model Order {
   totalPrice      Decimal
   paymentMethod   PaymentMethod
   paymentIntentId String
-  shippingAddress String
-  billingAddress  String
+  shippingAddressId String
+  billingAddressId  String
   user User @relation(fields: [userId], references: [id])
   orderItems OrderItem[]
+
+  shippingAddress Address @relation(name: "shipping_address", fields: [shippingAddressId], references: [id])
+  billingAddress Address @relation(name: "billing_address", fields: [billingAddressId], references: [id])
 }
 
 model OrderItem{
@@ -65,6 +69,24 @@ model OrderItem{
   @@unique([orderId, productId, sizeId])
 }
 
+model Address{
+  id String @id @default(uuid())
+  userId String
+  street String
+  number String
+  complement String?
+  district String
+  city String
+  state String
+  postalCode Int
+  isDefault Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id])
+
+  orders_shipping Order[] @relation("shipping_address")
+  orders_billing Order[] @relation("billing_address")
+}
+
 model Product{
   id String @id @default(uuid())
   idCategory String
@@ -74,8 +96,8 @@ model Product{
   promotion_price Decimal?
 
   category Category @relation(fields: [idCategory], references: [id])
-
   orderItems OrderItem[]
+  productImages ProductImage[]
 }
 
 model Category{
@@ -102,4 +124,13 @@ model CategorySize{
   size Size @relation(fields: [idSize], references: [id])
 
   @@id([idCategory, idSize])
+}
+
+model ProductImage{
+  id String @id @default(uuid())
+  productId String
+  url String
+  alt String
+
+  product Product @relation(fields: [productId], references: [id])
 }

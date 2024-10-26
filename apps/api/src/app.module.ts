@@ -3,12 +3,21 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { UserModule } from './user/user.module';
+import { WebhookModule } from './webhook/webhook.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../..', 'client', 'dist')
     }),
+    UserModule,
+    WebhookModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env'
+    })
   ],
   controllers: [AppController],
   providers: [AppService],
