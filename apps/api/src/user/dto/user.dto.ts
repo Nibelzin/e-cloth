@@ -1,8 +1,10 @@
 export class UserDTO{
-    id: string
+    id?: string
     clerkId: string
     firstName: string
     lastname?: string
     email: string
     phone?: string
+    addresses?: Object[]
+    orders?: Object[]
 }
