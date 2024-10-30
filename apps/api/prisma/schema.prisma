@@ -78,7 +78,7 @@ model Address{
   district String
   city String
   state String
-  postalCode Int
+  postalCode String
   isDefault Boolean @default(false)
 
   user User @relation(fields: [userId], references: [id])
