@@ -1,5 +1,5 @@
 import { FaMagnifyingGlass } from "react-icons/fa6";
-import { HiMenu, HiOutlineSearch } from "react-icons/hi";
+import { HiMenu, HiOutlineDotsHorizontal, HiOutlineSearch } from "react-icons/hi";
 import { HiChevronRight, HiOutlineShoppingBag } from "react-icons/hi2";
 import CategoryBar from "./CategoryBar";
 import { useEffect, useRef, useState } from "react";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
 import { SignedIn, SignedOut, SignInButton, SignOutButton, useClerk, UserButton, useUser } from "@clerk/clerk-react";
 import { TbLogout } from "react-icons/tb";
+import AdditionalInfo from "./AdditionalInfo";
 
 const categoriesMock = [
     "Todos os Produtos",
@@ -109,7 +110,11 @@ const Header = () => {
                                     </SignInButton>
                                 </SignedOut>
                                 <SignedIn>
-                                    <UserButton showName />
+                                    <UserButton showName >
+                                        <UserButton.UserProfilePage label="Informações Adicionais" url="custom" labelIcon={<HiOutlineDotsHorizontal />}>
+                                            <AdditionalInfo />
+                                        </UserButton.UserProfilePage>
+                                    </UserButton>
                                 </SignedIn>
                             </div>
                             <button className="lg:hidden hover:bg-neutral-100 p-2 rounded-sm transition-colors" onClick={handleSearchBarButtonClick}>

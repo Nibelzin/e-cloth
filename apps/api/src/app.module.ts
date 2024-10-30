@@ -8,6 +8,7 @@ import { WebhookModule } from './webhook/webhook.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
+import { AddressModule } from './address/address.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { PrismaModule } from './prisma/prisma.module';
       isGlobal: true,
       envFilePath: '.env'
     }),
-    PrismaModule
+    PrismaModule,
+    AddressModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

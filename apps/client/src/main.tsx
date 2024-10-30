@@ -46,7 +46,8 @@ createRoot(document.getElementById('root')!).render(
         borderRadius: "0px"
       },
       layout: {
-        shimmer: false
+        shimmer: false,
+        animations: false
       },
       elements: {
         userButtonTrigger: "focus:shadow-none"
