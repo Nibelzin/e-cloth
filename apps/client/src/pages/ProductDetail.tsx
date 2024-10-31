@@ -67,7 +67,7 @@ const ProductDetail = () => {
                 <h2 className="text-2xl font-semibold mb-4">Você Também pode gostar</h2>
                 <div className="flex overflow-x-auto gap-4">
                     {productsMock.map(product => (
-                        <ProductCard key={product.id} product={product} />
+                        <ProductCard key={product.id} product={product} page="productDetail" />
                     ))}
                 </div>
             </div>

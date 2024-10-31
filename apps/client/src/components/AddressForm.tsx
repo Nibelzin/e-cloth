@@ -1,15 +1,44 @@
 import { useForm } from "react-hook-form";
 import Input from "./Input";
+import { useUser } from "@clerk/clerk-react";
+import toast from "react-hot-toast";
+import { useState } from "react";
+import ReactLoading from 'react-loading';
 
 interface AddressFormProps{
-    closeForm: () => void
+    closeForm: (refetch?: boolean) => void
 }
 
 const AddressForm = ({ closeForm }: AddressFormProps) => {
+
+
+    const { user } = useUser()
     const { register, handleSubmit, setValue, formState: { errors }, clearErrors } = useForm()
 
-    const onSubmit = (e: object) => {
-        console.log(e)
+    const [loading, setLoading] = useState(false)
+
+    const onSubmit = async (e: object) => {
+        setLoading(true)
+        const address = {...e, clerkId: user?.id }
+        const options = {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(address)
+        }
+
+        try{
+            const result = await fetch("http://localhost:3000/api/address", options)
+            if(!result.ok){
+                throw new Error(`Erro ao adicionar endereço: ${result.status} - ${result.statusText}`)
+            }
+            toast.success('Endereço adicionado com sucesso!')
+        } catch (error) {
+            console.log(error)
+        }
+        setLoading(false)
+        closeForm(true)
     }
 
     const checkCep = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,7 +156,7 @@ const AddressForm = ({ closeForm }: AddressFormProps) => {
                 </div>
                 <div className="flex gap-2 justify-end">
                     <button type="button" className="py-[0.375rem] px-[0.75rem] text-neutral-700 hover:bg-alpha text-sm font-semibold focus:shadow-focused transition-all" onClick={() => closeForm()}>Cancelar</button>
-                    <button type="submit" className="py-[0.375rem] px-[0.75rem] text-white bg-[#2F3037] text-sm font-semibold focus:shadow-focused transition-all">Add</button>
+                    <button type="submit" className="py-[0.375rem] px-[0.75rem] text-white bg-[#2F3037] text-sm font-semibold focus:shadow-focused transition-all flex items-center justify-center">{loading ? <ReactLoading type="spin" width={15} height={15}/> : "Add"}</button>
                 </div>
             </form>
         </div>

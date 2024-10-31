@@ -12,9 +12,18 @@ export class AddressService {
         return this.prisma.address.findMany()
     }
 
-    async getAddressessByUserId(userId: string) {
+    async getAddressessByUserId(clerkId: string) {
+        const user = await this.prisma.user.findUnique({
+            where: { clerkId }
+        })
+
+        if(!user){
+            throw new NotFoundException("Usuário não encontrado")
+        }
+
         return this.prisma.address.findMany({
-            where: { userId }
+            where: { userId: user.id },
+            orderBy: { isDefault: 'desc' }
         })
     }
 

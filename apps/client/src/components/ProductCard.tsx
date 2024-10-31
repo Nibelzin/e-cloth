@@ -4,26 +4,27 @@ import { Product } from "../types/interfaces";
 
 interface ProductCardProps {
     product: Product
+    page?: "home" | "productDetail"
 }
 
-const ProductCard = ({ product }: ProductCardProps) => {
+const ProductCard = ({ product, page = "home" }: ProductCardProps) => {
     return (
         <Link to={`/product/${product.id}`}>
-            <div className="bg-white min-w-48 max-w-72 border drop-shadow cursor-pointer">
+            <div className={`bg-white ${page === "home" ? "min-w-42" : "min-w-52"} max-w-72 h-80 border cursor-pointer flex flex-col`}>
                 <div className="w-full h-44">
                     <img src={product.imgs[0]} alt="" className="w-full h-full object-cover" />
                 </div>
-                <div className="p-4">
+                <div className="p-4 flex flex-col justify-between flex-1">
                     <div className="">
-                        <h1 className="text-lg uppercase truncate" title={product.name}>{product.name}</h1>
+                        <h1 className="lg:text-lg text-sm uppercase" title={product.name}>{product.name}</h1>
                         <p className="text-neutral-700">{product.category.name}</p>
                     </div>
                     <div className="flex gap-2 items-center">
                         {product.promotionPrice ? (
-                            <>
-                                <p className="font-bold text-xl">{getFormettedPrice(product.promotionPrice)}</p>
+                            <div className="flex flex-col md:flex-row-reverse md:items-center md:gap-2">
                                 <p className="text-sm line-through">{getFormettedPrice(product.price)}</p>
-                            </>
+                                <p className="font-bold text-xl">{getFormettedPrice(product.promotionPrice)}</p>
+                            </div>
                         ) : (
                             <p className="font-bold text-xl">{getFormettedPrice(product.price)}</p>
                         )}

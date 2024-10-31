@@ -4,10 +4,10 @@ import { persist, PersistOptions } from "zustand/middleware";
 import { matchIdAndSize } from "../lib/utils";
 
 interface CartState {
-  cart: ProductInCart[];
-  addItem: (product: Product, size: Size) => void;
-  removeItem: (product: Product, size: Size) => void;
-  clearCart: () => void;
+  cart: ProductInCart[]
+  addItem: (product: Product, size: Size) => void
+  removeItem: (product: Product, size: Size) => void
+  clearCart: () => void
 }
 
 type CartPersist = PersistOptions<CartState>;

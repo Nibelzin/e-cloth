@@ -50,7 +50,8 @@ createRoot(document.getElementById('root')!).render(
         animations: false
       },
       elements: {
-        userButtonTrigger: "focus:shadow-none"
+        userButtonTrigger: "focus:shadow-none",
+        modalBackdrop: "z-40"
       }
     }}
     localization={ptBR}>

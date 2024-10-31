@@ -23,3 +23,16 @@ export interface Size {
   id: string,
   size: string
 }
+
+export interface Address{
+  id: string,
+  userId: string,
+  street: string,
+  number: string,
+  complement?: string,
+  district: string,
+  city: string,
+  state: string,
+  postalCode: string,
+  isDefault: boolean
+}

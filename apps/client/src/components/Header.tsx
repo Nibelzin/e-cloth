@@ -82,8 +82,8 @@ const Header = () => {
 
     return (
         <>
-            <header className={`w-full  fixed top-0 z-30 bg-white transition-transform ${!openSearchBar && "border-b"}`}>
-                <div className="h-16 flex items-center justify-between px-6 md:px-16 lg:px-32 xl:px-64 py-4">
+            <header className={`w-full  fixed top-0 z-30 bg-white ${!openSearchBar && "border-b"}`}>
+                <div className="h-16 flex items-center justify-between px-4 md:px-16 lg:px-32 xl:px-64 py-4">
                     <div className="flex gap-4 items-center">
                         <button className="lg:hidden hover:bg-neutral-100 p-2 rounded-sm transition-colors" onClick={handleMenuButtonClick}>
                             <HiMenu size={30} />
