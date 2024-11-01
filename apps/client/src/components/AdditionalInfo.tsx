@@ -5,7 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useAddressStore } from "../store/addressStore";
 import ReactLoading from "react-loading";
-import { deleteUserAddress } from "../api/userService";
+import { deleteUserAddress, setAddressAsUserDefault } from "../api/userService";
+import { Address } from "../types/interfaces";
 
 
 
@@ -14,24 +15,43 @@ const AdditionalInfo = () => {
     const { user } = useUser()
     const { addresses, fetchAddresses } = useAddressStore();
 
-    const [openAddressForm, setOpenAddressForm] = useState(false)
+    const [openAddAddressForm, setOpenAddAddressForm] = useState(false)
+    const [openEditAddressForm, setOpenEditAddressForm] = useState(false)
     const [loading, setLoading] = useState(false)
     const [openAdressOptions, setOpenAddressOptions] = useState<string | null>(null)
+    const [addressToEdit, setAddressToEdit] = useState<Address | undefined>(addresses[0])
 
     const dropdownsRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
 
-    const handleCloseAddressFormButtonClick = (refetch?: boolean) => {
-        if(user && refetch){
+    const handleSetAddressAsDefaultButtonClick = async (addressId: string) => {
+        if(user){
+            setLoading(true)
+            await setAddressAsUserDefault(addressId)
+            fetchAddresses(user.id, setLoading)
+        }
+    }
+    
+    const handleEditAddressButtonClick = (address: Address) => {
+        setAddressToEdit(address)
+        setOpenEditAddressForm(true)
+    }
+
+    const handleCloseAddressFormButtonClick = (refetch?: boolean, editMode?: boolean) => {
+        if (user && refetch) {
             setLoading(true)
             fetchAddresses(user.id, setLoading)
         }
-        setOpenAddressForm(false)
+        if (editMode) {
+            setOpenEditAddressForm(false)
+        } else {
+            setOpenAddAddressForm(false)
+        }
     }
 
     const handleDeleteAddressButtonClick = async (addressId: string) => {
         setLoading(true)
         await deleteUserAddress(addressId)
-        if(user) fetchAddresses(user.id, setLoading)
+        if (user) fetchAddresses(user.id, setLoading)
     }
 
     useEffect(() => {
@@ -74,59 +94,66 @@ const AdditionalInfo = () => {
             <div className="my-6 flex flex-col lg:flex-row  justify-between">
                 <p className="text-xs font-semibold mb-3">Endereços</p>
                 <div className="lg:w-2/3">
-                    {loading ?
-                        <div className="w-full flex justify-center items-center">
-                            <ReactLoading type="spin" width={15} height={15} color="black" />
-                        </div>
-                        :
-                        (
-                            <div className="flex justify-between items-center mb-1 w-full">
-                                <div className="space-y-4 w-full">
-                                    {addresses.map(address => (
-                                        <>
-                                            <div className="flex justify-between items-center" key={address.id}>
-                                                <div>
-                                                    <div className="flex gap-2 items-center mb-2">
-                                                        <p className="text-sm">{address.street}, {address.number}</p>
-                                                        {address.isDefault && (
-                                                            <span className="text-[0.6875rem] border bg-background text-accent py-[0.0625rem] px-[0.375rem] font-semibold">Principal</span>
-                                                        )}
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-xs">CEP {address.postalCode} - {address.state} - {address.city}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="relative" ref={el => (dropdownsRefs.current[address.id] = el)}>
-                                                    <button className="text-accent hover:bg-alpha hover:opacity-100 p-[0.125rem] opacity-[0.62] focus:shadow-focused transition-all" onClick={() => setOpenAddressOptions(openAdressOptions === address.id ? null : address.id)}>
-                                                        <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" className="w-5"><g stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10.01 10H10M4.01 10H4M16.01 10H16"></path></g>
-                                                        </svg>
-                                                    </button>
-                                                    <div className={`bg-white border absolute z-50 right-0 top-8 w-fit drop-shadow-xl p-[0.125rem] ${openAdressOptions === address.id ? "visible opacity-100" : "invisible opacity-0 -translate-y-1"} transition-all duration-75 ease-in`}>
-                                                        <button className="text-xs font-semibold truncate py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha">Editar</button>
-                                                        <hr className="mx-[0.75rem] my-[0.25rem]" />
-                                                        <button disabled={address.isDefault} className={`text-xs font-semibold truncate py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha ${address.isDefault && "text-accent"} `} title={address.isDefault ? "Este já é seu endereço principal" : undefined}>Definir como principal</button>
-                                                        <hr className="mx-[0.75rem] my-[0.25rem]" />
-                                                        <button className="text-xs font-semibold truncate text-red-500 py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha" onClick={() => handleDeleteAddressButtonClick(address.id)}>Remover Endereço</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <hr />
-                                        </>
-                                    ))}
+                    {openEditAddressForm ? (
+                        <AddressForm closeForm={handleCloseAddressFormButtonClick} addressToEdit={addressToEdit} mode="edit" />
+                    ) : (
+                        <>
+                            {loading ?
+                                <div className="w-full flex justify-center items-center">
+                                    <ReactLoading type="spin" width={15} height={15} color="black" />
                                 </div>
-                            </div>
-                        )
-                    }
-                    {openAddressForm ?
-                        (
-                            <AddressForm closeForm={handleCloseAddressFormButtonClick} />
-                        ) : (
-                            <button className="w-full flex items-center gap-2 hover:bg-alpha p-2 focus:shadow-focused transition-all group" onClick={() => setOpenAddressForm(true)}>
-                                <FaPlus size={12} className="text-accent" />
-                                <p className="text-xs font-semibold">Adicionar Endereço</p>
-                                <IoArrowForward className="text-accent opacity-0 w-0 group-hover:w-5 group-hover:opacity-[0.75] transition-all" />
-                            </button>
-                        )}
+                                :
+                                (
+                                    <div className="flex justify-between items-center mb-1 w-full">
+                                        <div className="space-y-4 w-full">
+                                            {addresses.map(address => (
+                                                <div key={address.id}>
+                                                    <div className="flex justify-between items-center">
+                                                        <div>
+                                                            <div className="flex gap-2 items-center mb-2">
+                                                                <p className="text-sm">{address.street}, {address.number}</p>
+                                                                {address.isDefault && (
+                                                                    <span className="text-[0.6875rem] border bg-background text-accent py-[0.0625rem] px-[0.375rem] font-semibold">Principal</span>
+                                                                )}
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-xs">CEP {address.postalCode} - {address.state} - {address.city}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="relative" ref={el => (dropdownsRefs.current[address.id] = el)}>
+                                                            <button className="text-accent hover:bg-alpha hover:opacity-100 p-[0.125rem] opacity-[0.62] focus:shadow-focused transition-all" onClick={() => setOpenAddressOptions(openAdressOptions === address.id ? null : address.id)}>
+                                                                <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" className="w-5"><g stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10.01 10H10M4.01 10H4M16.01 10H16"></path></g>
+                                                                </svg>
+                                                            </button>
+                                                            <div className={`bg-white border absolute z-50 right-0 top-8 w-fit drop-shadow-xl p-[0.125rem] ${openAdressOptions === address.id ? "visible opacity-100" : "invisible opacity-0 -translate-y-1"} transition-all duration-75 ease-in`}>
+                                                                <button className="text-xs font-semibold truncate py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha" onClick={() => handleEditAddressButtonClick(address)}>Editar</button>
+                                                                <hr className="mx-[0.75rem] my-[0.25rem]" />
+                                                                <button disabled={address.isDefault} className={`text-xs font-semibold truncate py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha ${address.isDefault && "text-accent"} `} title={address.isDefault ? "Este já é seu endereço principal" : undefined} onClick={() => handleSetAddressAsDefaultButtonClick(address.id)}>Definir como principal</button>
+                                                                <hr className="mx-[0.75rem] my-[0.25rem]" />
+                                                                <button className="text-xs font-semibold truncate text-red-500 py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha" onClick={() => handleDeleteAddressButtonClick(address.id)}>Remover Endereço</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr className="mt-4"/>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )
+                            }
+                            {openAddAddressForm ?
+                                (
+                                    <AddressForm closeForm={handleCloseAddressFormButtonClick} />
+                                ) : (
+                                    <button className="w-full flex items-center gap-2 hover:bg-alpha p-2 focus:shadow-focused transition-all group" onClick={() => setOpenAddAddressForm(true)}>
+                                        <FaPlus size={12} className="text-accent" />
+                                        <p className="text-xs font-semibold">Adicionar Endereço</p>
+                                        <IoArrowForward className="text-accent opacity-0 w-0 group-hover:w-5 group-hover:opacity-[0.75] transition-all" />
+                                    </button>
+                                )}
+                        </>
+                    )}
+
                 </div>
             </div>
         </div>

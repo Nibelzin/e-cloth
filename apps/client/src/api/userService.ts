@@ -33,3 +33,23 @@ export async function deleteUserAddress(
     if (setLoading) setLoading(false);
   }
 }
+
+export async function setAddressAsUserDefault(
+    addressId: string,
+    setLoading?: (value: boolean) => void
+  ) {
+    try {
+      console.log(addressId)
+      const response = await fetch(
+        `http://localhost:3000/api/address/${addressId}/default`, {
+          method: "PUT"
+        }
+      );
+      if (!response.ok) throw new Error("Erro ao definir este endereço como principal");
+      toast.success('Endereço definido como principal')
+    } catch (error) {
+      console.log(error)
+    } finally {
+      if (setLoading) setLoading(false);
+    }
+  }

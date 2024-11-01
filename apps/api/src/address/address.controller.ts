@@ -72,6 +72,19 @@ export class AddressController {
     }
   }
 
+  @Put(':id/default')
+  async setAddressAsUserDefault(@Param('id') id: string){
+    try {
+      return await this.addressService.setAddressAsUserDefault(id);
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Endereço para alteração não encontrado')
+      } else {
+        throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+  }
+
   @Delete(':id')
   async deleteAddress(@Param('id') id: string) {
     try {

@@ -2,43 +2,74 @@ import { useForm } from "react-hook-form";
 import Input from "./Input";
 import { useUser } from "@clerk/clerk-react";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactLoading from 'react-loading';
+import { Address } from "../types/interfaces";
 
-interface AddressFormProps{
-    closeForm: (refetch?: boolean) => void
+interface AddressFormProps {
+    closeForm: (refetch?: boolean, editMode?: boolean) => void
+    mode?: "add" | "edit",
+    addressToEdit?: Address
 }
 
-const AddressForm = ({ closeForm }: AddressFormProps) => {
-
+const AddressForm = ({ closeForm, mode = "add", addressToEdit }: AddressFormProps) => {
 
     const { user } = useUser()
     const { register, handleSubmit, setValue, formState: { errors }, clearErrors } = useForm()
 
     const [loading, setLoading] = useState(false)
 
+
+
+    useEffect(() => {
+        if (addressToEdit && mode === "edit") {
+            setValue("postalCode", addressToEdit.postalCode)
+            setValue("state", addressToEdit.state)
+            setValue("city", addressToEdit.city)
+            setValue("district", addressToEdit.district)
+            setValue("street", addressToEdit.street)
+            setValue("number", addressToEdit.number)
+            setValue("complement", addressToEdit.complement)
+        }
+    }, [addressToEdit, mode, setValue])
+
     const onSubmit = async (e: object) => {
         setLoading(true)
-        const address = {...e, clerkId: user?.id }
-        const options = {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(address)
+        let options = {}
+        
+        if (mode === "add") {
+            const address = { ...e, clerkId: user?.id }
+            options = {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(address)
+            }
+        } else {
+            const address = { ...e, id: addressToEdit?.id }
+            options = {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(address)
+            }
         }
 
-        try{
+        try {
             const result = await fetch("http://localhost:3000/api/address", options)
-            if(!result.ok){
+            if (!result.ok) {
                 throw new Error(`Erro ao adicionar endereço: ${result.status} - ${result.statusText}`)
             }
-            toast.success('Endereço adicionado com sucesso!')
+            toast.success(mode === "add" ? 'Endereço adicionado com sucesso!' : 'Endereço alterado com sucesso!')
         } catch (error) {
             console.log(error)
+            toast.error(mode === "add" ? 'Erro ao adicionar endereço' : 'Erro ao alterar endereço')
+        } finally {
+            setLoading(false)
         }
-        setLoading(false)
-        closeForm(true)
+        closeForm(true, mode === "edit" && true)
     }
 
     const checkCep = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,7 +118,7 @@ const AddressForm = ({ closeForm }: AddressFormProps) => {
     return (
         <div className="shadow-md border p-4">
             <form onSubmit={handleSubmit(onSubmit)}>
-                <h2 className="text-sm font-bold text-dark mb-4">Adicionar endereço</h2>
+                <h2 className="text-sm font-bold text-dark mb-4">{mode === "add" ? "Adicionar Endereço" : "Editar Endereço"}</h2>
                 <div className="mb-4">
                     <Input
                         label="CEP *"
@@ -155,8 +186,8 @@ const AddressForm = ({ closeForm }: AddressFormProps) => {
                     <Input label="Complemento (opcional)" register={register} name="complement" />
                 </div>
                 <div className="flex gap-2 justify-end">
-                    <button type="button" className="py-[0.375rem] px-[0.75rem] text-neutral-700 hover:bg-alpha text-sm font-semibold focus:shadow-focused transition-all" onClick={() => closeForm()}>Cancelar</button>
-                    <button type="submit" className="py-[0.375rem] px-[0.75rem] text-white bg-[#2F3037] text-sm font-semibold focus:shadow-focused transition-all flex items-center justify-center">{loading ? <ReactLoading type="spin" width={15} height={15}/> : "Add"}</button>
+                    <button type="button" className="py-[0.375rem] px-[0.75rem] text-neutral-700 hover:bg-alpha text-sm font-semibold focus:shadow-focused transition-all" onClick={() => closeForm(false, mode === "edit" && true)}>Cancelar</button>
+                    <button type="submit" className="py-[0.375rem] px-[0.75rem] text-white bg-[#2F3037] text-sm font-semibold focus:shadow-focused transition-all flex items-center justify-center">{loading ? <ReactLoading type="spin" width={15} height={15} /> : mode === "add" ? "Add" : "Salvar"}</button>
                 </div>
             </form>
         </div>
