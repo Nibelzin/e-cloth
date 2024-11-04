@@ -79,7 +79,6 @@ const AddressForm = ({ closeForm, mode = "add", addressToEdit }: AddressFormProp
             try {
                 const response = await fetch(`http://localhost:3000/api/address/cep/${cep}`)
                 const data = await response.json()
-                console.log(data)
                 setValue("state", data.estado)
                 setValue("city", data.localidade)
                 setValue("district", data.bairro)
@@ -97,8 +96,6 @@ const AddressForm = ({ closeForm, mode = "add", addressToEdit }: AddressFormProp
 
         if (value) {
             clearErrors(fieldName)
-            console.log(fieldName)
-            console.log(errors)
         }
 
         setValue(fieldName, value)

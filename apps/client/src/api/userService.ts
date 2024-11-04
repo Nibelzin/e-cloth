@@ -1,5 +1,18 @@
 import toast from "react-hot-toast";
-import { Address } from "../types/interfaces";
+import { Address, User } from "../types/interfaces";
+
+export async function getUserById(userId: string) {
+  const response = await fetch(
+    `http://localhost:3000/api/user/${userId}`,
+    {
+      method: "GET"
+    }
+  );
+  if (!response.ok) throw new Error("Erro ao buscar este usuário");
+
+  const user: User = await response.json();
+  return user
+}
 
 export async function getUserAddresses(userId: string) {
   const response = await fetch(
@@ -19,7 +32,6 @@ export async function deleteUserAddress(
   setLoading?: (value: boolean) => void
 ) {
   try {
-    console.log(addressId)
     const response = await fetch(
       `http://localhost:3000/api/address/${addressId}`, {
         method: "DELETE"
@@ -39,7 +51,6 @@ export async function setAddressAsUserDefault(
     setLoading?: (value: boolean) => void
   ) {
     try {
-      console.log(addressId)
       const response = await fetch(
         `http://localhost:3000/api/address/${addressId}/default`, {
           method: "PUT"

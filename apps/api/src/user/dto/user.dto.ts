@@ -8,3 +8,8 @@ export class UserDTO{
     addresses?: Object[]
     orders?: Object[]
 }
+
+export class UserPhoneDTO{
+    clerkId: string
+    phone: string
+}

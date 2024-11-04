@@ -41,6 +41,8 @@ export class AddressService {
       throw new NotFoundException('Usuário não encontrado');
     }
 
+    const existingAddresses = await this.getAddressess()
+
     return this.prisma.address.create({
       data: {
         city: data.city,
@@ -51,6 +53,7 @@ export class AddressService {
         street: data.street,
         complement: data.complement,
         userId: user.id,
+        isDefault: existingAddresses.length === 0
       },
     });
   }

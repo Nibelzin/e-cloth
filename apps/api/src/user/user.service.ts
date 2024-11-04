@@ -1,5 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { UserDTO } from './dto/user.dto';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { UserDTO, UserPhoneDTO } from './dto/user.dto';
 import { ClerkUserEventData } from './dto/clerk-user-event-data.interface';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
@@ -7,6 +11,20 @@ import { Prisma } from '@prisma/client';
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
+
+  async getUsers() {
+    return this.prisma.user.findMany();
+  }
+
+  async getUserById(id: string) {
+    return this.prisma.user.findFirst({
+      where: { OR: [{ id: id }, { clerkId: id }] },
+      include: {
+        addresses: true
+      }
+    });
+
+  }
 
   async createUser(data: Prisma.UserCreateInput): Promise<UserDTO> {
     const userExists = await this.prisma.user.findFirst({
@@ -39,6 +57,38 @@ export class UserService {
   async deleteUser(where: Prisma.UserWhereUniqueInput) {
     return this.prisma.user.delete({
       where,
+    });
+  }
+
+  async alterUserPhoneNumber(data: UserPhoneDTO) {
+    const user = await this.prisma.user.findUnique({
+      where: { clerkId: data.clerkId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    if (user.phone === data.phone) return;
+
+    return this.prisma.user.update({
+      where: { id: user.id },
+      data: { phone: data.phone },
+    });
+  }
+
+  async deleteUserPhoneNumber(data: UserPhoneDTO) {
+    const user = await this.prisma.user.findUnique({
+      where: { clerkId: data.clerkId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    return this.prisma.user.update({
+      where: { id: user.id },
+      data: { phone: null },
     });
   }
 

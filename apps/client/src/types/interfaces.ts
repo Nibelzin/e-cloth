@@ -1,3 +1,13 @@
+export interface User{
+  id?: string,
+  clerkId?: string,
+  firstName: string,
+  lastName?: string,
+  email: string,
+  phone? : string,
+  addresses?: Address[]
+}
+
 export interface Product {
   id: string,
   name: string,
