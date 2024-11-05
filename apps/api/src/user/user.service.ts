@@ -77,9 +77,9 @@ export class UserService {
     });
   }
 
-  async deleteUserPhoneNumber(data: UserPhoneDTO) {
+  async deleteUserPhoneNumber(clerkId: string) {
     const user = await this.prisma.user.findUnique({
-      where: { clerkId: data.clerkId },
+      where: { clerkId },
     });
 
     if (!user) {

@@ -1,5 +1,5 @@
 import CartItem from "../components/CartItem";
-import { getFormettedPrice } from "../lib/utils";
+import { getFormattedPrice } from "../lib/utils";
 import { useCartStore } from "../store/cartStore";
 
 const Cart = () => {
@@ -21,7 +21,7 @@ const Cart = () => {
                 <div className="border w-full lg:w-96 p-6 space-y-4 h-fit">
                     <div className="flex justify-between">
                         <p>Valor dos produtos:</p>
-                        <p>{getFormettedPrice(totalProductprice)}</p>
+                        <p>{getFormattedPrice(totalProductprice)}</p>
                     </div>
                     <hr />
                     <div className="flex justify-between">

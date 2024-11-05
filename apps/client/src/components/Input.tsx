@@ -1,20 +1,21 @@
 import React from "react";
-import { FieldError, FieldErrorsImpl, FieldValues, Merge, RegisterOptions, UseFormRegister } from "react-hook-form";
+import { FieldError, FieldErrorsImpl, FieldValues, Merge, Path, RegisterOptions, UseFormRegister } from "react-hook-form";
 
-interface InputProps {
+interface InputProps<T extends FieldValues> {
     label: string
-    register: UseFormRegister<FieldValues>
-    name: string
+    register: UseFormRegister<T>
+    name: Path<T>
     className?: string
     onBlur?: React.FocusEventHandler<HTMLInputElement>
     onChange?: React.ChangeEventHandler<HTMLInputElement>
     disabled?: boolean
-    options?: RegisterOptions
+    options?: RegisterOptions<T>
     maxLength?: number
     error?: FieldError | Merge<FieldError, FieldErrorsImpl>
+    placeholder?: string
 }
 
-const Input: React.FC<InputProps> = ({ label, register, name, onBlur, onChange, className, options, error, ...rest }) => {
+const Input = <T extends FieldValues>({ label, register, name, onBlur, onChange, className, options, error, ...rest }: InputProps<T>) => {
     return (
         <div className={`w-full ${className}`}>
             <p className={`text-sm text-accent font-semibold mb-1 ${rest.disabled && 'text-neutral-400'} ${error && 'text-red-500'}`}>{label}</p>

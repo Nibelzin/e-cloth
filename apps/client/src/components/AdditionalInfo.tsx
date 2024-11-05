@@ -7,6 +7,8 @@ import ReactLoading from "react-loading";
 import { deleteUserAddress, setAddressAsUserDefault } from "../api/userService";
 import { Address } from "../types/interfaces";
 import { useUserStore } from "../store/userStore";
+import { getFormattedPhoneNumber } from "../lib/utils";
+import PhoneForm from "./PhoneForm";
 
 
 
@@ -17,8 +19,14 @@ const AdditionalInfo = () => {
 
     const [openAddAddressForm, setOpenAddAddressForm] = useState(false)
     const [openEditAddressForm, setOpenEditAddressForm] = useState(false)
+
+    const [openAddPhoneForm, setOpenPhoneForm] = useState(false)
+
     const [loading, setLoading] = useState(false)
+
     const [openAdressOptions, setOpenAddressOptions] = useState<string | null>(null)
+    const [openPhoneOptions, setOpenPhoneOptions] = useState(false)
+
     const [addressToEdit, setAddressToEdit] = useState<Address | undefined>(undefined)
 
     const dropdownsRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
@@ -34,6 +42,14 @@ const AdditionalInfo = () => {
     const handleEditAddressButtonClick = (address: Address) => {
         setAddressToEdit(address)
         setOpenEditAddressForm(true)
+    }
+
+    const handleClosePhoneFormButtonClick = (refetch?: boolean) => {
+        if (user && refetch) {
+            setLoading(true)
+            fetchUser(user.id, setLoading)
+        }
+        setOpenPhoneForm(false)
     }
 
     const handleCloseAddressFormButtonClick = (refetch?: boolean, editMode?: boolean) => {
@@ -67,6 +83,7 @@ const AdditionalInfo = () => {
 
             if (!isClickInside) {
                 setOpenAddressOptions(null)
+                setOpenPhoneOptions(false)
             }
         }
 
@@ -81,20 +98,44 @@ const AdditionalInfo = () => {
             <h1 className="font-bold text-md">Informações Adicionais</h1>
             <hr className="my-4" />
             <div className="flex my-6 flex-col lg:flex-row justify-between">
-                <p className="text-xs font-semibold mb-3">Telefone</p>
-                <div className="flex justify-between items-center lg:w-2/3">
-                    <p className="text-sm">(11) 94533-6668</p>
-                    <div className="relative">
-                        <button className="text-accent hover:bg-alpha hover:opacity-100 p-[0.125rem] opacity-[0.62] focus:shadow-focused transition-all">
-                            <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" className="w-5"><g stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10.01 10H10M4.01 10H4M16.01 10H16"></path></g>
-                            </svg>
-                        </button>
-                        <div className={`bg-white border absolute z-50 right-0 top-8 w-fit drop-shadow-xl p-[0.125rem] transition-all duration-75 ease-in`}>
-                            <button className="text-xs font-semibold truncate py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha">Editar</button>
-                            <hr className="mx-[0.75rem] my-[0.25rem]" />
-                            <button className="text-xs font-semibold truncate text-red-500 py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha">Remover Telefone</button>
-                        </div>
-                    </div>
+                <div className={`flex ${storedUser?.phone === null && openAddPhoneForm === false && "items-center"}`}>
+                    <p className="text-xs font-semibold mb-3 lg:mb-0">Telefone</p>
+                </div>
+                <div className=" lg:w-2/3">
+                    {
+                        loading ? (
+                            <div className="w-full flex justify-center items-center">
+                                <ReactLoading type="spin" width={15} height={15} color="black" />
+                            </div>
+                        ) : (
+                            storedUser && storedUser.phone !== null ? (
+                                <div className="flex w-full justify-between items-center">
+                                    <p className="text-sm">{getFormattedPhoneNumber(storedUser.phone)}</p>
+                                    <div className="relative" ref={el => (dropdownsRefs.current["phoneDropdown"] = el)}>
+                                        <button className="text-accent hover:bg-alpha hover:opacity-100 p-[0.125rem] opacity-[0.62] focus:shadow-focused transition-all" onClick={() => setOpenPhoneOptions(!openPhoneOptions)}>
+                                            <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" className="w-5"><g stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10.01 10H10M4.01 10H4M16.01 10H16"></path></g>
+                                            </svg>
+                                        </button>
+                                        <div className={`bg-white border absolute z-50 right-0 top-8 w-fit drop-shadow-xl p-[0.125rem] transition-all ${openPhoneOptions === true ? "visible opacity-100" : "invisible opacity-0 -translate-y-1"} duration-75 ease-in`}>
+                                            <button className="text-xs font-semibold truncate py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha">Editar</button>
+                                            <hr className="mx-[0.75rem] my-[0.25rem]" />
+                                            <button className="text-xs font-semibold truncate text-red-500 py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha">Remover Telefone</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                openAddPhoneForm ? (
+                                    <PhoneForm closeForm={handleClosePhoneFormButtonClick} />
+                                ) : (
+                                    <button className="w-full flex items-center gap-2 hover:bg-alpha p-2 focus:shadow-focused transition-all group" onClick={() => setOpenPhoneForm(true)}>
+                                        <FaPlus size={12} className="text-accent" />
+                                        <p className="text-xs font-semibold">Adicionar Telefone</p>
+                                        <IoArrowForward className="text-accent opacity-0 w-0 group-hover:w-5 group-hover:opacity-[0.75] transition-all" />
+                                    </button>
+                                )
+                            )
+                        )
+                    }
                 </div>
             </div>
             <hr className="my-4" />

@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import { productsMock } from "../lib/mock";
-import { getFormettedPrice } from "../lib/utils";
+import { getFormattedPrice } from "../lib/utils";
 import { useCartStore } from "../store/cartStore";
 import { useState } from "react";
 
@@ -42,11 +42,11 @@ const ProductDetail = () => {
                         <div className="flex items-center gap-4 mb-4 flex-wrap">
                             {product?.promotionPrice ? (
                                 <>
-                                    <p className="text-2xl font-bold">{getFormettedPrice(product?.promotionPrice)}</p>
-                                    <p className="line-through">{getFormettedPrice(product?.price)}</p>
+                                    <p className="text-2xl font-bold">{getFormattedPrice(product?.promotionPrice)}</p>
+                                    <p className="line-through">{getFormattedPrice(product?.price)}</p>
                                 </>
                             ) : (
-                                <p className="text-2xl font-bold">{getFormettedPrice(product?.price)}</p>
+                                <p className="text-2xl font-bold">{getFormattedPrice(product?.price)}</p>
                             )}
                         </div>
                         <div>

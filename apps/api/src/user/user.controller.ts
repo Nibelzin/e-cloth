@@ -51,10 +51,10 @@ export class UserController {
     }
   }
 
-  @Put('phone')
-  async alterUserPhoneNumber(@Body() data: UserPhoneDTO) {
+  @Put(':id/phone')
+  async alterUserPhoneNumber(@Param('id') clerkId: string, @Body() data: { phone: string }) {
     try {
-      return this.userService.alterUserPhoneNumber(data);
+      return this.userService.alterUserPhoneNumber({...data, clerkId});
     } catch (error) {
       if (error.code === 'P2025') {
         throw new NotFoundException('Usuário não encontrado');
@@ -64,10 +64,10 @@ export class UserController {
     }
   }
 
-  @Delete('phone')
-  async deleteUserPhoneNumber(@Body() data: UserPhoneDTO) {
+  @Delete(':id/phone')
+  async deleteUserPhoneNumber(@Param('id') clerkId: string) {
     try {
-      return this.userService.deleteUserPhoneNumber(data);
+      return this.userService.deleteUserPhoneNumber(clerkId);
     } catch (error) {
       if (error.code === 'P2025') {
         throw new NotFoundException('Usuário não encontrado');

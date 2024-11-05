@@ -46,3 +46,7 @@ export interface Address{
   postalCode: string,
   isDefault: boolean
 }
+
+export interface PhoneFormValues {
+  phone: string
+}

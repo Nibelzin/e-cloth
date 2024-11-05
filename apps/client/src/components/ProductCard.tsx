@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { getFormettedPrice } from "../lib/utils";
+import { getFormattedPrice} from "../lib/utils";
 import { Product } from "../types/interfaces";
 
 interface ProductCardProps {
@@ -22,11 +22,11 @@ const ProductCard = ({ product, page = "home" }: ProductCardProps) => {
                     <div className="flex gap-2 items-center">
                         {product.promotionPrice ? (
                             <div className="flex flex-col md:flex-row-reverse md:items-center md:gap-2">
-                                <p className="text-sm line-through">{getFormettedPrice(product.price)}</p>
-                                <p className="font-bold text-xl">{getFormettedPrice(product.promotionPrice)}</p>
+                                <p className="text-sm line-through">{getFormattedPrice(product.price)}</p>
+                                <p className="font-bold text-xl">{getFormattedPrice(product.promotionPrice)}</p>
                             </div>
                         ) : (
-                            <p className="font-bold text-xl">{getFormettedPrice(product.price)}</p>
+                            <p className="font-bold text-xl">{getFormattedPrice(product.price)}</p>
                         )}
                     </div>
                 </div>

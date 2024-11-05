@@ -1,5 +1,5 @@
 import { HiOutlineTrash } from "react-icons/hi2";
-import { getFormettedPrice } from "../lib/utils";
+import { getFormattedPrice } from "../lib/utils";
 import { useCartStore } from "../store/cartStore";
 import { ProductInCart } from "../types/interfaces";
 
@@ -46,11 +46,11 @@ const CartItem = ({ item }: CartItemProps) => {
                         <div className="text-end">
                             {item.promotionPrice && item.quantity === 1 ? (
                                 <>
-                                    <p className="line-through">{getFormettedPrice(item.price)}</p>
-                                    <h1 className="text-xl font-semibold">{getFormettedPrice(item.promotionPrice)}</h1>
+                                    <p className="line-through">{getFormattedPrice(item.price)}</p>
+                                    <h1 className="text-xl font-semibold">{getFormattedPrice(item.promotionPrice)}</h1>
                                 </>
                             ) : (
-                                <h1 className="text-xl font-semibold">{getFormettedPrice(item.price * item.quantity)}</h1>
+                                <h1 className="text-xl font-semibold">{getFormattedPrice(item.price * item.quantity)}</h1>
                             )}
                         </div>
                     </div>
