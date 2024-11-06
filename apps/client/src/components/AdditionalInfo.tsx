@@ -4,7 +4,7 @@ import AddressForm from "./AddressForm";
 import { useEffect, useRef, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import ReactLoading from "react-loading";
-import { deleteUserAddress, setAddressAsUserDefault } from "../api/userService";
+import { deleteUserAddress, deleteUserPhoneNumber, setAddressAsUserDefault } from "../api/userService";
 import { Address } from "../types/interfaces";
 import { useUserStore } from "../store/userStore";
 import { getFormattedPhoneNumber } from "../lib/utils";
@@ -20,7 +20,8 @@ const AdditionalInfo = () => {
     const [openAddAddressForm, setOpenAddAddressForm] = useState(false)
     const [openEditAddressForm, setOpenEditAddressForm] = useState(false)
 
-    const [openAddPhoneForm, setOpenPhoneForm] = useState(false)
+    const [openAddPhoneForm, setOpenAddPhoneForm] = useState(false)
+    const [openEditPhoneForm, setOpenEditPhoneForm] = useState(false)
 
     const [loading, setLoading] = useState(false)
 
@@ -44,12 +45,16 @@ const AdditionalInfo = () => {
         setOpenEditAddressForm(true)
     }
 
-    const handleClosePhoneFormButtonClick = (refetch?: boolean) => {
+    const handleClosePhoneFormButtonClick = (refetch?: boolean, editMode?: boolean) => {
         if (user && refetch) {
             setLoading(true)
             fetchUser(user.id, setLoading)
         }
-        setOpenPhoneForm(false)
+        if (editMode) {
+            setOpenEditPhoneForm(false)
+        } else {
+            setOpenAddPhoneForm(false)
+        }
     }
 
     const handleCloseAddressFormButtonClick = (refetch?: boolean, editMode?: boolean) => {
@@ -65,9 +70,19 @@ const AdditionalInfo = () => {
     }
 
     const handleDeleteAddressButtonClick = async (addressId: string) => {
-        setLoading(true)
-        await deleteUserAddress(addressId)
-        if (user) fetchUser(user.id, setLoading)
+        if (user) {
+            setLoading(true)
+            await deleteUserAddress(addressId)
+            fetchUser(user.id, setLoading)
+        }
+    }
+
+    const handleDeletePhoneNumberButtonClick = async () => {
+        if (user) {
+            setLoading(true)
+            await deleteUserPhoneNumber(user.id)
+            fetchUser(user.id, setLoading)
+        }
     }
 
     useEffect(() => {
@@ -102,7 +117,9 @@ const AdditionalInfo = () => {
                     <p className="text-xs font-semibold mb-3 lg:mb-0">Telefone</p>
                 </div>
                 <div className=" lg:w-2/3">
-                    {
+                    {openEditPhoneForm && storedUser ? (
+                        <PhoneForm closeForm={handleClosePhoneFormButtonClick} phoneToEdit={storedUser.phone} mode="edit" />
+                    ) : (
                         loading ? (
                             <div className="w-full flex justify-center items-center">
                                 <ReactLoading type="spin" width={15} height={15} color="black" />
@@ -117,9 +134,9 @@ const AdditionalInfo = () => {
                                             </svg>
                                         </button>
                                         <div className={`bg-white border absolute z-50 right-0 top-8 w-fit drop-shadow-xl p-[0.125rem] transition-all ${openPhoneOptions === true ? "visible opacity-100" : "invisible opacity-0 -translate-y-1"} duration-75 ease-in`}>
-                                            <button className="text-xs font-semibold truncate py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha">Editar</button>
+                                            <button className="text-xs font-semibold truncate py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha" onClick={() => setOpenEditPhoneForm(true)}>Editar</button>
                                             <hr className="mx-[0.75rem] my-[0.25rem]" />
-                                            <button className="text-xs font-semibold truncate text-red-500 py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha">Remover Telefone</button>
+                                            <button className="text-xs font-semibold truncate text-red-500 py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha" onClick={() => handleDeletePhoneNumberButtonClick()}>Remover Telefone</button>
                                         </div>
                                     </div>
                                 </div>
@@ -127,7 +144,7 @@ const AdditionalInfo = () => {
                                 openAddPhoneForm ? (
                                     <PhoneForm closeForm={handleClosePhoneFormButtonClick} />
                                 ) : (
-                                    <button className="w-full flex items-center gap-2 hover:bg-alpha p-2 focus:shadow-focused transition-all group" onClick={() => setOpenPhoneForm(true)}>
+                                    <button className="w-full flex items-center gap-2 hover:bg-alpha p-2 focus:shadow-focused transition-all group" onClick={() => setOpenAddPhoneForm(true)}>
                                         <FaPlus size={12} className="text-accent" />
                                         <p className="text-xs font-semibold">Adicionar Telefone</p>
                                         <IoArrowForward className="text-accent opacity-0 w-0 group-hover:w-5 group-hover:opacity-[0.75] transition-all" />
@@ -135,6 +152,7 @@ const AdditionalInfo = () => {
                                 )
                             )
                         )
+                    )
                     }
                 </div>
             </div>

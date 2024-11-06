@@ -19,20 +19,6 @@ const AddressForm = ({ closeForm, mode = "add", addressToEdit }: AddressFormProp
 
     const [loading, setLoading] = useState(false)
 
-
-
-    useEffect(() => {
-        if (addressToEdit && mode === "edit") {
-            setValue("postalCode", addressToEdit.postalCode)
-            setValue("state", addressToEdit.state)
-            setValue("city", addressToEdit.city)
-            setValue("district", addressToEdit.district)
-            setValue("street", addressToEdit.street)
-            setValue("number", addressToEdit.number)
-            setValue("complement", addressToEdit.complement)
-        }
-    }, [addressToEdit, mode, setValue])
-
     const onSubmit = async (e: object) => {
         setLoading(true)
         let options = {}
@@ -111,6 +97,18 @@ const AddressForm = ({ closeForm, mode = "add", addressToEdit }: AddressFormProp
         e.target.value = cep
         handleInputChange(e, "postalCode")
     }
+
+    useEffect(() => {
+        if (addressToEdit && mode === "edit") {
+            setValue("postalCode", addressToEdit.postalCode)
+            setValue("state", addressToEdit.state)
+            setValue("city", addressToEdit.city)
+            setValue("district", addressToEdit.district)
+            setValue("street", addressToEdit.street)
+            setValue("number", addressToEdit.number)
+            setValue("complement", addressToEdit.complement)
+        }
+    }, [addressToEdit, mode, setValue])
 
     return (
         <div className="shadow-md border p-4">
