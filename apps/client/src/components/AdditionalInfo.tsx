@@ -23,7 +23,8 @@ const AdditionalInfo = () => {
     const [openAddPhoneForm, setOpenAddPhoneForm] = useState(false)
     const [openEditPhoneForm, setOpenEditPhoneForm] = useState(false)
 
-    const [loading, setLoading] = useState(false)
+    const [phoneLoading, setPhoneLoading] = useState(false)
+    const [addressLoading, setAddressLoading] = useState(false)
 
     const [openAdressOptions, setOpenAddressOptions] = useState<string | null>(null)
     const [openPhoneOptions, setOpenPhoneOptions] = useState(false)
@@ -34,9 +35,9 @@ const AdditionalInfo = () => {
 
     const handleSetAddressAsDefaultButtonClick = async (addressId: string) => {
         if (user) {
-            setLoading(true)
+            setAddressLoading(true)
             await setAddressAsUserDefault(addressId)
-            fetchUser(user.id, setLoading)
+            fetchUser(user.id, setAddressLoading)
         }
     }
 
@@ -47,8 +48,8 @@ const AdditionalInfo = () => {
 
     const handleClosePhoneFormButtonClick = (refetch?: boolean, editMode?: boolean) => {
         if (user && refetch) {
-            setLoading(true)
-            fetchUser(user.id, setLoading)
+            setPhoneLoading(true)
+            fetchUser(user.id, setPhoneLoading)
         }
         if (editMode) {
             setOpenEditPhoneForm(false)
@@ -59,8 +60,8 @@ const AdditionalInfo = () => {
 
     const handleCloseAddressFormButtonClick = (refetch?: boolean, editMode?: boolean) => {
         if (user && refetch) {
-            setLoading(true)
-            fetchUser(user.id, setLoading)
+            setAddressLoading(true)
+            fetchUser(user.id, setAddressLoading)
         }
         if (editMode) {
             setOpenEditAddressForm(false)
@@ -71,24 +72,34 @@ const AdditionalInfo = () => {
 
     const handleDeleteAddressButtonClick = async (addressId: string) => {
         if (user) {
-            setLoading(true)
+            setAddressLoading(true)
             await deleteUserAddress(addressId)
-            fetchUser(user.id, setLoading)
+            fetchUser(user.id, setAddressLoading)
         }
     }
 
     const handleDeletePhoneNumberButtonClick = async () => {
         if (user) {
-            setLoading(true)
+            setPhoneLoading(true)
             await deleteUserPhoneNumber(user.id)
-            fetchUser(user.id, setLoading)
+            fetchUser(user.id, setPhoneLoading)
+        }
+    }
+
+    const setPhoneAndAddressLoading = (option: boolean) => {
+        if(option === true){
+            setPhoneLoading(true)
+            setAddressLoading(true)
+        } else {
+            setPhoneLoading(false)
+            setAddressLoading(false)
         }
     }
 
     useEffect(() => {
         if (user && !storedUser) {
-            setLoading(true)
-            fetchUser(user.id, setLoading)
+            setPhoneAndAddressLoading(true)
+            fetchUser(user.id, setPhoneAndAddressLoading)
         }
     }, [user, storedUser, fetchUser])
 
@@ -120,7 +131,7 @@ const AdditionalInfo = () => {
                     {openEditPhoneForm && storedUser ? (
                         <PhoneForm closeForm={handleClosePhoneFormButtonClick} phoneToEdit={storedUser.phone} mode="edit" />
                     ) : (
-                        loading ? (
+                        phoneLoading ? (
                             <div className="w-full flex justify-center items-center">
                                 <ReactLoading type="spin" width={15} height={15} color="black" />
                             </div>
@@ -166,7 +177,7 @@ const AdditionalInfo = () => {
                         <AddressForm closeForm={handleCloseAddressFormButtonClick} addressToEdit={addressToEdit} mode="edit" />
                     ) : (
                         <>
-                            {loading ?
+                            {addressLoading ?
                                 <div className="w-full flex justify-center items-center">
                                     <ReactLoading type="spin" width={15} height={15} color="black" />
                                 </div>
@@ -189,17 +200,17 @@ const AdditionalInfo = () => {
                                                                     <p className="text-xs">CEP {address.postalCode} - {address.state} - {address.city}</p>
                                                                 </div>
                                                             </div>
-                                                            <div className="relative" ref={el => (dropdownsRefs.current[address.id] = el)}>
-                                                                <button className="text-accent hover:bg-alpha hover:opacity-100 p-[0.125rem] opacity-[0.62] focus:shadow-focused transition-all" onClick={() => setOpenAddressOptions(openAdressOptions === address.id ? null : address.id)}>
+                                                            <div className="relative" ref={el => (dropdownsRefs.current[address.id!] = el)}>
+                                                                <button className="text-accent hover:bg-alpha hover:opacity-100 p-[0.125rem] opacity-[0.62] focus:shadow-focused transition-all" onClick={() => setOpenAddressOptions(openAdressOptions === address.id! ? null : address.id!)}>
                                                                     <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" className="w-5"><g stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10.01 10H10M4.01 10H4M16.01 10H16"></path></g>
                                                                     </svg>
                                                                 </button>
                                                                 <div className={`bg-white border absolute z-50 right-0 top-8 w-fit drop-shadow-xl p-[0.125rem] ${openAdressOptions === address.id ? "visible opacity-100" : "invisible opacity-0 -translate-y-1"} transition-all duration-75 ease-in`}>
                                                                     <button className="text-xs font-semibold truncate py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha" onClick={() => handleEditAddressButtonClick(address)}>Editar</button>
                                                                     <hr className="mx-[0.75rem] my-[0.25rem]" />
-                                                                    <button disabled={address.isDefault} className={`text-xs font-semibold truncate py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha ${address.isDefault && "text-accent"} `} title={address.isDefault ? "Este já é seu endereço principal" : undefined} onClick={() => handleSetAddressAsDefaultButtonClick(address.id)}>Definir como principal</button>
+                                                                    <button disabled={address.isDefault} className={`text-xs font-semibold truncate py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha ${address.isDefault && "text-accent"} `} title={address.isDefault ? "Este já é seu endereço principal" : undefined} onClick={() => handleSetAddressAsDefaultButtonClick(address.id!)}>Definir como principal</button>
                                                                     <hr className="mx-[0.75rem] my-[0.25rem]" />
-                                                                    <button className="text-xs font-semibold truncate text-red-500 py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha" onClick={() => handleDeleteAddressButtonClick(address.id)}>Remover Endereço</button>
+                                                                    <button className="text-xs font-semibold truncate text-red-500 py-[0.25rem] px-[0.75rem] w-full hover:bg-alpha" onClick={() => handleDeleteAddressButtonClick(address.id!)}>Remover Endereço</button>
                                                                 </div>
                                                             </div>
                                                         </div>

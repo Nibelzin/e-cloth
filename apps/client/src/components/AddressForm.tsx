@@ -1,10 +1,10 @@
 import { useForm } from "react-hook-form";
 import Input from "./Input";
 import { useUser } from "@clerk/clerk-react";
-import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import ReactLoading from 'react-loading';
-import { Address } from "../types/interfaces";
+import { Address, AddressFields, AddressFormValues, AddressToAdd } from "../types/interfaces";
+import { addUserAddress, editUserAddress } from "../api/userService";
 
 interface AddressFormProps {
     closeForm: (refetch?: boolean, editMode?: boolean) => void
@@ -15,46 +15,25 @@ interface AddressFormProps {
 const AddressForm = ({ closeForm, mode = "add", addressToEdit }: AddressFormProps) => {
 
     const { user } = useUser()
-    const { register, handleSubmit, setValue, formState: { errors }, clearErrors } = useForm()
+    const { register, handleSubmit, setValue, formState: { errors }, clearErrors } = useForm<AddressFormValues>()
 
     const [loading, setLoading] = useState(false)
 
-    const onSubmit = async (e: object) => {
+    const onSubmit = async (e: AddressFormValues) => {
+        console.log(e)
         setLoading(true)
-        let options = {}
-        
+
+        if (!user) return
+
         if (mode === "add") {
-            const address = { ...e, clerkId: user?.id }
-            options = {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(address)
-            }
+            const address: AddressToAdd = { ...e, clerkId: user.id }
+            await addUserAddress(address)
         } else {
-            const address = { ...e, id: addressToEdit?.id }
-            options = {
-                method: 'PUT',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(address)
-            }
+            const address: Address = { ...e, id: addressToEdit?.id }
+            await editUserAddress(address)
         }
 
-        try {
-            const result = await fetch("http://localhost:3000/api/address", options)
-            if (!result.ok) {
-                throw new Error(`Erro ao adicionar endereço: ${result.status} - ${result.statusText}`)
-            }
-            toast.success(mode === "add" ? 'Endereço adicionado com sucesso!' : 'Endereço alterado com sucesso!')
-        } catch (error) {
-            console.log(error)
-            toast.error(mode === "add" ? 'Erro ao adicionar endereço' : 'Erro ao alterar endereço')
-        } finally {
-            setLoading(false)
-        }
+        setLoading(false)
         closeForm(true, mode === "edit" && true)
     }
 
@@ -77,7 +56,7 @@ const AddressForm = ({ closeForm, mode = "add", addressToEdit }: AddressFormProp
         }
     }
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: AddressFields) => {
         const value = e.target.value;
 
         if (value) {

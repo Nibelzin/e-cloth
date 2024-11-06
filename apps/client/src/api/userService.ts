@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { Address, User } from "../types/interfaces";
+import { Address, AddressToAdd, User } from "../types/interfaces";
 
 export async function getUserById(userId: string) {
   const response = await fetch(`http://localhost:3000/api/user/${userId}`, {
@@ -9,6 +9,52 @@ export async function getUserById(userId: string) {
 
   const user: User = await response.json();
   return user;
+}
+
+export async function addUserAddress(addressToAdd: AddressToAdd) {
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(addressToAdd),
+  };
+
+  try {
+    const result = await fetch("http://localhost:3000/api/address", options);
+    if (!result.ok) {
+      throw new Error(
+        `Erro ao adicionar endereço: ${result.status} - ${result.statusText}`
+      );
+    }
+    toast.success("Endereço adicionado com sucesso!");
+  } catch (error) {
+    console.error(error)
+    toast.error("Erro ao adicionar endereço");
+  }
+}
+
+export async function editUserAddress(address: Address) {
+  const options = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(address),
+  };
+
+  try {
+    const result = await fetch("http://localhost:3000/api/address", options);
+    if (!result.ok) {
+      throw new Error(
+        `Erro ao adicionar endereço: ${result.status} - ${result.statusText}`
+      );
+    }
+    toast.success("Endereço alterado com sucesso!");
+  } catch (error) {
+    console.error(error)
+    toast.error("Erro ao alterar endereço");
+  }
 }
 
 export async function getUserAddresses(userId: string) {
@@ -76,7 +122,7 @@ export async function alterUserPhoneNumber(
       {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           phone,
@@ -104,8 +150,10 @@ export async function deleteUserPhoneNumber(
       }
     );
     if (!response.ok) throw new Error("Erro ao excluir número de telefone");
+    toast.success("Telefone removido com sucesso")
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    toast.error("Erro ao remover telefone")
   } finally {
     if (setLoading) setLoading(false);
   }
