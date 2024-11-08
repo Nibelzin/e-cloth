@@ -5,8 +5,7 @@ import CategoryBar from "./CategoryBar";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
-import { SignedIn, SignedOut, SignInButton, SignOutButton, useClerk, UserButton, useUser } from "@clerk/clerk-react";
-import { TbLogout } from "react-icons/tb";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import AdditionalInfo from "./AdditionalInfo";
 
 const categoriesMock = [
@@ -19,9 +18,7 @@ const categoriesMock = [
 
 const Header = () => {
 
-    const user = useUser()
 
-    const { openUserProfile } = useClerk()
 
     const [openSearchBar, setOpenSearchBar] = useState(false)
     const [openMenuSheet, setOpenMenuSheet] = useState(false)
@@ -32,6 +29,7 @@ const Header = () => {
 
     const searchRef = useRef<HTMLInputElement>(null)
     const navigate = useNavigate()
+
 
 
 
@@ -158,28 +156,31 @@ const Header = () => {
                             </SignInButton>
                         </SignedOut>
                         <SignedIn>
-                            <div>
-                                <button className="flex gap-4 hover:bg-neutral-100 px-2 py-4 w-full rounded-sm transition-colors" onClick={() => openUserProfile()}>
-                                    <div className="rounded-full overflow-hidden h-16 w-16">
-                                        <img src={user.user?.imageUrl} alt="" />
-                                    </div>
-                                    <div className="text-left">
-                                        <p className="font-semibold text-2xl">{user.user?.firstName} {user.user?.lastName}</p>
-                                        <p className="text-sm font-semibold text-neutral-700">{user.user?.emailAddresses[0].toString()}</p>
-                                    </div>
-                                </button>
-                                <SignOutButton>
-                                    <button className="flex items-center gap-2 p-2 hover:bg-neutral-100 transition-colors w-full mt-4">
-                                        <TbLogout />
-                                        <p className="font-semibold">Sair</p>
-                                    </button>
-                                </SignOutButton>
+                            <div className="flex w-full hover:bg-neutral-100 transition-colors p-2 rounded-sm">
+                                <UserButton showName appearance={{
+                                    elements: {
+                                        rootBox: "w-full justify-start",
+                                        userButtonTrigger: "w-full justify-start",
+                                        avatarBox: "w-20 h-20 hover:bg-neutral-100",
+                                        userButtonBox: "flex-row-reverse",
+                                        userButtonOuterIdentifier: "text-xl sont-sans font-semibold",
+                                        userPreview: "hidden",
+                                        userButtonPopoverActions: "border-none"
+                                    },
+                                    layout: {
+                                        
+                                    }
+                                }}>
+                                    <UserButton.UserProfilePage label="Informações Adicionais" url="custom" labelIcon={<HiOutlineDotsHorizontal />}>
+                                        <AdditionalInfo />
+                                    </UserButton.UserProfilePage>
+                                </UserButton>
                             </div>
                         </SignedIn>
                         <hr className="my-4" />
                         <div className="flex flex-col">
                             {categoriesMock.map(category => (
-                                <a href="" key={category} className="font-medium p-2 hover:bg-neutral-100 transition-colors flex items-center justify-between">
+                                <a href="" key={category} className="font-medium p-2 hover:bg-neutral-100 transition-colors rounded-sm flex items-center justify-between">
                                     <p>{category}</p>
                                     <HiChevronRight />
                                 </a>

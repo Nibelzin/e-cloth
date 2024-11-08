@@ -43,7 +43,7 @@ createRoot(document.getElementById('root')!).render(
     afterSignOutUrl="/" 
     appearance={{
       variables: {
-        borderRadius: "0px"
+        borderRadius: "0.125rem"
       },
       layout: {
         shimmer: false,

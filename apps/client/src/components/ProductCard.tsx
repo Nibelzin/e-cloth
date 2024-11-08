@@ -10,7 +10,7 @@ interface ProductCardProps {
 const ProductCard = ({ product, page = "home" }: ProductCardProps) => {
     return (
         <Link to={`/product/${product.id}`}>
-            <div className={`bg-white ${page === "home" ? "min-w-42" : "min-w-52"} max-w-72 h-80 border cursor-pointer flex flex-col`}>
+            <div className={`bg-white ${page === "home" ? "min-w-42" : "min-w-52"} max-w-72 h-80 border cursor-pointer rounded-sm overflow-hidden flex flex-col`}>
                 <div className="w-full h-44">
                     <img src={product.imgs[0]} alt="" className="w-full h-full object-cover" />
                 </div>

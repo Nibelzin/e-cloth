@@ -9,6 +9,8 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { AddressModule } from './address/address.module';
+import { ProductModule } from './product/product.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -22,7 +24,9 @@ import { AddressModule } from './address/address.module';
       envFilePath: '.env'
     }),
     PrismaModule,
-    AddressModule
+    AddressModule,
+    ProductModule,
+    CategoryModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

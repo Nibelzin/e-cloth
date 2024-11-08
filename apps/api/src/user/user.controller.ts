@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AddressService } from 'src/address/address.service';
-import { UserPhoneDTO } from './dto/user.dto';
 
 @Controller('user')
 export class UserController {

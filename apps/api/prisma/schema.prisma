@@ -110,7 +110,7 @@ model Category{
 
 model Size{
   id String @id @default(uuid())
-  size String
+  size String @unique
 
   orderItems OrderItem[]
   categorySizes CategorySize[]
@@ -118,7 +118,7 @@ model Size{
 
 model CategorySize{
   idCategory String 
-  idSize String 
+  idSize String
 
   category Category @relation(fields: [idCategory], references: [id])
   size Size @relation(fields: [idSize], references: [id])
