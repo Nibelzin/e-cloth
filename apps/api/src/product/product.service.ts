@@ -1,53 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProductDTO, ProductImageDTO } from './dto/product.dto';
-import { Product, Prisma } from '@prisma/client';
-import { GetProductsQueryDTO, SortingTypes } from './dto/product.query.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) {}
 
-  async getProducts(query?: GetProductsQueryDTO, category?: string) {
-    const { search, itemsPerPage, page, sorting } = query;
-
-    const where: Prisma.ProductWhereInput = {};
-
-    if (category) {
-      where.category = { name: { contains: category, mode: 'insensitive' } };
-    }
-
-    if (search) {
-      if (category) {
-        where.name = { contains: search, mode: 'insensitive' };
-      } else {
-        where.OR = [
-          { name: { contains: search, mode: 'insensitive' } },
-          { category: { name: { contains: search, mode: 'insensitive' } } },
-        ];
-      }
-    }
-
-    let orderBy: Prisma.ProductOrderByWithRelationInput = {};
-    if (sorting === SortingTypes.PriceDesc) {
-      orderBy = { price: 'desc' };
-    } else if (sorting === SortingTypes.PriceAsc) {
-      orderBy = { price: 'asc' };
-    }
-
-    const take = itemsPerPage ? parseInt(itemsPerPage) : 2;
-    const skip = page ? (parseInt(page) - 1) * take : 0;
-
+  async getProducts() {
     return this.prisma.product.findMany({
-      where,
-      take,
-      skip,
-      orderBy,
       select: {
         id: true,
         name: true,
         description: true,
-        category: { select: { name: true } },
+        category: true,
+        price: true,
+        promotion_price: true,
+      },
+    });
+  }
+
+  async getProductById(productId: string) {
+    return this.prisma.product.findUnique({
+      where: { id: productId },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        category: true,
         price: true,
         promotion_price: true,
       },
@@ -97,6 +77,18 @@ export class ProductService {
           })),
         },
       },
+    });
+  }
+
+  async deleteProduct(productId: string) {
+    return this.prisma.$transaction(async (prisma) => {
+      await prisma.productImage.deleteMany({
+        where: { productId: productId },
+      });
+
+      return prisma.product.delete({
+        where: { id: productId },
+      });
     });
   }
 }

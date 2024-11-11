@@ -1,16 +1,17 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductDTO } from './dto/product.dto';
-import { GetProductsQueryDTO } from './dto/product.query.dto';
 
 @Controller('product')
 export class ProductController {
@@ -25,20 +26,37 @@ export class ProductController {
     }
   }
 
-  @Get('search')
-  async getFilteredProducts(@Query() query: GetProductsQueryDTO){
-    return this.productService.getProducts(query)
-  }
-
-  @Get('search/:category')
-  async getFilteredProductsByCategory(@Param('category') category: string, @Query() query: GetProductsQueryDTO) {
-    return this.productService.getProducts(query, category);
+  @Get(':id')
+  async getProductById(@Param('id') productId: string){
+    try {
+      return await this.productService.getProductById(productId)
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Post()
   async createProduct(@Body() product: ProductDTO) {
     try {
       return await this.productService.createProduct(product);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Put()
+  async updateProduct(@Body() updatedProduct: ProductDTO) {
+    try {
+      return await this.productService.updateProduct(updatedProduct);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Delete(':id')
+  async deleteProduct(@Param('id') productId: string){
+    try {
+      return await this.productService.deleteProduct(productId)
     } catch (error) {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }

@@ -4,38 +4,48 @@ import { ProductCategoryDTO } from './dto/category.dto';
 
 @Injectable()
 export class CategoryService {
-    constructor(private prisma: PrismaService){}
+  constructor(private prisma: PrismaService) {}
 
-    async createProductCategory(category: ProductCategoryDTO){
+  async getCategories() {
+    return this.prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        categorySizes: { select: { size: { select: { size: true } } } },
+      },
+    });
+  }
 
-        return this.prisma.category.create({
-            data: {
-                name: category.name,
-                categorySizes: {
-                    connectOrCreate: category.sizes.map(size => ({
-                        where: {
-                            idCategory_idSize: {
-                                idCategory: category.id,
-                                idSize: size.size
-                            }
-                         },
-                         create: {
-                            size: {
-                                connectOrCreate: {
-                                    where: { size: size.size },
-                                    create: { size: size.size }
-                                }
-                            }
-                         }
-                    }))
-                }
+  async createCategory(category: ProductCategoryDTO) {
+    return this.prisma.category.create({
+      data: {
+        name: category.name,
+        categorySizes: {
+          connectOrCreate: category.sizes.map((size) => ({
+            where: {
+              idCategory_idSize: {
+                idCategory: category.id,
+                idSize: size.size,
+              },
             },
-            include: {
-                categorySizes: { select: { 
-                    size: true
-                }}
-            }
-        })
-    }
-
+            create: {
+              size: {
+                connectOrCreate: {
+                  where: { size: size.size },
+                  create: { size: size.size },
+                },
+              },
+            },
+          })),
+        },
+      },
+      include: {
+        categorySizes: {
+          select: {
+            size: true,
+          },
+        },
+      },
+    });
+  }
 }

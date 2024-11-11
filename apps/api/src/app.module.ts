@@ -11,6 +11,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AddressModule } from './address/address.module';
 import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { CategoryModule } from './category/category.module';
     PrismaModule,
     AddressModule,
     ProductModule,
-    CategoryModule
+    CategoryModule,
+    SearchModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

@@ -1,18 +1,52 @@
-import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { ProductCategoryDTO } from './dto/category.dto';
+import { SearchService } from 'src/search/search.service';
+import { GetProductsQueryDTO } from 'src/search/dto/search.query.dto';
 
 @Controller('category')
 export class CategoryController {
+  constructor(
+    private readonly categoryService: CategoryService,
+    private readonly searchService: SearchService,
+  ) {}
 
-    constructor(private readonly categoryService: CategoryService){}
-
-    @Post()
-    async createProductCategory(@Body() category: ProductCategoryDTO) {
-      try {
-        return await this.categoryService.createProductCategory(category);
-      } catch (error) {
-        throw new HttpException(error, HttpStatus.BAD_REQUEST);
-      }
+  @Get()
+  async getCategories() {
+    try {
+      return await this.categoryService.getCategories();
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
+  }
+
+  @Get(':categoryName')
+  async searchProductsByCategory(
+    @Param('categoryName') categoryName: string,
+    @Query() query: GetProductsQueryDTO,
+  ) {
+    try {
+      return this.searchService.searchProductsByCategory(categoryName, query);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post()
+  async createCategory(@Body() category: ProductCategoryDTO) {
+    try {
+      return await this.categoryService.createCategory(category);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
 }
