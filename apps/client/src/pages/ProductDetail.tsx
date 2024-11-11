@@ -30,7 +30,7 @@ const ProductDetail = () => {
         <div className="px-6 md:px-16 lg:px-32 xl:px-64 py-16">
             <div className="flex flex-col lg:flex-row gap-4 mb-32">
                 <div className="w-full lg:w-3/5 overflow-hidden border">
-                    <img src={product?.imgs[0]} alt="" className="w-full h-full object-cover" />
+                    <img src={product?.productImages[0].url} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 p-4 flex flex-col justify-between">
                     <div>

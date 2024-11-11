@@ -18,7 +18,7 @@ const CartItem = ({ item }: CartItemProps) => {
                 <div className="flex items-center h-full justify-between">
                     <div className="h-full items-center flex gap-2">
                         <div className="w-24 h-24 md:w-32 md:h-32">
-                            <img src={item.imgs[0]} alt="" className="w-full h-full object-cover" />
+                            <img src={item.productImages[0].url} alt="" className="w-full h-full object-cover" />
                         </div>
                         <div className="h-full">
                             <h1 className="uppercase font-semibold">{item.name}</h1>

@@ -1,6 +1,5 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Home from './pages/Home.tsx'
@@ -8,6 +7,10 @@ import Cart from './pages/Cart.tsx'
 import ProductDetail from './pages/ProductDetail.tsx'
 import { ClerkProvider } from '@clerk/clerk-react'
 import { ptBR } from '@clerk/localizations'
+import MainLayout from './layout/MainLayout.tsx'
+import AdminLayout from './layout/AdminLayout.tsx'
+import AdminDashboard from './pages/AdminDashboard.tsx'
+import ProductManagement from './pages/ProductManagement.tsx'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -18,7 +21,7 @@ if (!PUBLISHABLE_KEY) {
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <MainLayout />,
     children: [
       {
         path: "/",
@@ -31,6 +34,20 @@ const router = createBrowserRouter([
       {
         path: "/product/:id",
         element: <ProductDetail />
+      }
+    ]
+  },
+  {
+    path: "/admin",
+    element: <AdminLayout/>,
+    children: [
+      {
+        path: "/admin",
+        element: <AdminDashboard/>
+      },
+      {
+        path: "/admin/products",
+        element: <ProductManagement/>
       }
     ]
   }

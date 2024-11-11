@@ -18,7 +18,7 @@ const Cart = () => {
                         <CartItem item={product} />
                     ))}
                 </div>
-                <div className="border w-full lg:w-96 p-6 space-y-4 h-fit">
+                <div className="border w-full lg:w-96 p-6 space-y-4 h-fit bg-white">
                     <div className="flex justify-between">
                         <p>Valor dos produtos:</p>
                         <p>{getFormattedPrice(totalProductprice)}</p>

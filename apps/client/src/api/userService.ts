@@ -1,8 +1,10 @@
 import toast from "react-hot-toast";
 import { Address, AddressToAdd, User } from "../types/interfaces";
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export async function getUserById(userId: string) {
-  const response = await fetch(`http://localhost:3000/api/user/${userId}`, {
+  const response = await fetch(`${apiUrl}/api/user/${userId}`, {
     method: "GET",
   });
   if (!response.ok) throw new Error("Erro ao buscar este usuário");
@@ -21,7 +23,7 @@ export async function addUserAddress(addressToAdd: AddressToAdd) {
   };
 
   try {
-    const result = await fetch("http://localhost:3000/api/address", options);
+    const result = await fetch(`${apiUrl}/api/address`, options);
     if (!result.ok) {
       throw new Error(
         `Erro ao adicionar endereço: ${result.status} - ${result.statusText}`
@@ -44,7 +46,7 @@ export async function editUserAddress(address: Address) {
   };
 
   try {
-    const result = await fetch("http://localhost:3000/api/address", options);
+    const result = await fetch(`${apiUrl}/api/address`, options);
     if (!result.ok) {
       throw new Error(
         `Erro ao adicionar endereço: ${result.status} - ${result.statusText}`
@@ -59,7 +61,7 @@ export async function editUserAddress(address: Address) {
 
 export async function getUserAddresses(userId: string) {
   const response = await fetch(
-    `http://localhost:3000/api/user/${userId}/addresses`,
+    `${apiUrl}/api/user/${userId}/addresses`,
     {
       method: "GET",
     }
@@ -76,7 +78,7 @@ export async function deleteUserAddress(
 ) {
   try {
     const response = await fetch(
-      `http://localhost:3000/api/address/${addressId}`,
+      `${apiUrl}/api/address/${addressId}`,
       {
         method: "DELETE",
       }
@@ -96,7 +98,7 @@ export async function setAddressAsUserDefault(
 ) {
   try {
     const response = await fetch(
-      `http://localhost:3000/api/address/${addressId}/default`,
+      `${apiUrl}/api/address/${addressId}/default`,
       {
         method: "PUT",
       }
@@ -118,7 +120,7 @@ export async function alterUserPhoneNumber(
 ) {
   try {
     const response = await fetch(
-      `http://localhost:3000/api/user/${userId}/phone`,
+      `${apiUrl}/api/user/${userId}/phone`,
       {
         method: "PUT",
         headers: {
@@ -144,7 +146,7 @@ export async function deleteUserPhoneNumber(
 ) {
   try {
     const response = await fetch(
-      `http://localhost:3000/api/user/${userId}/phone`,
+      `${apiUrl}/api/user/${userId}/phone`,
       {
         method: "DELETE",
       }

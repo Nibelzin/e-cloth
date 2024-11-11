@@ -73,6 +73,14 @@ export class SearchService {
       take,
       skip,
       orderBy,
+      include: {
+        category: true,
+        productImages: { select: {
+            id: true,
+            url: true,
+            alt: true
+        }}
+      }
     });
   }
 }

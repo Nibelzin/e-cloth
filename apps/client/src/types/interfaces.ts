@@ -15,7 +15,7 @@ export interface Product {
   price: number;
   promotionPrice?: number;
   description?: string;
-  imgs: string[];
+  productImages: ProductImage[];
 }
 
 export interface ProductInCart extends Product {
@@ -27,6 +27,12 @@ export interface Category {
   id: string;
   name: string;
   sizes: Size[];
+}
+
+export interface ProductImage {
+  id: string
+  url: string
+  alt: string
 }
 
 export interface Size {
