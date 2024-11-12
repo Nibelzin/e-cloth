@@ -4,6 +4,7 @@ export enum SortingTypes {
 }
 
 export class GetProductsQueryDTO{
+    term?: string
     itemsPerPage?: string
     page?: string
     sorting?: SortingTypes

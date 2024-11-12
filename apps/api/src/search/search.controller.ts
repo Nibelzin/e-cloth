@@ -22,15 +22,4 @@ export class SearchController {
     }
   }
 
-  @Get(':term')
-  async searchProductsByTerm(
-    @Param('term') term: string,
-    @Query() query: GetProductsQueryDTO,
-  ) {
-    try {
-      return this.searchService.searchProductsByTerm(term, query);
-    } catch (error) {
-      throw new HttpException(error, HttpStatus.BAD_REQUEST);
-    }
-  }
 }
