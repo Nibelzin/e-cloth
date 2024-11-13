@@ -35,7 +35,7 @@ export class ProductService {
   }
 
   async createProduct(product: ProductDTO) {
-    const { productImages } = product;
+    const { productImages, productStock } = product;
 
     return this.prisma.product.create({
       data: {
@@ -49,10 +49,14 @@ export class ProductService {
             alt: image.alt,
           })),
         },
+        productStock: {
+          create: productStock
+        }
       },
       include: {
         productImages: true,
         category: true,
+        productStock: true
       },
     });
   }
@@ -83,8 +87,12 @@ export class ProductService {
   async deleteProduct(productId: string) {
     return this.prisma.$transaction(async (prisma) => {
       await prisma.productImage.deleteMany({
-        where: { productId: productId },
+        where: { productId },
       });
+
+      await prisma.productStock.delete({
+        where: { productId }
+      })
 
       return prisma.product.delete({
         where: { id: productId },

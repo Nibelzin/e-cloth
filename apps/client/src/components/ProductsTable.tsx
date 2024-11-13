@@ -50,7 +50,7 @@ const ProductsTable = () => {
         <table className="bg-white p-2 w-full border rounded-sm table-auto">
             <thead className="border-b">
                 <tr>
-                    <th colSpan={4} className="px-4 py-4 text-left justify-between">
+                    <th colSpan={5} className="px-4 py-4 text-left justify-between">
                         <div className="flex justify-between items-center">
                             <p className="text-xl font-semibold">Produtos</p>
                             <div className=" bg-gray-200 px-4 flex gap-2 items-center">
@@ -66,13 +66,14 @@ const ProductsTable = () => {
                     <th className="py-2 text-left px-4 font-semibold">Nome</th>
                     <th className="py-2 text-left px-4 font-semibold">Categoria</th>
                     <th className="py-2 text-left px-4 font-semibold">Preço</th>
+                    <th className="py-2 text-left px-4 font-semibold">Qtd em estoque</th>
                     <th className="py-2 text-left px-4 font-semibold">Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {loading ? (
                     <tr>
-                        <td colSpan={4}>
+                        <td colSpan={5}>
                             <div className="w-full flex-col justify-center p-4 space-y-2">
                                 <div className="w-full bg-gray-300 h-6 animate-pulse rounded-sm">
                                 </div>
@@ -100,6 +101,7 @@ const ProductsTable = () => {
                             </td>
                             <td className="py-2 px-4">{product.category.name}</td>
                             <td className="py-2 px-4">{getFormattedPrice(product.price)}</td>
+                            <td className="py-2 px-4">{product.productStock?.quantity}</td>
                             <td className="py-2 px-4">
                                 <div className="flex gap-2">
                                     <button>Editar</button>

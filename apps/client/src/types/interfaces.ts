@@ -16,6 +16,13 @@ export interface Product {
   promotionPrice?: number;
   description?: string;
   productImages: ProductImage[];
+  productStock?: ProductStock
+}
+
+export interface ProductStock {
+  id: string
+  quantity: number
+  updatedAt: Date
 }
 
 export interface ProductInCart extends Product {
@@ -59,6 +66,16 @@ export interface AddressToAdd extends Address {
 
 export interface PhoneFormValues {
   phone: string;
+}
+
+export interface ProductFormValues {
+  name: string;
+  idCategory: string;
+  description: string;
+  price: number;
+  promotionPrice?: number;
+  images?: FileList;
+  stock: number;
 }
 
 export type AddressFormValues = Pick<

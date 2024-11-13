@@ -68,6 +68,13 @@ export class SearchService {
             alt: true,
           },
         },
+        productStock: {
+          select: {
+            id: true,
+            quantity: true,
+            updatedAt: true
+          }
+        }
       },
     });
 
