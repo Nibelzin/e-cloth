@@ -90,12 +90,18 @@ const ProductsTable = () => {
                 ) : (
                     products?.map((product, index) => (
                         <tr key={product.id} className={`${index % 2 === 0 && "bg-neutral-100"}`}>
-                            <td className="py-2 px-4">{product.name}</td>
+                            <td className="py-2 px-4">
+                                <div className="flex items-center gap-2">
+                                    <div className="flex w-10 h-10 border bg-white">
+                                        <img src={product.productImages[0]?.url} alt="" />
+                                    </div>
+                                  <p>{product.name}</p>
+                                </div>
+                            </td>
                             <td className="py-2 px-4">{product.category.name}</td>
                             <td className="py-2 px-4">{getFormattedPrice(product.price)}</td>
                             <td className="py-2 px-4">
                                 <div className="flex gap-2">
-                                    <button>Excluir</button>
                                     <button>Editar</button>
                                 </div>
                             </td>
@@ -118,20 +124,20 @@ const ProductsTable = () => {
                             </div>
                             <div className="flex items-center justify-center">
                                 <div className="flex items-center justify-center">
-                                    <button className="flex items-center justify-center w-8 h-8 border"><BiChevronLeft size={20} onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)} /></button>
+                                    <button className="flex items-center justify-center w-8 h-8 border hover:bg-neutral-100 transition-colors"><BiChevronLeft size={20} onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)} /></button>
                                     {Array.from({ length: numOfPages }, (_, index) => {
                                         const page = index + 1
                                         return (
                                             <button
                                                 key={page}
-                                                className={`flex items-center justify-center w-8 h-8 border-y font-semibold ${currentPage === page && "bg-neutral-100"}`}
+                                                className={`flex items-center justify-center w-8 h-8 border-y font-semibold ${currentPage === page && "bg-neutral-100"} hover:bg-neutral-100 transition-colors`}
                                                 onClick={() => setCurrentPage(page)}
                                             >
                                                 {page}
                                             </button>
                                         )
                                     })}
-                                    <button className="flex items-center justify-center w-8 h-8 border" onClick={() => numOfPages > currentPage && setCurrentPage(currentPage + 1)}><BiChevronRight size={20} /></button>
+                                    <button className="flex items-center justify-center w-8 h-8 border hover:bg-neutral-100 transition-colors" onClick={() => numOfPages > currentPage && setCurrentPage(currentPage + 1)}><BiChevronRight size={20} /></button>
                                 </div>
                             </div>
                         </div>
