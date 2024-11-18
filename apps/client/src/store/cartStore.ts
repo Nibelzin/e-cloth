@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Product, ProductInCart, Size } from "../types/interfaces";
+import { Product, ProductInCart, Size } from "../types/types";
 import { persist, PersistOptions } from "zustand/middleware";
 import { matchIdAndSize } from "../lib/utils";
 

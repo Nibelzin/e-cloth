@@ -1,4 +1,4 @@
-import { User } from "../types/interfaces";
+import { User } from "../types/types";
 import { create } from "zustand";
 import { getUserById } from "../api/userService";
 

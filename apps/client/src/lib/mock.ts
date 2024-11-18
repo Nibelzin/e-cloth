@@ -1,4 +1,4 @@
-import { Category, Product, Size } from "../types/interfaces";
+import { Category, Product, Size } from "../types/types";
 
 // Mock de tamanhos de camisetas, calças e chapéus
 const tShirtSizesMock: Size[] = [

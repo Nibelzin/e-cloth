@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { getFormattedPrice} from "../lib/utils";
-import { Product } from "../types/interfaces";
+import { Product } from "../types/types";
 
 interface ProductCardProps {
     product: Product

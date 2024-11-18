@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import Input from "./Input";
 import { alterUserPhoneNumber } from "../api/userService";
 import { useUser } from "@clerk/clerk-react";
-import { PhoneFormValues } from "../types/interfaces";
+import { PhoneFormValues } from "../types/types";
 import { useEffect, useState } from "react";
 import ReactLoading from "react-loading";
 import { getFormattedPhoneNumber } from "../lib/utils";

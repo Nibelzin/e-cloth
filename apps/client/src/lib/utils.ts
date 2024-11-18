@@ -1,4 +1,4 @@
-import { Product, ProductInCart, Size } from "../types/interfaces";
+import { Product, ProductInCart, Size } from "../types/types";
 
 export const getFormattedPrice = (price?: number) => {
   if (price || price === 0)

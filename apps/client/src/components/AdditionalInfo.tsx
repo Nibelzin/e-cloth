@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import ReactLoading from "react-loading";
 import { deleteUserAddress, deleteUserPhoneNumber, setAddressAsUserDefault } from "../api/userService";
-import { Address } from "../types/interfaces";
+import { Address } from "../types/types";
 import { useUserStore } from "../store/userStore";
 import { getFormattedPhoneNumber } from "../lib/utils";
 import PhoneForm from "./PhoneForm";

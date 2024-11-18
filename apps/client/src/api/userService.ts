@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { Address, AddressToAdd, User } from "../types/interfaces";
+import { Address, AddressToAdd, User } from "../types/types";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 

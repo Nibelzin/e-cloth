@@ -2,7 +2,7 @@ import { FaMagnifyingGlass } from "react-icons/fa6";
 import { getFormattedPrice } from "../lib/utils";
 import React, { useEffect, useState } from "react";
 import { getProducts } from "../api/productService";
-import { Product } from "../types/interfaces";
+import { Product } from "../types/types";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 
 const ProductsTable = () => {

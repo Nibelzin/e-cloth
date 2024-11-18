@@ -1,7 +1,7 @@
 import { HiOutlineTrash } from "react-icons/hi2";
 import { getFormattedPrice } from "../lib/utils";
 import { useCartStore } from "../store/cartStore";
-import { ProductInCart } from "../types/interfaces";
+import { ProductInCart } from "../types/types";
 
 interface CartItemProps {
     item: ProductInCart

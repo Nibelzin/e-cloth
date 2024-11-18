@@ -93,3 +93,16 @@ export type AddressFields = Exclude<
   keyof Address,
   "id" | "userId" | "isDefault"
 >;
+
+export interface FileWithDbImage extends File {
+  id?: string
+  url?: string
+  alt?: string
+}
+
+export interface PreviewImage {
+  id: string
+  url?: string
+  alt?: string
+  file?: File
+}

@@ -1,21 +1,46 @@
 import { useEffect, useState } from 'react';
-import { Category, ProductFormValues } from '../types/interfaces';
+import { Category, PreviewImage, ProductFormValues, ProductImage } from '../types/types';
 import { getCategories } from '../api/categoryService';
 import { FormProvider, useForm } from 'react-hook-form';
 import DropzoneField from './DropzoneField';
+import { v4 as uuid } from 'uuid';
 
 
 const ProductForm = () => {
 
     const methods = useForm<ProductFormValues>()
-    const { register, handleSubmit } = methods
+    const { register, handleSubmit, setValue, formState: { errors } } = methods
 
     const [categories, setCategories] = useState<Category[]>([])
-    const [images, setImages] = useState<File[]>([])
+    const [images, setImages] = useState<PreviewImage[]>([])
     
 
     const onSubmit = (data: ProductFormValues) => {
         console.log(data)
+        console.log(errors)
+    }
+
+    const fetchImages = async () => {
+        const imagesFromDb: ProductImage[] = [
+            { id: uuid(), url: "https://www.galaxcommerce.com.br/sistema/upload/3785/produtos/bolsa-louis-vuitton-passy-bag-monogram_2022-05-16_14-37-25_3_427.jpg", alt: "Imagem 1" },
+            { id: uuid(), url: "https://acdn.mitiendanube.com/stores/001/406/075/products/54f3caf9-3da9-400a-b3a5-f43b715c8cbe1-0f30d7d539e8abb67916332281687283-640-0.jpeg", alt: "Imagem 2" },
+        ];
+
+        const previewImages: PreviewImage[] = imagesFromDb.map(image => {
+            const imageFile = new File([new Blob([image.url])], image.alt)
+
+            return {
+                ...image,
+                file: imageFile
+            }
+        })
+
+        setImages(previewImages)
+
+        const imagesList = new DataTransfer();
+        previewImages.forEach(image => image.file && imagesList.items.add(image.file))
+
+        setValue("images", imagesList.files)
     }
 
     const fetchCategories = async () => {
@@ -28,6 +53,7 @@ const ProductForm = () => {
     }
 
     useEffect(() => {
+        fetchImages()
         fetchCategories()
     }, [])
 
@@ -65,6 +91,7 @@ const ProductForm = () => {
                             <div className='flex gap-4'>
                                 <DropzoneField name="images" multiple images={images} setImages={setImages}/>
                             </div>
+                            { errors.images && <p className="text-xs text-red-500 mt-1">{errors.images.message}</p> }
                         </div>
                         <div className="w-full flex mb-4 gap-4">
                             <div className='w-full'>

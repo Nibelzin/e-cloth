@@ -1,4 +1,4 @@
-import { Address } from "../types/interfaces";
+import { Address } from "../types/types";
 import { create } from "zustand";
 import { getUserAddresses } from "../api/userService";
 

@@ -3,7 +3,7 @@ import Input from "./Input";
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import ReactLoading from 'react-loading';
-import { Address, AddressFields, AddressFormValues, AddressToAdd } from "../types/interfaces";
+import { Address, AddressFields, AddressFormValues, AddressToAdd } from "../types/types";
 import { addUserAddress, editUserAddress } from "../api/userService";
 
 interface AddressFormProps {
