@@ -23,4 +23,9 @@ export class ProductStockDTO{
     updatedAt: Date
 }
 
+export class ProductPreviewImageDTO{
+    id: string
+    file: Express.Multer.File
+  }
+
 

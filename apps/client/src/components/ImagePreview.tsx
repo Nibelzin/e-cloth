@@ -42,7 +42,7 @@ const ImagePreview = ({ image, index, handleRemoveImage }: ImagePreviewProps) =>
                     onLoad={() => image.file && URL.revokeObjectURL(URL.createObjectURL(image.file))}
                 />
             </div>
-            <div className="absolute top-2 z-50 right-2 bg-white w-6 h-6 rounded-full flex items-center justify-center cursor-pointer border" onClick={() => handleRemoveImage(index)} >
+            <div className="absolute top-2 right-2 bg-white w-6 h-6 rounded-full flex items-center justify-center cursor-pointer border" onClick={() => handleRemoveImage(index)} >
                 <FaX size={12} />
             </div>
             { index === 0 && (

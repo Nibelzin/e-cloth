@@ -20,6 +20,7 @@ const ProductsTable = () => {
 
     const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setItemsPerPage(Number(e.target.value))
+        setCurrentPage(1)
     }
 
     const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {

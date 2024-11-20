@@ -19,6 +19,19 @@ export interface Product {
   productStock?: ProductStock
 }
 
+export interface ProductFormData {
+  id : string
+  name: string
+  idCategory: string
+  description: string
+  price: number
+  promotionPrice?: number
+  productStock: {
+    quantity: number
+  }
+  productImages: ProductImage[]
+}
+
 export interface ProductStock {
   id: string
   quantity: number
@@ -72,9 +85,9 @@ export interface ProductFormValues {
   name: string;
   idCategory: string;
   description: string;
-  price: number;
-  promotionPrice?: number;
-  images?: FileList;
+  price: string;
+  promotionPrice?: string;
+  images?: File[];
   stock: number;
 }
 
@@ -104,5 +117,5 @@ export interface PreviewImage {
   id: string
   url?: string
   alt?: string
-  file?: File
+  file: File
 }

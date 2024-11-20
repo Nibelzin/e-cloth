@@ -5,7 +5,7 @@ import ProductForm from "../components/ProductForm";
 
 const ProductManagement = () => {
 
-    const [openProductForm, setOpenProductForm] = useState(true)
+    const [openProductForm, setOpenProductForm] = useState(false)
 
 
     return (

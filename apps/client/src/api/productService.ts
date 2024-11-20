@@ -1,4 +1,4 @@
-import { Product } from "../types/types";
+import { Product, ProductFormData } from "../types/types";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -21,7 +21,40 @@ export async function getProducts(
 
   if (!response.ok) throw new Error("Erro ao buscar produtos");
 
-  const result = await response.json() as { products: Product[], total: number };
+  const result = (await response.json()) as {
+    products: Product[];
+    total: number;
+  };
 
-  return result
+  return result;
+}
+
+export async function createProduct(productData: ProductFormData) {
+  const response = await fetch(`${apiUrl}/api/product`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(productData),
+  });
+
+  if (!response.ok) throw new Error("Erro ao criar produto");
+
+  const result = await response.json();
+
+  return result;
+}
+
+export async function createProductImages(productImagesData: FormData) {
+  const response = await fetch(`${apiUrl}/api/product/images`, {
+    method: "POST",
+    body: productImagesData,
+  });
+
+  if (!response.ok) throw new Error("Erro fazer upload das imagens");
+
+  const result = await response.json();
+
+
+  return result;
 }

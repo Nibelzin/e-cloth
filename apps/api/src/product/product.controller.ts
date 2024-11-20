@@ -9,9 +9,12 @@ import {
   Post,
   Put,
   Query,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductDTO } from './dto/product.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('product')
 export class ProductController {
@@ -40,6 +43,7 @@ export class ProductController {
     try {
       return await this.productService.createProduct(product);
     } catch (error) {
+      console.log(error)
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
@@ -58,6 +62,24 @@ export class ProductController {
     try {
       return await this.productService.deleteProduct(productId)
     } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post('images')
+  @UseInterceptors(FilesInterceptor('images'))
+  async createProductImages(@UploadedFiles() images: Express.Multer.File[], @Body() body: any){
+    try {
+      const imagesWithId = images.map((image, index) => {
+        return {
+          id: JSON.parse(body.imageIds)[index],
+          file: image
+        }
+      })
+
+      return await this.productService.createProductImages(imagesWithId, body.productId);
+    } catch (error) {
+      console.log(error)
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }

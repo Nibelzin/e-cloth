@@ -1,5 +1,5 @@
 import { ChangeEventHandler, Dispatch, SetStateAction } from "react";
-import { useDropzone } from "react-dropzone";
+import { FileRejection, useDropzone } from "react-dropzone";
 import { Controller, FieldError, FieldValues, useFormContext, UseFormSetValue } from "react-hook-form";
 import { FaArrowUpFromBracket } from "react-icons/fa6";
 import { PreviewImage } from "../types/types";
@@ -21,7 +21,7 @@ interface DropzoneProps {
     onChange?: ChangeEventHandler<HTMLInputElement>,
     images: PreviewImage[],
     handleRemoveImage: (index: number) => void,
-    handleDrop: (acceptedFiles: File[]) => void,
+    handleDrop: (acceptedFiles: File[], fileRejection: FileRejection[]) => void,
     setImages: Dispatch<SetStateAction<PreviewImage[]>>
     setValue: UseFormSetValue<FieldValues>
     error: FieldError | undefined
@@ -29,21 +29,26 @@ interface DropzoneProps {
 
 const DropzoneField = ({ name, multiple, images, setImages, ...rest }: DropzoneFieldProps) => {
 
-    const { control, setValue, clearErrors } = useFormContext()
+    const { control, setValue, clearErrors, setError } = useFormContext()
 
-    const handleDrop = (acceptedFiles: File[]) => {
-        const newImages: PreviewImage[] = acceptedFiles.map(file => {
-            return {
-                id: uuid(),
-                file
-            }
-        })
+    const handleDrop = (acceptedFiles: File[], fileRejection: FileRejection[]) => {
 
-        const updatedImages = [...images, ...newImages];
-        setImages(updatedImages);
-
-        setValue(name, updatedImages.map(image => image.file))
-        clearErrors(name)
+        if (acceptedFiles.length > 0) {
+            const newImages: PreviewImage[] = acceptedFiles.map(file => {
+                return {
+                    id: uuid(),
+                    file
+                }
+            })
+    
+            const updatedImages = [...images, ...newImages];
+            setImages(updatedImages);
+    
+            setValue(name, updatedImages.map(image => image.file))
+            clearErrors(name)
+        } else if(fileRejection.length > 0) {
+            setError(name, { message: "Formato inválido", type: "validate" })
+        }
     };
 
     const handleFileChange: ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -91,7 +96,7 @@ const DropzoneField = ({ name, multiple, images, setImages, ...rest }: DropzoneF
                 />
             )}
             name={name}
-            rules={{ required: "Campo obrigatório" }}
+            rules={{ required: "Adicione uma ou mais imagens" }}
             control={control}
             defaultValue=""
         />
@@ -120,6 +125,11 @@ const Dropzone = ({ multiple, onChange, images, name, setImages, handleRemoveIma
     const { getRootProps, getInputProps } = useDropzone({
         onDrop: handleDrop,
         multiple,
+        accept: {
+            "image/png": ['.png'],
+            "image/webp": ['.webp'],
+            "image/jpg": ['.jpg', '.jpeg'],
+        },
         ...rest
     })
 

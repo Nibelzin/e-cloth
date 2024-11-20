@@ -8,6 +8,25 @@ export const getFormattedPrice = (price?: number) => {
     }).format(price);
 };
 
+export const getValueFormattedToCurrency = (value: string, promotionPrice?: boolean) => {
+    if(value === ""){
+      if(promotionPrice){
+        return ""
+      } else {
+        return "0,00"
+      }
+    }
+
+    const numericValue = value.replace(/\D/g, "");
+
+    const numberValue = parseFloat(numericValue) / 100;
+
+    return numberValue.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    })
+}
+
 export const getFormattedPhoneNumber = (phoneNumber?: string) => {
   if (phoneNumber){
     const ddd = phoneNumber.slice(0, 2);
