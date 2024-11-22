@@ -95,26 +95,32 @@ const ProductsTable = ({ editProduct }: ProductsTableProps) => {
                         </td>
                     </tr>
                 ) : (
-                    products?.map((product, index) => (
-                        <tr key={product.id} className={`${index % 2 === 0 && "bg-neutral-100"}`}>
-                            <td className="py-2 px-4">
-                                <div className="flex items-center gap-2">
-                                    <div className="flex w-10 h-10 border bg-white">
-                                        <img src={product.productImages[0]?.url} alt="" className="object-cover"/>
+                    products?.map((product, index) => {
+
+
+                        const capeImageUrl = product.productImages.find(image => image.position === 0)?.url
+
+                        return (
+                            <tr key={product.id} className={`${index % 2 === 0 && "bg-neutral-100"}`}>
+                                <td className="py-2 px-4">
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex w-10 h-10 border bg-white">
+                                            <img alt="" src={capeImageUrl} className="object-cover" />
+                                        </div>
+                                        <p>{product.name}</p>
                                     </div>
-                                  <p>{product.name}</p>
-                                </div>
-                            </td>
-                            <td className="py-2 px-4">{product.category.name}</td>
-                            <td className="py-2 px-4">{getFormattedPrice(product.price)}</td>
-                            <td className="py-2 px-4">{product.productStock?.quantity}</td>
-                            <td className="py-2 px-4">
-                                <div className="flex gap-2">
-                                    <a onClick={() => editProduct(product.id)}>Editar</a>
-                                </div>
-                            </td>
-                        </tr>
-                    ))
+                                </td>
+                                <td className="py-2 px-4">{product.category.name}</td>
+                                <td className="py-2 px-4">{getFormattedPrice(product.price)}</td>
+                                <td className="py-2 px-4">{product.productStock?.quantity}</td>
+                                <td className="py-2 px-4">
+                                    <div className="flex gap-2">
+                                        <a className="cursor-pointer text-blue-500" onClick={() => editProduct(product.id)}>Editar</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        )
+                    })
                 )}
             </tbody>
             <tfoot className="border-t">

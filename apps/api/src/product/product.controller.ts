@@ -13,7 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
-import { ProductDTO } from './dto/product.dto';
+import { ProductDTO, ProductImageDTO } from './dto/product.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('product')
@@ -57,6 +57,16 @@ export class ProductController {
     }
   }
 
+  @Delete('images')
+  async deleteProductImages(@Body() imagesToRemove: ProductImageDTO[]){
+    try {
+      return this.productService.deleteProductImages(imagesToRemove);
+    } catch (error) {
+      console.log(error)
+      throw new HttpException(error, HttpStatus.NOT_FOUND);
+    }
+  }
+
   @Delete(':id')
   async deleteProduct(@Param('id') productId: string){
     try {
@@ -83,4 +93,5 @@ export class ProductController {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
+
 }

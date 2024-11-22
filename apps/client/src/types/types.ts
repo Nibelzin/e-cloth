@@ -51,8 +51,10 @@ export interface Category {
 
 export interface ProductImage {
   id: string
+  productId?: string
   url: string
   alt: string
+  position: number
 }
 
 export interface Size {
@@ -117,5 +119,11 @@ export interface PreviewImage {
   id: string
   url?: string
   alt?: string
+  position?: number
   file: File
+}
+
+export interface updatedProductResponse {
+  product: Product,
+  imagesToRemove: ProductImage[]
 }

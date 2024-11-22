@@ -1,4 +1,4 @@
-import { Product, ProductFormData } from "../types/types";
+import { Product, ProductFormData, ProductImage, updatedProductResponse } from "../types/types";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -57,6 +57,24 @@ export async function createProduct(productData: ProductFormData) {
   return result;
 }
 
+export async function updateProduct(productData: ProductFormData) {
+  const response = await fetch(`${apiUrl}/api/product`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(productData),
+  });
+
+  if(!response.ok) throw new Error("Erro ao atualizar produto");
+
+  const updatedProductAndImagesToRemove: updatedProductResponse = await response.json();
+
+  await deleteProductImages(updatedProductAndImagesToRemove.imagesToRemove);
+
+  return updatedProductAndImagesToRemove;
+}
+
 export async function createProductImages(productImagesData: FormData) {
   const response = await fetch(`${apiUrl}/api/product/images`, {
     method: "POST",
@@ -67,6 +85,23 @@ export async function createProductImages(productImagesData: FormData) {
 
   const result = await response.json();
 
+
+  return result;
+}
+
+export async function deleteProductImages(imagesToRemove: ProductImage[]) {
+
+  const response = await fetch(`${apiUrl}/api/product/images`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(imagesToRemove),
+  });
+
+  if (!response.ok) throw new Error("Erro ao deletar imagens");
+
+  const result = await response.json();
 
   return result;
 }

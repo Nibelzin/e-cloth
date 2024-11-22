@@ -47,8 +47,8 @@ export class ProductService {
         price: true,
         promotion_price: true,
         productImages: true,
-        productStock: true
-      }
+        productStock: true,
+      },
     });
   }
 
@@ -66,19 +66,16 @@ export class ProductService {
           create: productStock,
         },
         productImages: {
-          connectOrCreate: productImages.map(
-            (image: ProductImageDTO, index: number) => {
+          createMany: {
+            data: productImages.map((image: ProductImageDTO, index: number) => {
               return {
-                where: { id: image.id },
-                create: {
                   id: image.id,
                   url: image.url,
                   alt: image.alt,
                   position: index,
-                },
               };
-            },
-          ),
+            }),
+          },
         },
       },
       include: {
@@ -90,9 +87,21 @@ export class ProductService {
   }
 
   async updateProduct(updatedProduct: ProductDTO) {
+    if (!updatedProduct || !updatedProduct.productImages) {
+      throw new Error('Invalid product data');
+    }
+
     const { productImages } = updatedProduct;
 
-    return this.prisma.product.update({
+    const productCurrentImages = await this.prisma.productImage.findMany({
+      where: { productId: updatedProduct.id },
+    });
+
+    const imagesToRemove = productCurrentImages.filter((currentImage) => {
+      return !productImages.some((newImage) => newImage.id === currentImage.id);
+    });
+
+    const product = await this.prisma.product.update({
       where: { id: updatedProduct.id },
       data: {
         description: updatedProduct.description,
@@ -104,15 +113,37 @@ export class ProductService {
             (image: ProductImageDTO, index: number) => ({
               where: { id: image.id },
               create: {
+                id: image.id,
                 url: image.url,
                 alt: image.alt,
                 position: index,
               },
             }),
           ),
+          updateMany: productImages.map(
+            (image: ProductImageDTO, index: number) => ({
+              where: { id: image.id },
+              data: {
+                position: index,
+              },
+            }),
+          ),
+          deleteMany: imagesToRemove.map((image) => ({
+            id: image.id,
+          })),
         },
+        productStock: {
+          update: updatedProduct.productStock,
+        }
       },
     });
+
+    const updatedProductAndImagesToRemove = {
+      product,
+      imagesToRemove,
+    };
+
+    return updatedProductAndImagesToRemove;
   }
 
   async deleteProduct(productId: string) {
@@ -144,14 +175,25 @@ export class ProductService {
     });
 
     const existingImageIds = existingImages.map((image) => image.id);
-    const newImages = imagesWithId.filter(
+
+    const imagesToUpload = imagesWithId.filter(
       (image) => !existingImageIds.includes(image.id),
     );
 
-    const uploadedImages = newImages.map(async (image) => {
+    const restOfTheImages = imagesWithId.filter((image) =>
+      existingImageIds.includes(image.id),
+    );
+
+    await restOfTheImages.map(async (image) => {
+      fs.unlinkSync(image.file.path);
+    });
+
+    const uploadedImages = imagesToUpload.map(async (image) => {
       const imageExt = image.file.originalname.split('.').pop();
       const imagePath = `${image.id}.${imageExt}`;
-      
+
+      console.log(imagePath);
+
       const { error } = await this.supabase.storage
         .from('product_images')
         .upload(
@@ -184,5 +226,28 @@ export class ProductService {
     });
 
     return Promise.all(uploadedImages);
+  }
+
+  async deleteProductImages(imagesToRemove: ProductImageDTO[]) {
+    if (imagesToRemove.length === 0) {
+      return { message: 'Sem imagens para deletar', status: 'success' };
+    }
+
+    const deletedImages = imagesToRemove.map(async (image) => {
+      const imageExt = image.alt.split('.').pop();
+      const imagePath = `${image.id}.${imageExt}`;
+
+      const { error } = await this.supabase.storage
+        .from('product_images')
+        .remove([`${image.productId}/${imagePath}`]);
+
+      if (error) {
+        throw new Error(`Failed to delete image: ${imagePath}`);
+      }
+
+      return { id: image.id, status: 'deleted' };
+    });
+
+    return Promise.all(deletedImages);
   }
 }

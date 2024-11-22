@@ -66,6 +66,7 @@ export class SearchService {
             id: true,
             url: true,
             alt: true,
+            position: true
           },
         },
         productStock: {

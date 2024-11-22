@@ -81,7 +81,7 @@ const Header = () => {
     return (
         <>
             <header className={`w-full  fixed top-0 z-30 bg-white ${!openSearchBar && "border-b"}`}>
-                <div className="h-16 flex items-center justify-between px-4 md:px-16 lg:px-32 xl:px-64 py-4">
+                <div className="h-16 flex items-center justify-between px-4 md:px-16 lg:px-32 xl:px-44 py-4">
                     <div className="flex gap-4 items-center">
                         <button className="lg:hidden hover:bg-neutral-100 p-2 rounded-sm transition-colors" onClick={handleMenuButtonClick}>
                             <HiMenu size={30} />
@@ -92,11 +92,11 @@ const Header = () => {
                         </button>
                     </div>
                     <div className="flex items-center gap-12">
-                        <div className="hidden bg-gray-200 px-4 lg:flex gap-2 w-64 items-center">
+                        <div className="hidden bg-gray-200 rounded-full px-4 lg:flex gap-2 w-48 items-center overflow-hidden">
                             <div>
                                 <FaMagnifyingGlass size={15} className="text-gray-500" />
                             </div>
-                            <input type="text" className="bg-gray-200 p-2 font-semibold focus:outline-none focus:ring-0" placeholder="O que você deseja?" />
+                            <input type="text" className="bg-transparent p-2 font-semibold focus:outline-none focus:ring-0" placeholder="Pesquisar" />
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="hidden lg:block">

@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import DropzoneField from './DropzoneField';
 import { v4 as uuid } from 'uuid';
 import { getValueFormattedToCurrency } from '../lib/utils';
-import { createProduct, createProductImages, getProductById } from '../api/productService';
+import { createProduct, createProductImages, getProductById, updateProduct } from '../api/productService';
 import toast from 'react-hot-toast';
 import ReactLoading from 'react-loading';
 
@@ -36,7 +36,7 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
     const onSubmit = async (data: ProductFormValues) => {
         setSumbmitButtonLoading(true)
         try {
-            const productId = uuid()
+            const productId = productToEditId ? productToEditId : uuid()
             const imageIds = images.map(image => image.id)
 
             const productImagesData = new FormData();
@@ -48,30 +48,70 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
 
             const createdImages: ProductImage[] = await createProductImages(productImagesData)
 
-            console.log(createdImages)
+            if(productToEditId){
 
-            const productData: ProductFormData = {
-                id: productId,
-                name: data.name,
-                idCategory: data.idCategory,
-                description: data.description,
-                price: parseFloat(data.price.replace(/\D/g, "")) / 100,
-                promotionPrice: data.promotionPrice ? parseFloat(data.promotionPrice.replace(/\D/g, "")) / 100 : undefined,
-                productStock: {
-                    quantity: Number(data.stock)
-                },
-                productImages: createdImages.map(image => {
-                    return {
-                        id: image.id,
-                        url: image.url,
-                        alt: image.alt
+                const productImages: ProductImage[] = images.map<ProductImage>((image, index) => {
+                    const isNewImage = createdImages.find(createdImage => createdImage.id === image.id)
+                    if(isNewImage){
+                        return {
+                            id: isNewImage.id,
+                            url: isNewImage.url,
+                            alt: isNewImage.alt,
+                            position: index
+                        }
+                    } else {
+                        const productImage: ProductImage = {
+                            id: image.id,
+                            url: image.url!,
+                            alt: image.alt!,
+                            position: index
+                        }
+
+                        return productImage
                     }
                 })
+
+                const productData: ProductFormData = {
+                    id: productId,
+                    name: data.name,
+                    idCategory: data.idCategory,
+                    description: data.description,
+                    price: parseFloat(data.price.replace(/\D/g, "")) / 100,
+                    promotionPrice: data.promotionPrice ? parseFloat(data.promotionPrice.replace(/\D/g, "")) / 100 : undefined,
+                    productStock: {
+                        quantity: Number(data.stock)
+                    },
+                    productImages: productImages
+                }
+    
+                await updateProduct(productData)
+                toast.success("Produto editado com sucesso!")
+            } else {
+                const productData: ProductFormData = {
+                    id: productId,
+                    name: data.name,
+                    idCategory: data.idCategory,
+                    description: data.description,
+                    price: parseFloat(data.price.replace(/\D/g, "")) / 100,
+                    promotionPrice: data.promotionPrice ? parseFloat(data.promotionPrice.replace(/\D/g, "")) / 100 : undefined,
+                    productStock: {
+                        quantity: Number(data.stock)
+                    },
+                    productImages: createdImages.map(image => {
+                        return {
+                            id: image.id,
+                            url: image.url,
+                            alt: image.alt,
+                            position: image.position
+                        }
+                    })
+                }
+    
+                await createProduct(productData)
+                toast.success("Produto adicionado com sucesso!")
             }
 
-            await createProduct(productData)
-
-            toast.success("Produto adicionado com sucesso!")
+            closeForm()
 
         } catch (error) {
             console.error(error)
@@ -98,9 +138,12 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
 
                 return {
                     ...image,
-                    file: imageFile
+                    file: imageFile,
                 }
             })
+
+            previewImages.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+
 
             setImages(previewImages)
             setValue("images", previewImages.map(image => image.file).filter((file): file is File => file !== undefined))
@@ -111,7 +154,6 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
         setFormLoading(true)
         await fetchCategories()
         if (productToEditId) {
-            console.log(productToEditId)
             await fetchProductToEdit(productToEditId)
         }
         setFormLoading(false)
@@ -261,7 +303,7 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
                             <div className='flex justify-end'>
                                 <div className='flex gap-2'>
                                     <button type='button' className='p-2 border rounded-sm' onClick={() => closeForm()}>Cancelar</button>
-                                    <button type='submit' className='p-2 bg-black text-white rounded-sm font-semibold'>{sumbmitButtonLoading ? <ReactLoading type="spin" width={15} height={15} /> : "Adicionar"}</button>
+                                    <button type='submit' className='p-2 bg-black text-white rounded-sm font-semibold'>{sumbmitButtonLoading ? <ReactLoading type="spin" width={15} height={15} /> : productToEditId? "Editar" : "Adicionar"}</button>
                                 </div>
                             </div>
                         </div>

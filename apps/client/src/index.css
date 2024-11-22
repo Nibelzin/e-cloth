@@ -10,12 +10,12 @@
     @apply h-screen
   }
   body {
-    @apply bg-background h-full
+    @apply h-full
   }
 }
 
 :root{
-  --background: hsla(0, 0%, 0%, 0.03);
+  --background: hsla(0, 0%, 39%, 0.03);
   --accent: hsla(0, 0%, 0%, 0.62);
   --alpha: hsla(0, 0%, 0%, 0.03);
   --accentHover: hsla(0, 0%, 0%, 0.73);
