@@ -11,6 +11,7 @@ import MainLayout from './layout/MainLayout.tsx'
 import AdminLayout from './layout/AdminLayout.tsx'
 import AdminDashboard from './pages/AdminDashboard.tsx'
 import ProductManagement from './pages/ProductManagement.tsx'
+import { Toaster } from 'react-hot-toast'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -74,5 +75,14 @@ createRoot(document.getElementById('root')!).render(
     localization={ptBR}>
       <RouterProvider router={router} />
     </ClerkProvider>
+    <Toaster
+      toastOptions={{
+        style: {
+          zIndex: 99999,
+          border: "1px solid #e5e7eb"
+        },
+        position: "top-right"
+      }}
+      />
   </StrictMode>,
 )

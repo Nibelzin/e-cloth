@@ -14,6 +14,7 @@ export class ProductImageDTO{
     productId: string
     url: string
     alt: string
+    position?: number
 }
 
 export class ProductStockDTO{

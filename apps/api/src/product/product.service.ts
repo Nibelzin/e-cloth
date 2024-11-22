@@ -46,7 +46,9 @@ export class ProductService {
         category: true,
         price: true,
         promotion_price: true,
-      },
+        productImages: true,
+        productStock: true
+      }
     });
   }
 
@@ -64,16 +66,19 @@ export class ProductService {
           create: productStock,
         },
         productImages: {
-          connectOrCreate: productImages.map((image: ProductImageDTO) => {
-            return {
-              where: { id: image.id },
-              create: {
-                id: image.id,
-                url: image.url,
-                alt: image.alt,
-              },
-            };
-          }),
+          connectOrCreate: productImages.map(
+            (image: ProductImageDTO, index: number) => {
+              return {
+                where: { id: image.id },
+                create: {
+                  id: image.id,
+                  url: image.url,
+                  alt: image.alt,
+                  position: index,
+                },
+              };
+            },
+          ),
         },
       },
       include: {
@@ -95,13 +100,16 @@ export class ProductService {
         price: updatedProduct.price,
         idCategory: updatedProduct.idCategory,
         productImages: {
-          connectOrCreate: productImages.map((image: ProductImageDTO) => ({
-            where: { id: image.id },
-            create: {
-              url: image.url,
-              alt: image.alt,
-            },
-          })),
+          connectOrCreate: productImages.map(
+            (image: ProductImageDTO, index: number) => ({
+              where: { id: image.id },
+              create: {
+                url: image.url,
+                alt: image.alt,
+                position: index,
+              },
+            }),
+          ),
         },
       },
     });
@@ -140,13 +148,11 @@ export class ProductService {
       (image) => !existingImageIds.includes(image.id),
     );
 
-    const uploadedImages = [];
-
-    for (const image of newImages) {
+    const uploadedImages = newImages.map(async (image) => {
       const imageExt = image.file.originalname.split('.').pop();
       const imagePath = `${image.id}.${imageExt}`;
-
-      const { data, error } = await this.supabase.storage
+      
+      const { error } = await this.supabase.storage
         .from('product_images')
         .upload(
           `${productId}/${imagePath}`,
@@ -164,19 +170,19 @@ export class ProductService {
 
       const {
         data: { publicUrl },
-      } = this.supabase.storage
+      } = await this.supabase.storage
         .from('product_images')
         .getPublicUrl(`${productId}/${imagePath}`);
 
-      uploadedImages.push({
+      fs.unlinkSync(image.file.path);
+
+      return {
         id: image.id,
         url: publicUrl,
         alt: image.file.originalname,
-      });
+      };
+    });
 
-      fs.unlinkSync(image.file.path);
-    }
-
-    return uploadedImages;
+    return Promise.all(uploadedImages);
   }
 }

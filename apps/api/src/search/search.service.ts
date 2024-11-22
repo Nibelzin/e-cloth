@@ -78,7 +78,9 @@ export class SearchService {
       },
     });
 
-    const numOfProducts = await this.prisma.product.count()
+    const numOfProducts = await this.prisma.product.count({
+      where
+    })
 
     return {
       products,

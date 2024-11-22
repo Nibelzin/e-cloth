@@ -2,6 +2,18 @@ import { Product, ProductFormData } from "../types/types";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
+export async function getProductById(productId: string) {
+  const response = await fetch(`${apiUrl}/api/product/${productId}`, {
+    method: "GET",
+  });
+
+  if (!response.ok) throw new Error("Erro ao buscar produto");
+
+  const result = await response.json();
+
+  return result;
+}
+
 export async function getProducts(
   itemsPerPage?: number,
   currentPage?: number,

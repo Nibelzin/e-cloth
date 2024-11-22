@@ -77,7 +77,7 @@ export class ProductController {
         }
       })
 
-      return await this.productService.createProductImages(imagesWithId, body.productId);
+      return this.productService.createProductImages(imagesWithId, body.productId);
     } catch (error) {
       console.log(error)
       throw new HttpException(error, HttpStatus.BAD_REQUEST);

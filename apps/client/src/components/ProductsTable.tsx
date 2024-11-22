@@ -5,7 +5,11 @@ import { getProducts } from "../api/productService";
 import { Product } from "../types/types";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 
-const ProductsTable = () => {
+interface ProductsTableProps {
+    editProduct: (productId: string) => void
+}
+
+const ProductsTable = ({ editProduct }: ProductsTableProps) => {
 
     const [products, setProducts] = useState<Product[]>([])
 
@@ -26,6 +30,7 @@ const ProductsTable = () => {
     const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             setSearchTerm(e.currentTarget.value)
+            setCurrentPage(1)
         }
     }
 
@@ -95,7 +100,7 @@ const ProductsTable = () => {
                             <td className="py-2 px-4">
                                 <div className="flex items-center gap-2">
                                     <div className="flex w-10 h-10 border bg-white">
-                                        <img src={product.productImages[0]?.url} alt="" />
+                                        <img src={product.productImages[0]?.url} alt="" className="object-cover"/>
                                     </div>
                                   <p>{product.name}</p>
                                 </div>
@@ -105,7 +110,7 @@ const ProductsTable = () => {
                             <td className="py-2 px-4">{product.productStock?.quantity}</td>
                             <td className="py-2 px-4">
                                 <div className="flex gap-2">
-                                    <button>Editar</button>
+                                    <a onClick={() => editProduct(product.id)}>Editar</a>
                                 </div>
                             </td>
                         </tr>
