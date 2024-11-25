@@ -94,6 +94,8 @@ model Product{
   description String
   price Decimal
   promotionPrice Decimal?
+  createdAt DateTime @default(now())
+  removedAt DateTime?
 
   category Category @relation(fields: [idCategory], references: [id])
   orderItems OrderItem[]

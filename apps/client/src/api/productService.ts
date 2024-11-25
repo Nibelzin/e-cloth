@@ -105,3 +105,15 @@ export async function deleteProductImages(imagesToRemove: ProductImage[]) {
 
   return result;
 }
+
+export async function softDeleteProduct(productId: string) {
+  const response = await fetch(`${apiUrl}/api/product/${productId}/soft`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) throw new Error("Erro ao deletar produto");
+
+  const result = await response.json();
+
+  return result;
+}

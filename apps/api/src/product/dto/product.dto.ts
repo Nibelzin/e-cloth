@@ -5,6 +5,9 @@ export class ProductDTO {
     description: string
     price: number
     promotionPrice?: number
+    createdAt?: Date
+    removedAt?: Date
+
     productImages?: ProductImageDTO[]
     productStock?: ProductStockDTO
 }

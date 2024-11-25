@@ -70,10 +70,10 @@ export class ProductService {
           createMany: {
             data: productImages.map((image: ProductImageDTO, index: number) => {
               return {
-                  id: image.id,
-                  url: image.url,
-                  alt: image.alt,
-                  position: index,
+                id: image.id,
+                url: image.url,
+                alt: image.alt,
+                position: index,
               };
             }),
           },
@@ -136,7 +136,7 @@ export class ProductService {
         },
         productStock: {
           update: updatedProduct.productStock,
-        }
+        },
       },
     });
 
@@ -148,7 +148,22 @@ export class ProductService {
     return updatedProductAndImagesToRemove;
   }
 
+  async softDeleteProduct(productId: string) {
+    return this.prisma.product.update({
+      where: { id: productId },
+      data: {
+        removedAt: new Date(),
+      },
+    });
+  }
+
   async deleteProduct(productId: string) {
+    const productImages = await this.prisma.productImage.findMany({
+      where: { productId },
+    });
+
+    await this.deleteProductImages(productImages);
+
     return this.prisma.$transaction(async (prisma) => {
       await prisma.productImage.deleteMany({
         where: { productId },

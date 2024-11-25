@@ -76,6 +76,15 @@ export class ProductController {
     }
   }
 
+  @Delete(':id/soft')
+  async softDeleteProduct(@Param('id') productId: string){
+    try {
+      return await this.productService.softDeleteProduct(productId)
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   @Post('images')
   @UseInterceptors(FilesInterceptor('images'))
   async createProductImages(@UploadedFiles() images: Express.Multer.File[], @Body() body: any){

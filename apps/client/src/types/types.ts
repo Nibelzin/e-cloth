@@ -15,6 +15,8 @@ export interface Product {
   price: number;
   promotionPrice?: number;
   description?: string;
+  createdAt?: Date;
+  removedAt?: Date;
   productImages: ProductImage[];
   productStock?: ProductStock
 }

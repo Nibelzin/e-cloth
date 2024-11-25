@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import ReactLoading from "react-loading";
 
 export interface DialogProps {
+    loading?: boolean;
     open: boolean;
     closeDialog: () => void;
     dialogAction?: () => void;
@@ -9,7 +11,7 @@ export interface DialogProps {
     deletion?: boolean;
 }
 
-const Dialog = ({ open, dialogAction, closeDialog, content, title, deletion }: DialogProps) => {
+const Dialog = ({ loading = false, open, dialogAction, closeDialog, content, title, deletion }: DialogProps) => {
 
     const [isOpen, setIsOpen] = useState(open);
     const [animate, setAnimate] = useState(false);
@@ -47,9 +49,9 @@ const Dialog = ({ open, dialogAction, closeDialog, content, title, deletion }: D
                     )}
                     <div className="flex flex-col gap-2 justify-end">
                         {deletion ? (
-                            <button className='p-2 bg-red-500 text-white rounded-sm font-semibold hover:bg-red-600 transition-colors' onClick={() => dialogAction && dialogAction()}>Excluir</button>
+                            <button className='p-2 bg-red-500 text-white rounded-sm font-semibold hover:bg-red-600 transition-colors flex items-center justify-center h-10' onClick={() => dialogAction && dialogAction()}>{loading ? <ReactLoading type="spin" width={15} height={15} /> : "Editar" }</button>
                         ) : (
-                            <button className='p-2 bg-black text-white rounded-sm font-semibold hover:bg-neutral-900 transition-colors' onClick={() => dialogAction && dialogAction()}>Salvar</button>
+                            <button className='p-2 bg-black text-white rounded-sm font-semibold hover:bg-neutral-900 transition-colors h-10' onClick={() => dialogAction && dialogAction()}>{loading ? <ReactLoading type="spin" width={15} height={15} /> : "Salvar" }</button>
                         )}
                         <button className='p-2 border rounded-sm hover:bg-neutral-100 transition-colors' onClick={() => closeDialog()}>Cancelar</button>
                     </div>

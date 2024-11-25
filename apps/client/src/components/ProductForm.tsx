@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import DropzoneField from './DropzoneField';
 import { v4 as uuid } from 'uuid';
 import { getValueFormattedToCurrency } from '../lib/utils';
-import { createProduct, createProductImages, getProductById, updateProduct } from '../api/productService';
+import { createProduct, createProductImages, getProductById, softDeleteProduct, updateProduct } from '../api/productService';
 import toast from 'react-hot-toast';
 import ReactLoading from 'react-loading';
 import Dialog from './Dialog';
@@ -32,8 +32,9 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
     const [images, setImages] = useState<PreviewImage[]>([])
     const [sumbmitButtonLoading, setSumbmitButtonLoading] = useState(false)
     const [formLoading, setFormLoading] = useState(false)
+    const [deleteLoading, setDeleteLoading] = useState(false)
     const [productToEdit, setProductToEdit] = useState<Product | null>(null)
-    const [openDialog, setOpenDialog] = useState(true)
+    const [openDialog, setOpenDialog] = useState(false)
 
     const onSubmit = async (data: ProductFormValues) => {
         setSumbmitButtonLoading(true)
@@ -134,7 +135,20 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
     }
 
     const handleDeleteProduct = async () => {
-        setOpenDialog(true)
+        setDeleteLoading(true)
+        try {
+            if(productToEditId){
+                await softDeleteProduct(productToEditId)
+                toast.success("Produto removido com sucesso!")
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error("Erro ao remover produto")
+        } finally {
+            setOpenDialog(false)
+            closeForm()
+            setDeleteLoading(false)
+        }
     }
 
     const fetchImages = async () => {
@@ -308,7 +322,7 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
                                     </div>
                                 </div>
                                 <div className={`flex ${productToEditId ? "justify-between" : "justify-end"} items-center`}>
-                                    {productToEditId && <a className='text-red-500 cursor-pointer' onClick={() => handleDeleteProduct()}>Remover Produto</a>}
+                                    {productToEditId && <a className='text-red-500 cursor-pointer' onClick={() => setOpenDialog(true)}>Remover Produto</a>}
                                     <div className='flex gap-2'>
                                         <button type='button' className='p-2 border rounded-sm' onClick={() => closeForm()}>Cancelar</button>
                                         <button type='submit' className='p-2 bg-black text-white rounded-sm font-semibold'>{sumbmitButtonLoading ? <ReactLoading type="spin" width={15} height={15} /> : productToEditId ? "Editar" : "Adicionar"}</button>
@@ -320,11 +334,13 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
                 </FormProvider>
             </div>
             <Dialog 
+            loading={deleteLoading}
             open={openDialog}
             closeDialog={() => setOpenDialog(false)}
             title={`Deseja excluir o produto ${productToEdit?.name}?`}
-            content='Todas as imagens do produto serão excluídas permanentemente, e ele só sera visivel em pedidos já realizados, deseja continuar?'
+            content='As imagens do produto serão excluídas permanentemente após 90 dias, e ele só sera visivel em pedidos já realizados, deseja continuar?'
             deletion={true}
+            dialogAction={handleDeleteProduct}
             />
         </>
     );

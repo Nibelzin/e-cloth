@@ -36,7 +36,10 @@ export class SearchService {
   async searchAllProducts(query: GetProductsQueryDTO) {
     const { itemsPerPage, page, sorting, term } = query;
 
-    const where: Prisma.ProductWhereInput = {};
+    const where: Prisma.ProductWhereInput = {
+      removedAt: null,
+    };
+    
     if (term) {
       where.OR = [
         { name: { contains: term, mode: 'insensitive' } },

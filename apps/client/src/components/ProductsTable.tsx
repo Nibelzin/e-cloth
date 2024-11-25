@@ -73,13 +73,14 @@ const ProductsTable = ({ editProduct }: ProductsTableProps) => {
                     <th className="py-2 text-left px-4 font-semibold">Categoria</th>
                     <th className="py-2 text-left px-4 font-semibold">Preço</th>
                     <th className="py-2 text-left px-4 font-semibold">Qtd em estoque</th>
+                    <th className="py-2 text-left px-4 font-semibold">Criado Em</th>
                     <th className="py-2 text-left px-4 font-semibold">Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {loading ? (
                     <tr>
-                        <td colSpan={5}>
+                        <td colSpan={6}>
                             <div className="w-full flex-col justify-center p-4 space-y-2">
                                 <div className="w-full bg-gray-300 h-6 animate-pulse rounded-sm">
                                 </div>
@@ -120,6 +121,9 @@ const ProductsTable = ({ editProduct }: ProductsTableProps) => {
                                     ) : <p className="font-semibold">{getFormattedPrice(product.price)}</p>}
                                 </td>
                                 <td className="py-2 px-4">{product.productStock?.quantity}</td>
+                                <td>
+                                    {new Date(product.createdAt!).toLocaleDateString()}
+                                </td>
                                 <td className="py-2 px-4">
                                     <div className="flex gap-2">
                                         <a className="cursor-pointer text-blue-500" onClick={() => editProduct(product.id)}>Editar</a>
