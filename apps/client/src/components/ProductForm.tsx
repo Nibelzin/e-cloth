@@ -8,6 +8,7 @@ import { getValueFormattedToCurrency } from '../lib/utils';
 import { createProduct, createProductImages, getProductById, updateProduct } from '../api/productService';
 import toast from 'react-hot-toast';
 import ReactLoading from 'react-loading';
+import Dialog from './Dialog';
 
 
 interface ProductFormProps {
@@ -32,6 +33,7 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
     const [sumbmitButtonLoading, setSumbmitButtonLoading] = useState(false)
     const [formLoading, setFormLoading] = useState(false)
     const [productToEdit, setProductToEdit] = useState<Product | null>(null)
+    const [openDialog, setOpenDialog] = useState(true)
 
     const onSubmit = async (data: ProductFormValues) => {
         setSumbmitButtonLoading(true)
@@ -48,11 +50,11 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
 
             const createdImages: ProductImage[] = await createProductImages(productImagesData)
 
-            if(productToEditId){
+            if (productToEditId) {
 
                 const productImages: ProductImage[] = images.map<ProductImage>((image, index) => {
                     const isNewImage = createdImages.find(createdImage => createdImage.id === image.id)
-                    if(isNewImage){
+                    if (isNewImage) {
                         return {
                             id: isNewImage.id,
                             url: isNewImage.url,
@@ -83,7 +85,7 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
                     },
                     productImages: productImages
                 }
-    
+
                 await updateProduct(productData)
                 toast.success("Produto editado com sucesso!")
             } else {
@@ -106,7 +108,7 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
                         }
                     })
                 }
-    
+
                 await createProduct(productData)
                 toast.success("Produto adicionado com sucesso!")
             }
@@ -129,6 +131,10 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
         } else {
             setValue("price", formattedValue)
         }
+    }
+
+    const handleDeleteProduct = async () => {
+        setOpenDialog(true)
     }
 
     const fetchImages = async () => {
@@ -200,117 +206,127 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
     }, [productToEdit])
 
     return (
-        <div className="w-4/5 flex justify-center bg-white border rounded-sm">
-            <FormProvider {...methods}>
-                <form action="" className="w-full p-4 flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-                    <h2 className="text-2xl mb-4 font-semibold">{productToEditId ? "Editar Produto" : "Adicionar Produto"}</h2>
-                    {formLoading ? (
-                        <div className="w-full flex-col justify-center p-4 space-y-4 h-full">
-                            <div className='flex gap-4'>
-                            <div className="w-full bg-gray-300 h-8 animate-pulse rounded-sm">
-                            </div>
-                            <div className="w-full bg-gray-300 h-8 animate-pulse rounded-sm">
-                            </div>
-                            </div>
-                            <div className="w-full bg-gray-300 h-64 animate-pulse rounded-sm">
-                            </div>
-                            <div className="w-full bg-gray-300 h-16 animate-pulse rounded-sm">
-                            </div>
-                            <div className="w-full bg-gray-300 h-16 animate-pulse rounded-sm">
-                            </div>
-                        </div>
-                    ) : (
-                        <div className='flex flex-col justify-between h-full'>
-                            <div className="w-full mb-4 flex gap-4">
-                                <div className="w-full">
-                                    <p className={`mb-2 text-sm ${errors.name && "text-red-500"}`}>Nome</p>
-                                    <input type="text" className={`border p-2 w-full`} {...register("name", {
-                                        required: 'Por favor informe o nome do produto'
-                                    })} />
-                                    {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
-                                </div>
-                                <div className="w-full">
-                                    <div className='flex gap-2 items-center mb-2'>
-                                        <p className="text-sm">Categoria</p>
-                                        <a className='text-xs text-blue-400 cursor-pointer'>Adicionar</a>
-                                    </div>
-                                    <select className="border p-2 w-full" {...register("idCategory")} >
-                                        {categories.map(category => (
-                                            <option key={category.id} value={category.id}>{category.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="w-full mb-4">
-                                <div>
-                                    <p className="mb-2 text-sm">Descrição</p>
-                                    <textarea className="border p-1 w-full resize-none" rows={3} {...register("description")}></textarea>
-                                </div>
-                            </div>
-                            <div className="w-full mb-4">
-                                <p className="mb-2">Imagens do Produto</p>
+        <>
+            <div className="w-4/5 flex justify-center bg-white border rounded-sm">
+                <FormProvider {...methods}>
+                    <form action="" className="w-full p-4 flex flex-col" onSubmit={handleSubmit(onSubmit)}>
+                        <h2 className="text-2xl mb-4 font-semibold">{productToEditId ? "Editar Produto" : "Adicionar Produto"}</h2>
+                        {formLoading ? (
+                            <div className="w-full flex-col justify-center p-4 space-y-4 h-full">
                                 <div className='flex gap-4'>
-                                    <DropzoneField name="images" multiple images={images} setImages={setImages} />
+                                    <div className="w-full bg-gray-300 h-8 animate-pulse rounded-sm">
+                                    </div>
+                                    <div className="w-full bg-gray-300 h-8 animate-pulse rounded-sm">
+                                    </div>
                                 </div>
-                                {errors.images && <p className="text-xs text-red-500 mt-1">{errors.images.message}</p>}
+                                <div className="w-full bg-gray-300 h-64 animate-pulse rounded-sm">
+                                </div>
+                                <div className="w-full bg-gray-300 h-16 animate-pulse rounded-sm">
+                                </div>
+                                <div className="w-full bg-gray-300 h-16 animate-pulse rounded-sm">
+                                </div>
                             </div>
-                            <div className="w-full flex mb-4 gap-4">
-                                <div className='w-full'>
-                                    <p className={`mb-2 text-sm ${errors.price && "text-red-500"}`}>Preço</p>
-                                    <div className='flex border'>
-                                        <input
-                                            type="text"
-                                            className={`border-r p-2 w-full`}
-                                            {...register("price", {
-                                                validate: value => {
-                                                    if (value === "0,00") {
-                                                        return 'Por favor informe o preço do produto'
+                        ) : (
+                            <div className='flex flex-col justify-between h-full'>
+                                <div className="w-full mb-4 flex gap-4">
+                                    <div className="w-full">
+                                        <p className={`mb-2 text-sm ${errors.name && "text-red-500"}`}>Nome</p>
+                                        <input type="text" className={`border p-2 w-full`} {...register("name", {
+                                            required: 'Por favor informe o nome do produto'
+                                        })} />
+                                        {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
+                                    </div>
+                                    <div className="w-full">
+                                        <div className='flex gap-2 items-center mb-2'>
+                                            <p className="text-sm">Categoria</p>
+                                            <a className='text-xs text-blue-400 cursor-pointer'>Adicionar</a>
+                                        </div>
+                                        <select className="border p-2 w-full" {...register("idCategory")} >
+                                            {categories.map(category => (
+                                                <option key={category.id} value={category.id}>{category.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="w-full mb-4">
+                                    <div>
+                                        <p className="mb-2 text-sm">Descrição</p>
+                                        <textarea className="border p-1 w-full resize-none" rows={3} {...register("description")}></textarea>
+                                    </div>
+                                </div>
+                                <div className="w-full mb-4">
+                                    <p className="mb-2">Imagens do Produto</p>
+                                    <div className='flex gap-4'>
+                                        <DropzoneField name="images" multiple images={images} setImages={setImages} />
+                                    </div>
+                                    {errors.images && <p className="text-xs text-red-500 mt-1">{errors.images.message}</p>}
+                                </div>
+                                <div className="w-full flex mb-4 gap-4">
+                                    <div className='w-full'>
+                                        <p className={`mb-2 text-sm ${errors.price && "text-red-500"}`}>Preço</p>
+                                        <div className='flex border'>
+                                            <input
+                                                type="text"
+                                                className={`border-r p-2 w-full`}
+                                                {...register("price", {
+                                                    validate: value => {
+                                                        if (value === "0,00") {
+                                                            return 'Por favor informe o preço do produto'
+                                                        }
+                                                        return true
                                                     }
-                                                    return true
-                                                }
-                                            })}
-                                            onChange={handlePriceInputChange}
-                                        />
-                                        <div className='flex px-2 items-center justify-center'>
-                                            <span className='text-sm'>R$</span>
+                                                })}
+                                                onChange={handlePriceInputChange}
+                                            />
+                                            <div className='flex px-2 items-center justify-center'>
+                                                <span className='text-sm'>R$</span>
+                                            </div>
+                                        </div>
+                                        {errors.price && <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>}
+                                    </div>
+                                    <div className='w-full'>
+                                        <p className="mb-2 text-sm">Preço Promocional?</p>
+                                        <div className='flex border'>
+                                            <input type="text"
+                                                className="border-r p-2 w-full"
+                                                {...register("promotionPrice")}
+                                                placeholder='Sem preço promocional'
+                                                onChange={(e) => handlePriceInputChange(e, true)}
+                                            />
+                                            <div className='flex px-2 items-center justify-center'>
+                                                <span className='text-sm'>R$</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    {errors.price && <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>}
                                 </div>
-                                <div className='w-full'>
-                                    <p className="mb-2 text-sm">Preço Promocional?</p>
-                                    <div className='flex border'>
-                                        <input type="text"
-                                            className="border-r p-2 w-full"
-                                            {...register("promotionPrice")}
-                                            placeholder='Sem preço promocional'
-                                            onChange={(e) => handlePriceInputChange(e, true)}
-                                        />
-                                        <div className='flex px-2 items-center justify-center'>
-                                            <span className='text-sm'>R$</span>
-                                        </div>
+                                <div className="w-full flex mb-4 gap-4">
+                                    <div className='w-full'>
+                                        <p className="mb-2 text-sm">Estoque</p>
+                                        <input type="number" className="border p-2 w-full" {...register("stock")} />
+                                    </div>
+                                    <div className='w-full'>
+                                    </div>
+                                </div>
+                                <div className={`flex ${productToEditId ? "justify-between" : "justify-end"} items-center`}>
+                                    {productToEditId && <a className='text-red-500 cursor-pointer' onClick={() => handleDeleteProduct()}>Remover Produto</a>}
+                                    <div className='flex gap-2'>
+                                        <button type='button' className='p-2 border rounded-sm' onClick={() => closeForm()}>Cancelar</button>
+                                        <button type='submit' className='p-2 bg-black text-white rounded-sm font-semibold'>{sumbmitButtonLoading ? <ReactLoading type="spin" width={15} height={15} /> : productToEditId ? "Editar" : "Adicionar"}</button>
                                     </div>
                                 </div>
                             </div>
-                            <div className="w-full flex mb-4 gap-4">
-                                <div className='w-full'>
-                                    <p className="mb-2 text-sm">Estoque</p>
-                                    <input type="number" className="border p-2 w-full" {...register("stock")} />
-                                </div>
-                                <div className='w-full'>
-                                </div>
-                            </div>
-                            <div className='flex justify-end'>
-                                <div className='flex gap-2'>
-                                    <button type='button' className='p-2 border rounded-sm' onClick={() => closeForm()}>Cancelar</button>
-                                    <button type='submit' className='p-2 bg-black text-white rounded-sm font-semibold'>{sumbmitButtonLoading ? <ReactLoading type="spin" width={15} height={15} /> : productToEditId? "Editar" : "Adicionar"}</button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </form>
-            </FormProvider>
-        </div>
+                        )}
+                    </form>
+                </FormProvider>
+            </div>
+            <Dialog 
+            open={openDialog}
+            closeDialog={() => setOpenDialog(false)}
+            title={`Deseja excluir o produto ${productToEdit?.name}?`}
+            content='Todas as imagens do produto serão excluídas permanentemente, e ele só sera visivel em pedidos já realizados, deseja continuar?'
+            deletion={true}
+            />
+        </>
     );
 
 }

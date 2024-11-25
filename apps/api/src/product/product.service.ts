@@ -31,7 +31,7 @@ export class ProductService {
         description: true,
         category: true,
         price: true,
-        promotion_price: true,
+        promotionPrice: true,
       },
     });
   }
@@ -45,7 +45,7 @@ export class ProductService {
         description: true,
         category: true,
         price: true,
-        promotion_price: true,
+        promotionPrice: true,
         productImages: true,
         productStock: true,
       },
@@ -61,6 +61,7 @@ export class ProductService {
         description: product.description,
         name: product.name,
         price: product.price,
+        promotionPrice: product.promotionPrice,
         idCategory: product.idCategory,
         productStock: {
           create: productStock,
@@ -107,6 +108,7 @@ export class ProductService {
         description: updatedProduct.description,
         name: updatedProduct.name,
         price: updatedProduct.price,
+        promotionPrice: updatedProduct.promotionPrice,
         idCategory: updatedProduct.idCategory,
         productImages: {
           connectOrCreate: productImages.map(

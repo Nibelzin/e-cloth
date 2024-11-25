@@ -110,8 +110,15 @@ const ProductsTable = ({ editProduct }: ProductsTableProps) => {
                                         <p>{product.name}</p>
                                     </div>
                                 </td>
-                                <td className="py-2 px-4">{product.category.name}</td>
-                                <td className="py-2 px-4">{getFormattedPrice(product.price)}</td>
+                                <td className="py-2 px-4"><span className="px-3 py-1 bg-white border rounded-full text-sm">{product.category.name}</span></td>
+                                <td className="py-2 px-4">
+                                    { product.promotionPrice ? (
+                                        <div className="flex gap-2 items-center">
+                                            <p className="line-through text-gray-500">{getFormattedPrice(product.price)}</p>
+                                            <p className="font-semibold">{getFormattedPrice(product.promotionPrice)}</p>
+                                        </div>
+                                    ) : <p className="font-semibold">{getFormattedPrice(product.price)}</p>}
+                                </td>
                                 <td className="py-2 px-4">{product.productStock?.quantity}</td>
                                 <td className="py-2 px-4">
                                     <div className="flex gap-2">

@@ -93,7 +93,7 @@ model Product{
   name String
   description String
   price Decimal
-  promotion_price Decimal?
+  promotionPrice Decimal?
 
   category Category @relation(fields: [idCategory], references: [id])
   orderItems OrderItem[]
