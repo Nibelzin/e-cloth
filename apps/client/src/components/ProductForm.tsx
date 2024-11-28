@@ -137,7 +137,7 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
     const handleDeleteProduct = async () => {
         setDeleteLoading(true)
         try {
-            if(productToEditId){
+            if (productToEditId) {
                 await softDeleteProduct(productToEditId)
                 toast.success("Produto removido com sucesso!")
             }
@@ -151,61 +151,58 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
         }
     }
 
-    const fetchImages = async () => {
-        if (productToEdit) {
-            const previewImages: PreviewImage[] = productToEdit.productImages.map(image => {
-                const imageFile = new File([new Blob([image.url])], image.url)
-
-                return {
-                    ...image,
-                    file: imageFile,
-                }
-            })
-
-            previewImages.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-
-
-            setImages(previewImages)
-            setValue("images", previewImages.map(image => image.file).filter((file): file is File => file !== undefined))
-        }
-    }
-
-    const fetchCategoriesAndProductToEdit = async () => {
-        setFormLoading(true)
-        await fetchCategories()
-        if (productToEditId) {
-            await fetchProductToEdit(productToEditId)
-        }
-        setFormLoading(false)
-    }
-
-
-    const fetchCategories = async () => {
-        try {
-            const result = await getCategories()
-            setCategories(result)
-            setValue("idCategory", result[0].id)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const fetchProductToEdit = async (productId: string) => {
-        try {
-            const result = await getProductById(productId)
-            setProductToEdit(result)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-
-
     useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const result = await getCategories()
+                setCategories(result)
+                setValue("idCategory", result[0].id!)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        const fetchProductToEdit = async (productId: string) => {
+            try {
+                const result = await getProductById(productId)
+                setProductToEdit(result)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        const fetchCategoriesAndProductToEdit = async () => {
+            setFormLoading(true)
+            await fetchCategories()
+            if (productToEditId) {
+                await fetchProductToEdit(productToEditId)
+            }
+            setFormLoading(false)
+        }
+
         fetchCategoriesAndProductToEdit()
-    }, [])
+    }, [productToEditId, setValue])
 
     useEffect(() => {
+        const fetchImages = async () => {
+            if (productToEdit) {
+                const previewImages: PreviewImage[] = productToEdit.productImages.map(image => {
+                    const imageFile = new File([new Blob([image.url])], image.url)
+
+                    return {
+                        ...image,
+                        file: imageFile,
+                    }
+                })
+
+                previewImages.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+
+
+                setImages(previewImages)
+                setValue("images", previewImages.map(image => image.file).filter((file): file is File => file !== undefined))
+            }
+        }
+
         if (productToEdit) {
             setValue("name", productToEdit?.name)
             setValue("description", productToEdit.description || "")
@@ -217,13 +214,13 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
 
             fetchImages()
         }
-    }, [productToEdit])
+    }, [productToEdit, setValue])
 
     return (
         <>
             <div className="w-4/5 flex justify-center bg-white border rounded-sm">
                 <FormProvider {...methods}>
-                    <form action="" className="w-full p-4 flex flex-col" onSubmit={handleSubmit(onSubmit)}>
+                    <form className="w-full p-4 flex flex-col" onSubmit={handleSubmit(onSubmit)}>
                         <h2 className="text-2xl mb-4 font-semibold">{productToEditId ? "Editar Produto" : "Adicionar Produto"}</h2>
                         {formLoading ? (
                             <div className="w-full flex-col justify-center p-4 space-y-4 h-full">
@@ -333,14 +330,14 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
                     </form>
                 </FormProvider>
             </div>
-            <Dialog 
-            loading={deleteLoading}
-            open={openDialog}
-            closeDialog={() => setOpenDialog(false)}
-            title={`Deseja excluir o produto ${productToEdit?.name}?`}
-            content='As imagens do produto serão excluídas permanentemente após 90 dias, e ele só sera visivel em pedidos já realizados, deseja continuar?'
-            deletion={true}
-            dialogAction={handleDeleteProduct}
+            <Dialog
+                loading={deleteLoading}
+                open={openDialog}
+                closeDialog={() => setOpenDialog(false)}
+                title={`Deseja excluir o produto ${productToEdit?.name}?`}
+                content='As imagens do produto serão excluídas permanentemente após 90 dias, e ele só sera visivel em pedidos já realizados, deseja continuar?'
+                deletion={true}
+                dialogAction={handleDeleteProduct}
             />
         </>
     );

@@ -58,7 +58,6 @@ const ProductsTable = ({ editProduct }: ProductsTableProps) => {
                 <tr>
                     <th colSpan={5} className="px-4 py-4 text-left justify-between">
                         <div className="flex justify-between items-center">
-                            <p className="text-xl font-semibold">Produtos</p>
                             <div className=" bg-gray-200 px-4 flex gap-2 items-center">
                                 <div>
                                     <FaMagnifyingGlass size={15} className="text-gray-500" />

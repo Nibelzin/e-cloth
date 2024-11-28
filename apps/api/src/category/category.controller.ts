@@ -46,6 +46,7 @@ export class CategoryController {
     try {
       return await this.categoryService.createCategory(category);
     } catch (error) {
+      console.log(error);
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }

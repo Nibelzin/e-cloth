@@ -10,7 +10,7 @@
     @apply h-screen
   }
   body {
-    @apply h-full
+    @apply h-full box-border
   }
 }
 

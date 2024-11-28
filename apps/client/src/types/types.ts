@@ -46,7 +46,7 @@ export interface ProductInCart extends Product {
 }
 
 export interface Category {
-  id: string;
+  id?: string;
   name: string;
   sizes: Size[];
 }
@@ -60,7 +60,7 @@ export interface ProductImage {
 }
 
 export interface Size {
-  id: string;
+  id?: string;
   size: string;
 }
 
@@ -93,6 +93,11 @@ export interface ProductFormValues {
   promotionPrice?: string;
   images?: File[];
   stock: number;
+}
+
+export interface CategoryFormValues {
+  name: string;
+  sizes: string[];
 }
 
 export type AddressFormValues = Pick<
