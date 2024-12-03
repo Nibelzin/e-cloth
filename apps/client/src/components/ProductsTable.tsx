@@ -110,9 +110,13 @@ const ProductsTable = ({ editProduct }: ProductsTableProps) => {
                                         <p>{product.name}</p>
                                     </div>
                                 </td>
-                                <td className="py-2 px-4"><span className="px-3 py-1 bg-white border rounded-full text-sm">{product.category.name}</span></td>
                                 <td className="py-2 px-4">
-                                    { product.promotionPrice ? (
+                                    <div className="px-2 py-1 bg-white border rounded-full text-sm w-fit">
+                                        <span>{product.category ? product.category.name : "Sem Categoria"}</span>
+                                    </div>
+                                </td>
+                                <td className="py-2 px-4">
+                                    {product.promotionPrice ? (
                                         <div className="flex gap-2 items-center">
                                             <p className="line-through text-gray-500">{getFormattedPrice(product.price)}</p>
                                             <p className="font-semibold">{getFormattedPrice(product.promotionPrice)}</p>

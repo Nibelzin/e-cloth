@@ -72,3 +72,13 @@ export async function updateCategory(category: Category) {
     
     return updatedCategory;
 }
+
+export async function deleteCategory(categoryId: string) {
+    const response = await fetch(`${apiUrl}/api/category/${categoryId}`, {
+        method: "DELETE",
+    });
+    
+    if (!response.ok) throw new Error("Erro ao deletar categoria");
+    
+    return;
+}

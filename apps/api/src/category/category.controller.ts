@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -66,6 +67,16 @@ export class CategoryController {
     try {
       return await this.categoryService.updateCategory(category);
     } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Delete(':categoryId')
+  async deleteCategory(@Param('categoryId') categoryId: string) {
+    try {
+      return await this.categoryService.deleteCategory(categoryId);
+    } catch (error) {
+      console.log(error)
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }

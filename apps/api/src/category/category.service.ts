@@ -13,8 +13,13 @@ export class CategoryService {
         id: true,
         name: true,
         categorySizes: { select: { size: true } },
-      }
-    })
+        _count: {
+          select: {
+            products: true,
+          },
+        },
+      },
+    });
   }
 
   async getCategories() {
@@ -27,7 +32,7 @@ export class CategoryService {
           select: {
             products: true,
           },
-        }
+        },
       },
     });
   }
@@ -72,7 +77,7 @@ export class CategoryService {
         name: category.name,
         categorySizes: {
           deleteMany: {
-            idCategory: category.id
+            idCategory: category.id,
           },
           connectOrCreate: category.categorySizes.map((size) => ({
             where: {
@@ -91,7 +96,24 @@ export class CategoryService {
             },
           })),
         },
-      }
-    })
+      },
+    });
+  }
+
+  async deleteCategory(categoryId: string) {
+    return this.prisma.$transaction(async (prisma) => {
+      await prisma.product.updateMany({
+        where: { idCategory: categoryId },
+        data: { idCategory: null },
+      });
+
+      await prisma.categorySize.deleteMany({
+        where: { idCategory: categoryId },
+      });
+
+      return prisma.category.delete({
+        where: { id: categoryId },
+      });
+    });
   }
 }

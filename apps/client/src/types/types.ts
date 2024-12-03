@@ -11,7 +11,7 @@ export interface User {
 export interface Product {
   id: string;
   name: string;
-  category: Category;
+  category?: Category;
   price: number;
   promotionPrice?: number;
   description?: string;

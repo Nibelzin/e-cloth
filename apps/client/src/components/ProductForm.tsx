@@ -334,11 +334,13 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
                 loading={deleteLoading}
                 open={openDialog}
                 closeDialog={() => setOpenDialog(false)}
-                title={`Deseja excluir o produto ${productToEdit?.name}?`}
-                content='As imagens do produto serão excluídas permanentemente após 90 dias, e ele só sera visivel em pedidos já realizados, deseja continuar?'
                 deletion={true}
                 dialogAction={handleDeleteProduct}
-            />
+            >
+                <Dialog.Title>Deseja excuir o produto {productToEdit?.name}?</Dialog.Title>
+                <Dialog.Description>As imagens do produto serão excluídas permanentemente após 90 dias, e ele só sera visivel em pedidos já realizados, deseja continuar?</Dialog.Description>
+                <Dialog.ActionButtons />
+            </Dialog>
         </>
     );
 

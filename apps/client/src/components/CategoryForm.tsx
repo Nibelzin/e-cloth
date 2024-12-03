@@ -4,10 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import SizeItem from "./SizeItem";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { Category, CategoryDTO, CategoryFormValues } from "../types/types";
-import { createCategory, getCategories, getCategoryById, updateCategory } from "../api/categoryService";
+import { createCategory, deleteCategory, getCategories, getCategoryById, updateCategory } from "../api/categoryService";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import ReactLoading from "react-loading";
+import Dialog from "./Dialog";
 
 interface CategoryFormProps {
     closeForm: () => void
@@ -21,8 +22,10 @@ const CategoryForm = ({ closeForm, categoryToEditId }: CategoryFormProps) => {
 
     const [sizes, setSizes] = useState<string[]>([])
     const [openAddSizeInput, setOpenAddSizeInput] = useState(false)
-    const [loading, setLoading] = useState(false)
+    const [sumbmitButtonLoading, setSumbmitButtonLoading] = useState(false)
+    const [deleteLoading, setDeleteLoading] = useState(false)
     const [formLoading, setFormLoading] = useState(true)
+    const [openDialog, setOpenDialog] = useState(false)
 
     const addSizeInput = useRef<HTMLInputElement>(null)
 
@@ -69,17 +72,33 @@ const CategoryForm = ({ closeForm, categoryToEditId }: CategoryFormProps) => {
         setSizes(sizes.filter((_, i) => i !== index))
     }
 
+    const handleDeleteCategory = async () => {
+        setDeleteLoading(true)
+        try {
+            if (categoryToEdit && categoryToEditId) {
+                await deleteCategory(categoryToEditId)
+                toast.success("Categoria removida com sucesso")
+                closeForm()
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error("Erro ao remover categoria")
+        } finally {
+            setDeleteLoading(false)
+        }
+    }
+
     const onSubmit = async (data: CategoryFormValues) => {
-        setLoading(true)
+        setSumbmitButtonLoading(true)
 
         const newCategory: Category = {
-            id: categoryToEditId? categoryToEditId : "",
+            id: categoryToEditId ? categoryToEditId : "",
             name: data.name,
             categorySizes: sizes.map(size => ({ size: size.toLocaleUpperCase() }))
         }
 
         try {
-            if(categoryToEdit) {
+            if (categoryToEdit) {
                 await updateCategory(newCategory)
                 toast.success("Categoria atualizada com sucesso")
                 closeForm()
@@ -92,7 +111,7 @@ const CategoryForm = ({ closeForm, categoryToEditId }: CategoryFormProps) => {
             console.log(error)
             toast.error("Erro ao adicionar categoria")
         } finally {
-            setLoading(false)
+            setSumbmitButtonLoading(false)
         }
     }
 
@@ -149,81 +168,103 @@ const CategoryForm = ({ closeForm, categoryToEditId }: CategoryFormProps) => {
     }, [sizes, setValue, clearErrors])
 
     return (
-        <div className="w-4/5 flex justify-center bg-white border rounded-sm">
-            <form className="w-full p-4 flex flex-col justify-between" onSubmit={handleSubmit(onSubmit)}>
-                <div>
-                    <h2 className="text-2xl mb-4 font-semibold">{categoryToEditId ? "Editar Categoria" : "Adicionar Categoria"}</h2>
-                    {formLoading ? (
-                        <div className="w-full flex-col justify-center p-4 space-y-4 h-full">
-                            <div className='flex gap-4'>
-                                <div className="w-full bg-neutral-300 h-8 animate-pulse rounded-sm">
-                                </div>
-                                <div className="w-full bg-neutral-300 h-8 animate-pulse rounded-sm">
-                                </div>
-                            </div>
-                            <div className="w-full bg-neutral-300 h-64 animate-pulse rounded-sm">
-                            </div>
-                            <div className="w-full bg-neutral-300 h-16 animate-pulse rounded-sm">
-                            </div>
-                            <div className="w-full bg-neutral-300 h-16 animate-pulse rounded-sm">
-                            </div>
-                        </div>
-                    ) : (
-                        <>
-                            <div className="w-full mb-4">
-                                <p className={`text-sm mb-2 ${errors.name && "text-red-500"}`}>Nome</p>
-                                <input type="text" className="border p-2 w-full" {...register("name", {
-                                    required: "Por favor informe o nome da categoria",
-                                    validate: (value) => categoryToEditId ? true : existingCategories.some(category => category.name === value) || "Categoria já existe"
-                                })} />
-                                {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
-                            </div>
-                            <div className="w-full mb-4">
-                                <p className={`text-sm mb-2 ${errors.sizes && "text-red-500"}`}>Tamanhos da Categoria</p>
-                                <div className="border">
-                                    {sizes.length === 0 && openAddSizeInput === false && (
-                                        <div className="p-2 border-b">
-                                            <p className="text-sm text-neutral-500">Sem Tamanhos</p>
-                                        </div>
-                                    )}
-                                    <DndContext
-                                        onDragEnd={handleDragEnd}
-                                        modifiers={[restrictToVerticalAxis]}
-                                    >
-                                        <SortableContext items={sizes}>
-                                            {sizes.map((size, index) => (
-                                                <SizeItem key={index} size={size} index={index} removeSize={handleRemoveSize} />
-                                            ))}
-                                        </SortableContext>
-                                    </DndContext>
-                                    {openAddSizeInput && (
-                                        <div className="p-2 border-b">
-                                            <input
-                                                type="text"
-                                                className="border p-2 w-full"
-                                                placeholder="PP, P, M, G, GG"
-                                                ref={addSizeInput}
-                                                onBlur={() => setOpenAddSizeInput(false)}
-                                                onKeyDown={handleAddSizes} />
-                                            <p className="text-sm text-neutral-500 mt-2">Pressione Enter para adicionar</p>
-                                        </div>
-                                    )}
-                                    <div className="p-2 flex justify-end">
-                                        <button type="button" onClick={() => setOpenAddSizeInput(true)}>Adicionar Tamanhos</button>
+        <>
+            <div className="w-4/5 flex justify-center bg-white border rounded-sm">
+                <form className="w-full p-4 flex flex-col justify-between" onSubmit={handleSubmit(onSubmit)}>
+                    <div>
+                        <h2 className="text-2xl mb-4 font-semibold">{categoryToEditId ? "Editar Categoria" : "Adicionar Categoria"}</h2>
+                        {formLoading ? (
+                            <div className="w-full flex-col justify-center p-4 space-y-4 h-full">
+                                <div className='flex gap-4'>
+                                    <div className="w-full bg-neutral-300 h-8 animate-pulse rounded-sm">
+                                    </div>
+                                    <div className="w-full bg-neutral-300 h-8 animate-pulse rounded-sm">
                                     </div>
                                 </div>
-                                {errors.sizes && <p className="text-xs text-red-500 mt-1">{errors.sizes.message}</p>}
+                                <div className="w-full bg-neutral-300 h-64 animate-pulse rounded-sm">
+                                </div>
+                                <div className="w-full bg-neutral-300 h-16 animate-pulse rounded-sm">
+                                </div>
+                                <div className="w-full bg-neutral-300 h-16 animate-pulse rounded-sm">
+                                </div>
                             </div>
-                        </>
-                    )}
+                        ) : (
+                            <>
+                                <div className="w-full mb-4">
+                                    <p className={`text-sm mb-2 ${errors.name && "text-red-500"}`}>Nome</p>
+                                    <input type="text" className="border p-2 w-full" {...register("name", {
+                                        required: "Por favor informe o nome da categoria",
+                                        validate: (value) => categoryToEditId ? true : existingCategories.some(category => category.name === value) || "Categoria já existe"
+                                    })} />
+                                    {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
+                                </div>
+                                <div className="w-full mb-4">
+                                    <p className={`text-sm mb-2 ${errors.sizes && "text-red-500"}`}>Tamanhos da Categoria</p>
+                                    <div className="border">
+                                        {sizes.length === 0 && openAddSizeInput === false && (
+                                            <div className="p-2 border-b">
+                                                <p className="text-sm text-neutral-500">Sem Tamanhos</p>
+                                            </div>
+                                        )}
+                                        <DndContext
+                                            onDragEnd={handleDragEnd}
+                                            modifiers={[restrictToVerticalAxis]}
+                                        >
+                                            <SortableContext items={sizes}>
+                                                {sizes.map((size, index) => (
+                                                    <SizeItem key={index} size={size} index={index} removeSize={handleRemoveSize} />
+                                                ))}
+                                            </SortableContext>
+                                        </DndContext>
+                                        {openAddSizeInput && (
+                                            <div className="p-2 border-b">
+                                                <input
+                                                    type="text"
+                                                    className="border p-2 w-full"
+                                                    placeholder="PP, P, M, G, GG"
+                                                    ref={addSizeInput}
+                                                    onBlur={() => setOpenAddSizeInput(false)}
+                                                    onKeyDown={handleAddSizes} />
+                                                <p className="text-sm text-neutral-500 mt-2">Pressione Enter para adicionar</p>
+                                            </div>
+                                        )}
+                                        <div className="p-2 flex justify-end">
+                                            <button type="button" onClick={() => setOpenAddSizeInput(true)}>Adicionar Tamanhos</button>
+                                        </div>
+                                    </div>
+                                    {errors.sizes && <p className="text-xs text-red-500 mt-1">{errors.sizes.message}</p>}
+                                </div>
+                            </>
+                        )}
 
-                </div>
-                <div className="flex justify-end gap-2">
-                    <button type='button' className='p-2 border rounded-sm' onClick={() => closeForm()}>Cancelar</button>
-                    <button type='submit' className='p-2 bg-black text-white rounded-sm font-semibold'>{loading ? <ReactLoading type="spin" width={15} height={15} /> : "Adicionar"}</button>
-                </div>
-            </form>
-        </div>
+                    </div>
+                    <div className={`flex ${categoryToEditId ? "justify-between" : "justify-end"} items-center`}>
+                        {categoryToEditId && <a className='text-red-500 cursor-pointer' onClick={() => setOpenDialog(true)}>Remover Categoria</a>}
+                        <div className="flex justify-end gap-2">
+                            <button type='button' className='p-2 border rounded-sm' onClick={() => closeForm()}>Cancelar</button>
+                            <button type='submit' className='p-2 bg-black text-white rounded-sm font-semibold'>{sumbmitButtonLoading ? <ReactLoading type="spin" width={15} height={15} /> : categoryToEditId? "Editar" : "Adicionar"}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <Dialog
+                open={openDialog}
+                closeDialog={() => setOpenDialog(false)}
+                deletion={true}
+                loading={deleteLoading}
+                dialogAction={handleDeleteCategory}
+            >
+                <Dialog.Title>Deseja excluir a categoria {categoryToEdit?.name}?</Dialog.Title>
+                <Dialog.Description>
+                    {categoryToEdit?._count && categoryToEdit._count.products > 0 ? (
+                        <p>{categoryToEdit._count.products} produtos ainda estão associados a essa categoria, estes serão atribuidos a "Sem Categoria"</p>
+                    ) : (
+                        <p>Essa ação não pode ser desfeita.</p>
+                    )}
+                </Dialog.Description>
+                <Dialog.ActionButtons />
+            </Dialog>
+        </>
     );
 }
 
