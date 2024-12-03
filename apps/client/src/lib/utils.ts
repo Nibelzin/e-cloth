@@ -37,6 +37,10 @@ export const getFormattedPhoneNumber = (phoneNumber?: string) => {
   }
 };
 
+export const getArrayAsString = (array: string[]) => {
+  return array.join(", ");
+}
+
 export const matchIdAndSize = (
   item: ProductInCart,
   product: Product,

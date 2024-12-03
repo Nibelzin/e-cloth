@@ -3,23 +3,26 @@ import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { useEffect, useRef, useState } from "react";
 import SizeItem from "./SizeItem";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import { Category, CategoryFormValues } from "../types/types";
-import { createCategory, getCategories } from "../api/categoryService";
+import { Category, CategoryDTO, CategoryFormValues } from "../types/types";
+import { createCategory, getCategories, getCategoryById, updateCategory } from "../api/categoryService";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import ReactLoading from "react-loading";
 
 interface CategoryFormProps {
     closeForm: () => void
+    categoryToEditId?: string | null
 }
 
-const CategoryForm = ({ closeForm }: CategoryFormProps) => {
+const CategoryForm = ({ closeForm, categoryToEditId }: CategoryFormProps) => {
 
-    const [existingCategories, setExistingCategories] = useState<Category[]>([])
+    const [existingCategories, setExistingCategories] = useState<CategoryDTO[]>([])
+    const [categoryToEdit, setCategoryToEdit] = useState<CategoryDTO | null>(null)
 
     const [sizes, setSizes] = useState<string[]>([])
     const [openAddSizeInput, setOpenAddSizeInput] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [formLoading, setFormLoading] = useState(true)
 
     const addSizeInput = useRef<HTMLInputElement>(null)
 
@@ -70,15 +73,21 @@ const CategoryForm = ({ closeForm }: CategoryFormProps) => {
         setLoading(true)
 
         const newCategory: Category = {
-            id: "",
+            id: categoryToEditId? categoryToEditId : "",
             name: data.name,
-            sizes: sizes.map(size => ({ size: size.toLocaleUpperCase() }))
+            categorySizes: sizes.map(size => ({ size: size.toLocaleUpperCase() }))
         }
 
-        try{
-            await createCategory(newCategory)
-            toast.success("Categoria adicionada com sucesso")
-            closeForm()
+        try {
+            if(categoryToEdit) {
+                await updateCategory(newCategory)
+                toast.success("Categoria atualizada com sucesso")
+                closeForm()
+            } else {
+                await createCategory(newCategory)
+                toast.success("Categoria adicionada com sucesso")
+                closeForm()
+            }
         } catch (error) {
             console.log(error)
             toast.error("Erro ao adicionar categoria")
@@ -88,14 +97,6 @@ const CategoryForm = ({ closeForm }: CategoryFormProps) => {
     }
 
 
-    const fetchExistingCategories = async () => {
-        try {
-            setExistingCategories(await getCategories())
-        } catch (error) {
-            console.log(error)
-            toast.error("Erro ao buscar categorias")
-        }
-    }
 
 
     useEffect(() => {
@@ -105,12 +106,44 @@ const CategoryForm = ({ closeForm }: CategoryFormProps) => {
     }, [openAddSizeInput]);
 
     useEffect(() => {
-        fetchExistingCategories()
-    })
+        const fetchExistingCategories = async () => {
+            try {
+                const { categories } = await getCategories()
+                setExistingCategories(categories)
+            } catch (error) {
+                console.log(error)
+                toast.error("Erro ao buscar categorias")
+            }
+        }
+
+        const fetchCategoryToEdit = async (categoryId: string) => {
+            try {
+                const category = await getCategoryById(categoryId)
+                setCategoryToEdit(category)
+                setValue("name", category.name)
+                setValue("sizes", category.categorySizes.map(categorySize => categorySize.size.size))
+                setSizes(category.categorySizes.map(categorySize => categorySize.size.size))
+            } catch (error) {
+                console.log(error)
+                toast.error("Erro ao buscar categoria")
+            }
+        }
+
+        const fetchExistingCategoriesAndCategoryToEdit = async () => {
+            setFormLoading(true)
+            await fetchExistingCategories()
+            if (categoryToEditId) {
+                await fetchCategoryToEdit(categoryToEditId)
+            }
+            setFormLoading(false)
+        }
+
+        fetchExistingCategoriesAndCategoryToEdit()
+    }, [categoryToEditId, setValue])
 
     useEffect(() => {
         setValue("sizes", sizes)
-        if(sizes.length > 0){
+        if (sizes.length > 0) {
             clearErrors("sizes")
         }
     }, [sizes, setValue, clearErrors])
@@ -119,51 +152,71 @@ const CategoryForm = ({ closeForm }: CategoryFormProps) => {
         <div className="w-4/5 flex justify-center bg-white border rounded-sm">
             <form className="w-full p-4 flex flex-col justify-between" onSubmit={handleSubmit(onSubmit)}>
                 <div>
-                    <h2 className="text-2xl mb-4 font-semibold">Adicionar Categoria</h2>
-                    <div className="w-full mb-4">
-                        <p className={`text-sm mb-2 ${errors.name && "text-red-500"}`}>Nome</p>
-                        <input type="text" className="border p-2 w-full" {...register("name", {
-                            required: "Por favor informe o nome da categoria",
-                            validate: (value) => !existingCategories.some(category => category.name === value) || "Categoria já existe"
-                        })} />
-                        {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
-                    </div>
-                    <div className="w-full mb-4">
-                        <p className={`text-sm mb-2 ${errors.sizes && "text-red-500"}`}>Tamanhos da Categoria</p>
-                        <div className="border">
-                            {sizes.length === 0 && openAddSizeInput === false && (
-                                <div className="p-2 border-b">
-                                    <p className="text-sm text-neutral-500">Sem Tamanhos</p>
+                    <h2 className="text-2xl mb-4 font-semibold">{categoryToEditId ? "Editar Categoria" : "Adicionar Categoria"}</h2>
+                    {formLoading ? (
+                        <div className="w-full flex-col justify-center p-4 space-y-4 h-full">
+                            <div className='flex gap-4'>
+                                <div className="w-full bg-neutral-300 h-8 animate-pulse rounded-sm">
                                 </div>
-                            )}
-                            <DndContext
-                                onDragEnd={handleDragEnd}
-                                modifiers={[restrictToVerticalAxis]}
-                            >
-                                <SortableContext items={sizes}>
-                                    {sizes.map((size, index) => (
-                                        <SizeItem key={index} size={size} index={index} removeSize={handleRemoveSize} />
-                                    ))}
-                                </SortableContext>
-                            </DndContext>
-                            {openAddSizeInput && (
-                                <div className="p-2 border-b">
-                                    <input
-                                        type="text"
-                                        className="border p-2 w-full"
-                                        placeholder="PP, P, M, G, GG"
-                                        ref={addSizeInput}
-                                        onBlur={() => setOpenAddSizeInput(false)}
-                                        onKeyDown={handleAddSizes} />
-                                    <p className="text-sm text-neutral-500 mt-2">Pressione Enter para adicionar</p>
+                                <div className="w-full bg-neutral-300 h-8 animate-pulse rounded-sm">
                                 </div>
-                            )}
-                            <div className="p-2 flex justify-end">
-                                <button type="button" onClick={() => setOpenAddSizeInput(true)}>Adicionar Tamanhos</button>
+                            </div>
+                            <div className="w-full bg-neutral-300 h-64 animate-pulse rounded-sm">
+                            </div>
+                            <div className="w-full bg-neutral-300 h-16 animate-pulse rounded-sm">
+                            </div>
+                            <div className="w-full bg-neutral-300 h-16 animate-pulse rounded-sm">
                             </div>
                         </div>
-                        {errors.sizes && <p className="text-xs text-red-500 mt-1">{errors.sizes.message}</p>}
-                    </div>
+                    ) : (
+                        <>
+                            <div className="w-full mb-4">
+                                <p className={`text-sm mb-2 ${errors.name && "text-red-500"}`}>Nome</p>
+                                <input type="text" className="border p-2 w-full" {...register("name", {
+                                    required: "Por favor informe o nome da categoria",
+                                    validate: (value) => categoryToEditId ? true : existingCategories.some(category => category.name === value) || "Categoria já existe"
+                                })} />
+                                {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
+                            </div>
+                            <div className="w-full mb-4">
+                                <p className={`text-sm mb-2 ${errors.sizes && "text-red-500"}`}>Tamanhos da Categoria</p>
+                                <div className="border">
+                                    {sizes.length === 0 && openAddSizeInput === false && (
+                                        <div className="p-2 border-b">
+                                            <p className="text-sm text-neutral-500">Sem Tamanhos</p>
+                                        </div>
+                                    )}
+                                    <DndContext
+                                        onDragEnd={handleDragEnd}
+                                        modifiers={[restrictToVerticalAxis]}
+                                    >
+                                        <SortableContext items={sizes}>
+                                            {sizes.map((size, index) => (
+                                                <SizeItem key={index} size={size} index={index} removeSize={handleRemoveSize} />
+                                            ))}
+                                        </SortableContext>
+                                    </DndContext>
+                                    {openAddSizeInput && (
+                                        <div className="p-2 border-b">
+                                            <input
+                                                type="text"
+                                                className="border p-2 w-full"
+                                                placeholder="PP, P, M, G, GG"
+                                                ref={addSizeInput}
+                                                onBlur={() => setOpenAddSizeInput(false)}
+                                                onKeyDown={handleAddSizes} />
+                                            <p className="text-sm text-neutral-500 mt-2">Pressione Enter para adicionar</p>
+                                        </div>
+                                    )}
+                                    <div className="p-2 flex justify-end">
+                                        <button type="button" onClick={() => setOpenAddSizeInput(true)}>Adicionar Tamanhos</button>
+                                    </div>
+                                </div>
+                                {errors.sizes && <p className="text-xs text-red-500 mt-1">{errors.sizes.message}</p>}
+                            </div>
+                        </>
+                    )}
+
                 </div>
                 <div className="flex justify-end gap-2">
                     <button type='button' className='p-2 border rounded-sm' onClick={() => closeForm()}>Cancelar</button>

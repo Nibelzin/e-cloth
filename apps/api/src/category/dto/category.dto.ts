@@ -1,7 +1,7 @@
 export class ProductCategoryDTO{
     id?: string
     name: string
-    sizes: ProductCategorySizeDTO[]
+    categorySizes: ProductCategorySizeDTO[]
 }
 
 export class ProductCategorySizeDTO{

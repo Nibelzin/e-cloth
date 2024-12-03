@@ -60,9 +60,9 @@ const ProductsTable = ({ editProduct }: ProductsTableProps) => {
                         <div className="flex justify-between items-center">
                             <div className=" bg-gray-200 px-4 flex gap-2 items-center">
                                 <div>
-                                    <FaMagnifyingGlass size={15} className="text-gray-500" />
+                                    <FaMagnifyingGlass size={15} className="text-neutral-500" />
                                 </div>
-                                <input type="text" className="bg-gray-200 p-2 w-full font-semibold focus:outline-none focus:ring-0" placeholder="Procurar" onKeyDown={handleSearch} />
+                                <input type="text" className="bg-neutral-200 p-2 w-full font-semibold focus:outline-none focus:ring-0" placeholder="Procurar" onKeyDown={handleSearch} />
                             </div>
                         </div>
                     </th>
@@ -81,15 +81,15 @@ const ProductsTable = ({ editProduct }: ProductsTableProps) => {
                     <tr>
                         <td colSpan={6}>
                             <div className="w-full flex-col justify-center p-4 space-y-2">
-                                <div className="w-full bg-gray-300 h-6 animate-pulse rounded-sm">
+                                <div className="w-full bg-neutral-300 h-6 animate-pulse rounded-sm">
                                 </div>
-                                <div className="w-full bg-gray-300 h-6 animate-pulse rounded-sm">
+                                <div className="w-full bg-neutral-300 h-6 animate-pulse rounded-sm">
                                 </div>
-                                <div className="w-full bg-gray-300 h-6 animate-pulse rounded-sm">
+                                <div className="w-full bg-neutral-300 h-6 animate-pulse rounded-sm">
                                 </div>
-                                <div className="w-full bg-gray-300 h-6 animate-pulse rounded-sm">
+                                <div className="w-full bg-neutral-300 h-6 animate-pulse rounded-sm">
                                 </div>
-                                <div className="w-full bg-gray-300 h-6 animate-pulse rounded-sm">
+                                <div className="w-full bg-neutral-300 h-6 animate-pulse rounded-sm">
                                 </div>
                             </div>
                         </td>

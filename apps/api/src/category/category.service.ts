@@ -6,12 +6,28 @@ import { ProductCategoryDTO } from './dto/category.dto';
 export class CategoryService {
   constructor(private prisma: PrismaService) {}
 
+  async getCategoryById(categoryId: string) {
+    return this.prisma.category.findUnique({
+      where: { id: categoryId },
+      select: {
+        id: true,
+        name: true,
+        categorySizes: { select: { size: true } },
+      }
+    })
+  }
+
   async getCategories() {
     return this.prisma.category.findMany({
       select: {
         id: true,
         name: true,
-        categorySizes: { select: { size: { select: { size: true } } } },
+        categorySizes: { select: { size: true } },
+        _count: {
+          select: {
+            products: true,
+          },
+        }
       },
     });
   }
@@ -21,7 +37,7 @@ export class CategoryService {
       data: {
         name: category.name,
         categorySizes: {
-          connectOrCreate: category.sizes.map((size) => ({
+          connectOrCreate: category.categorySizes.map((size) => ({
             where: {
               idCategory_idSize: {
                 idCategory: category.id,
@@ -47,5 +63,35 @@ export class CategoryService {
         },
       },
     });
+  }
+
+  async updateCategory(category: ProductCategoryDTO) {
+    return this.prisma.category.update({
+      where: { id: category.id },
+      data: {
+        name: category.name,
+        categorySizes: {
+          deleteMany: {
+            idCategory: category.id
+          },
+          connectOrCreate: category.categorySizes.map((size) => ({
+            where: {
+              idCategory_idSize: {
+                idCategory: category.id,
+                idSize: size.size,
+              },
+            },
+            create: {
+              size: {
+                connectOrCreate: {
+                  where: { size: size.size },
+                  create: { size: size.size },
+                },
+              },
+            },
+          })),
+        },
+      }
+    })
   }
 }

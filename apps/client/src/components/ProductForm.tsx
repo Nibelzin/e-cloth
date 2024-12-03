@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Category, PreviewImage, Product, ProductFormData, ProductFormValues, ProductImage } from '../types/types';
+import { CategoryDTO, PreviewImage, Product, ProductFormData, ProductFormValues, ProductImage } from '../types/types';
 import { getCategories } from '../api/categoryService';
 import { FormProvider, useForm } from 'react-hook-form';
 import DropzoneField from './DropzoneField';
@@ -28,7 +28,7 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
 
     const { register, handleSubmit, setValue, formState: { errors } } = methods
 
-    const [categories, setCategories] = useState<Category[]>([])
+    const [categories, setCategories] = useState<CategoryDTO[]>([])
     const [images, setImages] = useState<PreviewImage[]>([])
     const [sumbmitButtonLoading, setSumbmitButtonLoading] = useState(false)
     const [formLoading, setFormLoading] = useState(false)
@@ -154,9 +154,9 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const result = await getCategories()
-                setCategories(result)
-                setValue("idCategory", result[0].id!)
+                const { categories: dbCateogies } = await getCategories()
+                setCategories(dbCateogies)
+                setValue("idCategory", dbCateogies[0].id!)
             } catch (error) {
                 console.log(error)
             }

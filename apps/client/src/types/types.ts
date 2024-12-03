@@ -48,7 +48,20 @@ export interface ProductInCart extends Product {
 export interface Category {
   id?: string;
   name: string;
-  sizes: Size[];
+  categorySizes: Size[];
+}
+
+export interface CategoryDTO {
+  id: string;
+  name: string;
+  categorySizes: {
+    size: {
+      size: string;
+    }
+  }[];
+  _count? : {
+    products: number
+  }
 }
 
 export interface ProductImage {

@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { GetProductsQueryDTO, SortingTypes } from './dto/search.query.dto';
+import {
+  GetCategoriesQueryDTO,
+  GetProductsQueryDTO,
+  SortingTypes,
+} from './dto/search.query.dto';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
@@ -39,7 +43,7 @@ export class SearchService {
     const where: Prisma.ProductWhereInput = {
       removedAt: null,
     };
-    
+
     if (term) {
       where.OR = [
         { name: { contains: term, mode: 'insensitive' } },
@@ -69,26 +73,68 @@ export class SearchService {
             id: true,
             url: true,
             alt: true,
-            position: true
+            position: true,
           },
         },
         productStock: {
           select: {
             id: true,
             quantity: true,
-            updatedAt: true
-          }
-        }
+            updatedAt: true,
+          },
+        },
       },
     });
 
     const numOfProducts = await this.prisma.product.count({
-      where
-    })
+      where,
+    });
 
     return {
       products,
-      total: numOfProducts
+      total: numOfProducts,
+    };
+  }
+
+  async searchCategories(query: GetCategoriesQueryDTO) {
+    const { itemsPerPage, page, term } = query;
+
+    const where: Prisma.CategoryWhereInput = {};
+
+    if (term) {
+      where.name = { contains: term, mode: 'insensitive' };
     }
+
+    const take = parseInt(itemsPerPage) || 10;
+    const skip = (parseInt(page) - 1) * take || 0;
+
+    const categories = await this.prisma.category.findMany({
+      take,
+      skip,
+      where,
+      select: {
+        id: true,
+        name: true,
+        categorySizes: { select: { size: true } },
+        _count: {
+          select: {
+            products: {
+              where: {
+                removedAt: null
+              }
+            },
+          },
+        },
+      },
+    });
+
+    const numOfCategories = await this.prisma.category.count({
+      where,
+    });
+
+    return {
+      categories,
+      total: numOfCategories,
+    };
   }
 }

@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
@@ -29,6 +30,15 @@ export class CategoryController {
     }
   }
 
+  @Get(':categoryId')
+  async getCategoryById(@Param('categoryId') categoryId: string) {
+    try {
+      return await this.categoryService.getCategoryById(categoryId);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   @Get(':categoryName')
   async searchProductsByCategory(
     @Param('categoryName') categoryName: string,
@@ -47,6 +57,15 @@ export class CategoryController {
       return await this.categoryService.createCategory(category);
     } catch (error) {
       console.log(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Put()
+  async updateCategory(@Body() category: ProductCategoryDTO) {
+    try {
+      return await this.categoryService.updateCategory(category);
+    } catch (error) {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }

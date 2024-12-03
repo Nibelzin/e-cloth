@@ -22,4 +22,13 @@ export class SearchController {
     }
   }
 
+  @Get('category')
+  async searchCategories(@Query() query: GetProductsQueryDTO) {
+    try {
+      return this.searchService.searchCategories(query);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
 }

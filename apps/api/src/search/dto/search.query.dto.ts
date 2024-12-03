@@ -10,3 +10,8 @@ export class GetProductsQueryDTO{
     sorting?: SortingTypes
 }
 
+export class GetCategoriesQueryDTO{
+    term?: string
+    itemsPerPage?: string
+    page?: string
+}
