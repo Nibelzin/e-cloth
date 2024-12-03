@@ -242,7 +242,7 @@ const CategoryForm = ({ closeForm, categoryToEditId }: CategoryFormProps) => {
                         {categoryToEditId && <a className='text-red-500 cursor-pointer' onClick={() => setOpenDialog(true)}>Remover Categoria</a>}
                         <div className="flex justify-end gap-2">
                             <button type='button' className='p-2 border rounded-sm' onClick={() => closeForm()}>Cancelar</button>
-                            <button type='submit' className='p-2 bg-black text-white rounded-sm font-semibold'>{sumbmitButtonLoading ? <ReactLoading type="spin" width={15} height={15} /> : categoryToEditId? "Editar" : "Adicionar"}</button>
+                            <button disabled={sumbmitButtonLoading} type='submit' className='p-2 bg-black text-white rounded-sm font-semibold'>{sumbmitButtonLoading ? <ReactLoading type="spin" width={15} height={15} /> : categoryToEditId? "Editar" : "Adicionar"}</button>
                         </div>
                     </div>
                 </form>

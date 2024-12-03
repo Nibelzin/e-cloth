@@ -147,3 +147,14 @@ export interface updatedProductResponse {
   product: Product,
   imagesToRemove: ProductImage[]
 }
+
+export enum SortingTypes {
+  PriceAsc = 'PriceAsc',
+  PriceDesc = 'PriceDesc',
+  NameAsc = 'NameAsc',
+  NameDesc = 'NameDesc',
+  StockAsc = 'StockAsc',
+  StockDesc = 'StockDesc',
+  CategoryAsc = 'CategoryAsc',
+  CategoryDesc = 'CategoryDesc'
+}

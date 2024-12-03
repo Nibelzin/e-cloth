@@ -1,4 +1,4 @@
-import { Product, ProductFormData, ProductImage, updatedProductResponse } from "../types/types";
+import { Product, ProductFormData, ProductImage, SortingTypes, updatedProductResponse } from "../types/types";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -17,13 +17,15 @@ export async function getProductById(productId: string) {
 export async function getProducts(
   itemsPerPage?: number,
   currentPage?: number,
-  term?: string
+  term?: string,
+  sorting?: SortingTypes 
 ) {
   const queryParams = new URLSearchParams();
 
   if (itemsPerPage) queryParams.append("itemsPerPage", String(itemsPerPage));
   if (currentPage) queryParams.append("page", String(currentPage));
   if (term) queryParams.append("term", term);
+  if (sorting) queryParams.append("sorting", sorting);
 
   const query = `?${queryParams.toString()}`;
 

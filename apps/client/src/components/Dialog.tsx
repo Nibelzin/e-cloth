@@ -84,7 +84,7 @@ Dialog.ActionButtons = function ActionButtons() {
             {deletion ? (
                 <button className='p-2 bg-red-500 text-white rounded-sm font-semibold hover:bg-red-600 transition-colors flex items-center justify-center h-10' onClick={() => dialogAction && dialogAction()}>{loading ? <ReactLoading type="spin" width={15} height={15} /> : "Excluir"}</button>
             ) : (
-                <button className='p-2 bg-black text-white rounded-sm font-semibold hover:bg-neutral-900 transition-colors h-10' onClick={() => dialogAction && dialogAction()}>{loading ? <ReactLoading type="spin" width={15} height={15} /> : "Salvar"}</button>
+                <button disabled={loading} className='p-2 bg-black text-white rounded-sm font-semibold hover:bg-neutral-900 transition-colors h-10' onClick={() => dialogAction && dialogAction()}>{loading ? <ReactLoading type="spin" width={15} height={15} /> : "Salvar"}</button>
             )}
             <button className='p-2 border rounded-sm hover:bg-neutral-100 transition-colors' onClick={() => closeDialog()}>Cancelar</button>
         </div>

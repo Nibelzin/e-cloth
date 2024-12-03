@@ -1,8 +1,8 @@
-import { FaMagnifyingGlass } from "react-icons/fa6";
+import { FaChevronDown, FaChevronUp, FaMagnifyingGlass } from "react-icons/fa6";
 import { getFormattedPrice } from "../lib/utils";
 import React, { useEffect, useState } from "react";
 import { getProducts } from "../api/productService";
-import { Product } from "../types/types";
+import { Product, SortingTypes } from "../types/types";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 
 interface ProductsTableProps {
@@ -17,6 +17,7 @@ const ProductsTable = ({ editProduct }: ProductsTableProps) => {
     const [currentPage, setCurrentPage] = useState<number>(1)
     const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined)
     const [numOfProducts, setNumOfProducts] = useState<number>(0)
+    const [sorting, setSorting] = useState<SortingTypes>(SortingTypes.NameAsc)
 
     const [loading, setLoading] = useState(false)
 
@@ -34,13 +35,11 @@ const ProductsTable = ({ editProduct }: ProductsTableProps) => {
         }
     }
 
-
-
     useEffect(() => {
         const fetchProducts = async () => {
             setLoading(true)
             try {
-                const result = await getProducts(itemsPerPage, currentPage, searchTerm)
+                const result = await getProducts(itemsPerPage, currentPage, searchTerm, sorting)
                 setNumOfProducts(result.total)
                 await setProducts(result.products)
             } catch (error) {
@@ -50,7 +49,7 @@ const ProductsTable = ({ editProduct }: ProductsTableProps) => {
             }
         }
         fetchProducts()
-    }, [itemsPerPage, currentPage, searchTerm])
+    }, [itemsPerPage, currentPage, searchTerm, sorting])
 
     return (
         <table className="bg-white p-2 w-full border rounded-sm table-auto">
@@ -68,10 +67,60 @@ const ProductsTable = ({ editProduct }: ProductsTableProps) => {
                     </th>
                 </tr>
                 <tr>
-                    <th className="py-2 text-left px-4 font-semibold">Nome</th>
-                    <th className="py-2 text-left px-4 font-semibold">Categoria</th>
-                    <th className="py-2 text-left px-4 font-semibold">Preço</th>
-                    <th className="py-2 text-left px-4 font-semibold">Qtd em estoque</th>
+                    <th className="py-2 text-left px-4 font-semibold">
+                        <div
+                            className="flex gap-1 items-center cursor-pointer w-fit"
+                            onClick={() => {
+                                if (sorting === SortingTypes.NameAsc) {
+                                    setSorting(SortingTypes.NameDesc)
+                                } else {
+                                    setSorting(SortingTypes.NameAsc)
+                                }
+                            }}>
+                            <span>Nome</span>
+                            {sorting === SortingTypes.NameAsc && <FaChevronDown size={10} />}
+                            {sorting === SortingTypes.NameDesc && <FaChevronUp size={10} />}
+                        </div></th>
+                    <th className="py-2 text-left px-4 font-semibold">
+                        <div
+                            className="flex gap-1 items-center cursor-pointer w-fit"
+                            onClick={() => {
+                                if (sorting === SortingTypes.CategoryAsc) {
+                                    setSorting(SortingTypes.CategoryDesc)
+                                } else {
+                                    setSorting(SortingTypes.CategoryAsc)
+                                }
+                            }}>
+                            <span>Categoria</span>
+                            {sorting === SortingTypes.CategoryAsc && <FaChevronDown size={10} />}
+                            {sorting === SortingTypes.CategoryDesc && <FaChevronUp size={10} />}
+                        </div></th>                    <th className="py-2 text-left px-4 font-semibold">
+                        <div
+                            className="flex gap-1 items-center cursor-pointer w-fit"
+                            onClick={() => {
+                                if (sorting === SortingTypes.PriceAsc) {
+                                    setSorting(SortingTypes.PriceDesc)
+                                } else {
+                                    setSorting(SortingTypes.PriceAsc)
+                                }
+                            }}>
+                            <span>Preço</span>
+                            {sorting === SortingTypes.PriceAsc && <FaChevronDown size={10} />}
+                            {sorting === SortingTypes.PriceDesc && <FaChevronUp size={10} />}
+                        </div></th>                    <th className="py-2 text-left px-4 font-semibold">
+                        <div
+                            className="flex gap-1 items-center cursor-pointer w-fit"
+                            onClick={() => {
+                                if (sorting === SortingTypes.StockAsc) {
+                                    setSorting(SortingTypes.StockDesc)
+                                } else {
+                                    setSorting(SortingTypes.StockAsc)
+                                }
+                            }}>
+                            <span>Qtd Em Estoque</span>
+                            {sorting === SortingTypes.StockAsc && <FaChevronDown size={10} />}
+                            {sorting === SortingTypes.StockDesc && <FaChevronUp size={10} />}
+                        </div></th>
                     <th className="py-2 text-left px-4 font-semibold">Criado Em</th>
                     <th className="py-2 text-left px-4 font-semibold">Ações</th>
                 </tr>

@@ -322,7 +322,7 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
                                     {productToEditId && <a className='text-red-500 cursor-pointer' onClick={() => setOpenDialog(true)}>Remover Produto</a>}
                                     <div className='flex gap-2'>
                                         <button type='button' className='p-2 border rounded-sm' onClick={() => closeForm()}>Cancelar</button>
-                                        <button type='submit' className='p-2 bg-black text-white rounded-sm font-semibold'>{sumbmitButtonLoading ? <ReactLoading type="spin" width={15} height={15} /> : productToEditId ? "Editar" : "Adicionar"}</button>
+                                        <button disabled={sumbmitButtonLoading} type='submit' className='p-2 bg-black text-white rounded-sm font-semibold'>{sumbmitButtonLoading ? <ReactLoading type="spin" width={15} height={15} /> : productToEditId ? "Editar" : "Adicionar"}</button>
                                     </div>
                                 </div>
                             </div>

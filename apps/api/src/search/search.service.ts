@@ -55,10 +55,32 @@ export class SearchService {
     const skip = (parseInt(page) - 1) * take || 0;
 
     let orderBy: Prisma.ProductOrderByWithRelationInput = { price: 'asc' };
-    if (sorting === SortingTypes.PriceAsc) {
-      orderBy = { price: 'asc' };
-    } else if (sorting === SortingTypes.PriceDesc) {
-      orderBy = { price: 'desc' };
+
+    switch (sorting) {
+      case SortingTypes.PriceAsc:
+        orderBy = { price: 'asc' };
+        break;
+      case SortingTypes.PriceDesc:
+        orderBy = { price: 'desc' };
+        break;
+      case SortingTypes.NameAsc:
+        orderBy = { name: 'asc' };
+        break;
+      case SortingTypes.NameDesc:
+        orderBy = { name: 'desc' };
+        break;
+      case SortingTypes.StockAsc:
+        orderBy = { productStock: { quantity: 'asc' } };
+        break;
+      case SortingTypes.StockDesc:
+        orderBy = { productStock: { quantity: 'desc' } };
+        break;
+      case SortingTypes.CategoryAsc:
+        orderBy = { category: { name: 'asc' } };
+        break;
+      case SortingTypes.CategoryDesc:
+        orderBy = { category: { name: 'desc' } };
+        break;
     }
 
     const products = await this.prisma.product.findMany({
