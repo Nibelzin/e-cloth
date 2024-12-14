@@ -51,6 +51,7 @@ const ProductsTable = ({ editProduct }: ProductsTableProps) => {
         fetchProducts()
     }, [itemsPerPage, currentPage, searchTerm, sorting])
 
+
     return (
         <table className="bg-white p-2 w-full border rounded-sm table-auto">
             <thead className="border-b">
@@ -144,46 +145,54 @@ const ProductsTable = ({ editProduct }: ProductsTableProps) => {
                         </td>
                     </tr>
                 ) : (
-                    products?.map((product, index) => {
+                    products.length > 0 ? (
+                        products?.map((product, index) => {
+                            const capeImageUrl = product.productImages.find(image => image.position === 0)?.url
 
-
-                        const capeImageUrl = product.productImages.find(image => image.position === 0)?.url
-
-                        return (
-                            <tr key={product.id} className={`${index % 2 === 0 && "bg-neutral-100"}`}>
-                                <td className="py-2 px-4">
-                                    <div className="flex items-center gap-2">
-                                        <div className="flex w-10 h-10 border bg-white">
-                                            <img alt="" src={capeImageUrl} className="object-cover" />
+                            return (
+                                <tr key={product.id} className={`${index % 2 === 0 && "bg-neutral-100"}`}>
+                                    <td className="py-2 px-4">
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex w-10 h-10 border bg-white">
+                                                <img alt="" src={capeImageUrl} className="object-cover" />
+                                            </div>
+                                            <p>{product.name}</p>
                                         </div>
-                                        <p>{product.name}</p>
-                                    </div>
-                                </td>
-                                <td className="py-2 px-4">
-                                    <div className="px-2 py-1 bg-white border rounded-full text-sm w-fit">
-                                        <span>{product.category ? product.category.name : "Sem Categoria"}</span>
-                                    </div>
-                                </td>
-                                <td className="py-2 px-4">
-                                    {product.promotionPrice ? (
-                                        <div className="flex gap-2 items-center">
-                                            <p className="line-through text-gray-500">{getFormattedPrice(product.price)}</p>
-                                            <p className="font-semibold">{getFormattedPrice(product.promotionPrice)}</p>
+                                    </td>
+                                    <td className="py-2 px-4">
+                                        <div className="px-2 py-1 bg-white border rounded-full text-sm w-fit">
+                                            <span>{product.category ? product.category.name : "Sem Categoria"}</span>
                                         </div>
-                                    ) : <p className="font-semibold">{getFormattedPrice(product.price)}</p>}
-                                </td>
-                                <td className="py-2 px-4">{product.productStock?.quantity}</td>
-                                <td>
-                                    {new Date(product.createdAt!).toLocaleDateString()}
-                                </td>
-                                <td className="py-2 px-4">
-                                    <div className="flex gap-2">
-                                        <a className="cursor-pointer text-blue-500" onClick={() => editProduct(product.id)}>Editar</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        )
-                    })
+                                    </td>
+                                    <td className="py-2 px-4">
+                                        {product.promotionPrice ? (
+                                            <div className="flex gap-2 items-center">
+                                                <p className="line-through text-gray-500">{getFormattedPrice(product.price)}</p>
+                                                <p className="font-semibold">{getFormattedPrice(product.promotionPrice)}</p>
+                                            </div>
+                                        ) : <p className="font-semibold">{getFormattedPrice(product.price)}</p>}
+                                    </td>
+                                    <td className="py-2 px-4">{product.productStock?.quantity}</td>
+                                    <td>
+                                        {new Date(product.createdAt!).toLocaleDateString()}
+                                    </td>
+                                    <td className="py-2 px-4">
+                                        <div className="flex gap-2">
+                                            <a className="cursor-pointer text-blue-500" onClick={() => editProduct(product.id)}>Editar</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )
+                        })
+                    ) : (
+                        <tr>
+                            <td colSpan={6}>
+                                <div className="w-full flex justify-center items-center p-4 text-neutral-500">
+                                    <p>Sem Produtos Encontrados</p>
+                                </div>
+                            </td>
+                        </tr>
+                    )
                 )}
             </tbody>
             <tfoot className="border-t">

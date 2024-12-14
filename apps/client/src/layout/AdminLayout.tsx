@@ -10,16 +10,16 @@ const AdminLayout = () => {
             <AdminHeader />
             <div className="flex-1 flex flex-row">
                 <div className="w-80 bg-white border-r mt-16 p-4">
-                    <a className="flex gap-2 items-center p-2 hover:bg-neutral-100 transition-colors rounded-sm">
+                    <a className="flex gap-2 items-center p-2 hover:bg-neutral-100 transition-colors rounded-sm" href="/admin">
                         <FaChartSimple />
                         <p className="">Dashboard</p>
                     </a>
                     <hr className="my-4" />
-                    <a className="flex gap-2 items-center p-2 hover:bg-neutral-100 transition-colors rounded-sm">
+                    <a className="flex gap-2 items-center p-2 hover:bg-neutral-100 transition-colors rounded-sm" href="/admin/users">
                         <HiUser />
                         <p className="">Usuarios</p>
                     </a>
-                    <a className="flex gap-2 items-center p-2 hover:bg-neutral-100 transition-colors rounded-sm">
+                    <a className="flex gap-2 items-center p-2 hover:bg-neutral-100 transition-colors rounded-sm" href="/admin/products">
                         <HiShoppingBag />
                         <p className="">Produtos</p>
                     </a>

@@ -313,7 +313,7 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
                                 <div className="w-full flex mb-4 gap-4">
                                     <div className='w-full'>
                                         <p className="mb-2 text-sm">Estoque</p>
-                                        <input type="number" className="border p-2 w-full" {...register("stock")} />
+                                        <input type="number" className="border p-2 w-full" {...register("stock")} min={0} />
                                     </div>
                                     <div className='w-full'>
                                     </div>

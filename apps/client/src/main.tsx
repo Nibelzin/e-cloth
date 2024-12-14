@@ -12,6 +12,7 @@ import AdminLayout from './layout/AdminLayout.tsx'
 import AdminDashboard from './pages/AdminDashboard.tsx'
 import ProductManagement from './pages/ProductManagement.tsx'
 import { Toaster } from 'react-hot-toast'
+import UsersManagement from './pages/UsersManagement.tsx'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
       {
         path: "/admin/products",
         element: <ProductManagement/>
+      },
+      {
+        path: "/admin/users",
+        element: <UsersManagement/>
       }
     ]
   }

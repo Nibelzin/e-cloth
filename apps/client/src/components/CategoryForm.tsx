@@ -129,6 +129,7 @@ const CategoryForm = ({ closeForm, categoryToEditId }: CategoryFormProps) => {
             try {
                 const { categories } = await getCategories()
                 setExistingCategories(categories)
+                console.log(categories)
             } catch (error) {
                 console.log(error)
                 toast.error("Erro ao buscar categorias")
@@ -194,7 +195,7 @@ const CategoryForm = ({ closeForm, categoryToEditId }: CategoryFormProps) => {
                                     <p className={`text-sm mb-2 ${errors.name && "text-red-500"}`}>Nome</p>
                                     <input type="text" className="border p-2 w-full" {...register("name", {
                                         required: "Por favor informe o nome da categoria",
-                                        validate: (value) => categoryToEditId ? true : existingCategories.some(category => category.name === value) || "Categoria já existe"
+                                        validate: (value) => categoryToEditId ? true : existingCategories.some(category => category.name === value) ? "Categoria já existe" : true
                                     })} />
                                     {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
                                 </div>

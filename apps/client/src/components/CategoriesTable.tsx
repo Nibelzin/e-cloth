@@ -93,16 +93,25 @@ const CategoriesTable = ({ editCategory }: CategoriesTableProps) => {
                         </td>
                     </tr>
                 ) : (
-
-                    categories.map((category, index) => (
-                        <tr key={category.id} className={`${index % 2 === 0 && "bg-neutral-100"}`}>
-                            <td className="py-2 px-4">{category.name}</td>
-                            <td className="py-2 px-4">{getArrayAsString(category.categorySizes.map(categorySize => categorySize.size.size))}</td>
-                            <td className="py-2 px-4">{category._count?.products} Produtos</td>
-                            <td className="py-2 px-4">
-                                <button className="text-blue-500" onClick={() => editCategory(category.id)}>Editar</button>
+                    categories.length > 0 ? (
+                        categories.map((category, index) => (
+                            <tr key={category.id} className={`${index % 2 === 0 && "bg-neutral-100"}`}>
+                                <td className="py-2 px-4">{category.name}</td>
+                                <td className="py-2 px-4">{getArrayAsString(category.categorySizes.map(categorySize => categorySize.size.size))}</td>
+                                <td className="py-2 px-4">{category._count?.products} Produtos</td>
+                                <td className="py-2 px-4">
+                                    <button className="text-blue-500" onClick={() => editCategory(category.id)}>Editar</button>
+                                </td>
+                            </tr>))
+                    ) : (
+                        <tr>
+                            <td colSpan={6}>
+                                <div className="w-full flex justify-center items-center p-4 text-neutral-500">
+                                    <p>Sem Categorias Encontradas</p>
+                                </div>
                             </td>
-                        </tr>))
+                        </tr>
+                    )
                 )}
             </tbody>
             <tfoot className="border-t">
