@@ -22,6 +22,15 @@ export class SearchController {
     }
   }
 
+  @Get(':category')
+  async searchProductsByCategory(@Param('category') categoryName: string, @Query() query: GetProductsQueryDTO) {
+    try {
+      return this.searchService.searchProductsByCategory(categoryName, query);
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   @Get('category')
   async searchCategories(@Query() query: GetProductsQueryDTO) {
     try {

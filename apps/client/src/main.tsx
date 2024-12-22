@@ -9,10 +9,10 @@ import { ClerkProvider } from '@clerk/clerk-react'
 import { ptBR } from '@clerk/localizations'
 import MainLayout from './layout/MainLayout.tsx'
 import AdminLayout from './layout/AdminLayout.tsx'
-import AdminDashboard from './pages/AdminDashboard.tsx'
-import ProductManagement from './pages/ProductManagement.tsx'
 import { Toaster } from 'react-hot-toast'
-import UsersManagement from './pages/UsersManagement.tsx'
+import UsersManagement from './pages/admin/UsersManagement.tsx'
+import ProductManagement from './pages/admin/ProductManagement.tsx'
+import AdminDashboard from './pages/admin/AdminDashboard.tsx'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 

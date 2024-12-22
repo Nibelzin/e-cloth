@@ -150,12 +150,17 @@ export class SearchService {
       },
     });
 
+    const formattedCategories = categories.map((category) => ({
+      ...category,
+      categorySizes: category.categorySizes.map((size) => size.size),
+    }));
+
     const numOfCategories = await this.prisma.category.count({
       where,
     });
 
     return {
-      categories,
+      formattedCategories,
       total: numOfCategories,
     };
   }

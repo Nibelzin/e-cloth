@@ -37,19 +37,49 @@ export class ProductService {
   }
 
   async getProductById(productId: string) {
-    return this.prisma.product.findUnique({
+    const product = await this.prisma.product.findUnique({
       where: { id: productId },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        category: true,
-        price: true,
-        promotionPrice: true,
-        productImages: true,
-        productStock: true,
+      include: {
+        category: {
+          include: {
+            categorySizes: {
+              select: {
+                size: true,
+              }
+            },
+          }
+        },
+        productImages: {
+          select: {
+            id: true,
+            url: true,
+            alt: true,
+            position: true,
+          },
+        },
+        productStock: {
+          select: {
+            id: true,
+            quantity: true,
+            updatedAt: true,
+          },
+        },
       },
     });
+
+    const formattedCategories = product.category.categorySizes.map((categorySize) => {
+      return categorySize.size;
+    })
+
+    const formattedProduct = {
+      ...product,
+      category: {
+        ...product.category,
+        categorySizes: formattedCategories
+      }
+    }
+
+    return formattedProduct;
   }
 
   async createProduct(product: ProductDTO) {

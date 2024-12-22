@@ -43,6 +43,34 @@ export async function getProducts(
   return result;
 }
 
+export async function getProductsByCategory(
+  categoryName: string,
+  itemsPerPage?: number,
+  currentPage?: number,
+  sorting?: SortingTypes
+) {
+  const queryParams = new URLSearchParams();
+
+  if (itemsPerPage) queryParams.append("itemsPerPage", String(itemsPerPage));
+  if (currentPage) queryParams.append("page", String(currentPage));
+  if (sorting) queryParams.append("sorting", sorting);
+
+  const query = `?${queryParams.toString()}`;
+
+  const response = await fetch(`${apiUrl}/api/search/${categoryName}${query}`, {
+    method: "GET"
+  });
+
+  if(!response.ok) throw new Error("Erro ao buscar produtos por categoria");
+
+  const result = (await response.json()) as {
+    products: Product[];
+    total: number;
+  };
+
+  return result
+}
+
 export async function createProduct(productData: ProductFormData) {
   const response = await fetch(`${apiUrl}/api/product`, {
     method: "POST",

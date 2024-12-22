@@ -17,7 +17,7 @@ const ProductCard = ({ product, page = "home" }: ProductCardProps) => {
                 <div className="p-4 flex flex-col justify-between flex-1">
                     <div className="">
                         <h1 className="lg:text-lg text-sm" title={product.name}>{product.name}</h1>
-                        <p className="text-neutral-700">{product.category.name}</p>
+                        <p className="text-neutral-700">{product.category?.name}</p>
                     </div>
                     <div className="flex gap-2 items-center">
                         {product.promotionPrice ? (
