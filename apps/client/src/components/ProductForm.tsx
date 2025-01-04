@@ -155,10 +155,13 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
         const fetchCategories = async () => {
             try {
                 const { categories: dbCateogies } = await getCategories()
+
+                console.log(dbCateogies)
+
                 setCategories(dbCateogies)
                 setValue("idCategory", dbCateogies[0].id!)
             } catch (error) {
-                console.log(error)
+                console.log("ERRO", error)
             }
         }
 
@@ -253,7 +256,7 @@ const ProductForm = ({ closeForm, productToEditId }: ProductFormProps) => {
                                             <a className='text-xs text-blue-400 cursor-pointer'>Adicionar</a>
                                         </div>
                                         <select className="border p-2 w-full" {...register("idCategory")} >
-                                            {categories.map(category => (
+                                            {categories?.map(category => (
                                                 <option key={category.id} value={category.id}>{category.name}</option>
                                             ))}
                                         </select>

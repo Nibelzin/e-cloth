@@ -3,7 +3,7 @@ import ProductCard from "../components/ProductCard";
 import { productsMock } from "../lib/mock";
 import { getFormattedPrice } from "../lib/utils";
 import { useCartStore } from "../store/cartStore";
-import { useEffect, useState } from "react";
+import { MouseEventHandler, useEffect, useRef, useState } from "react";
 import { Product } from "../types/types";
 import { getProductById } from "../api/productService";
 
@@ -12,15 +12,39 @@ import { getProductById } from "../api/productService";
 const ProductDetail = () => {
     const [selectedSizeId, setSelectedSizeId] = useState<string | undefined>(undefined)
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+    const [selectedProductImage, setSelectedProductImage] = useState<string | null>(null)
+
+    const [zoomImage, setZoomImage] = useState<boolean>(false)
+    const zoomImageRef = useRef<HTMLImageElement>(null)
 
     const { id: productId } = useParams();
+
+
+    const handleImageZoomIn = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        setZoomImage(true)
+    }
+
+    const handleImageZoomOut = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        setZoomImage(false)
+    }
+
+    const handleImageZoom = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (zoomImageRef.current) {
+            const { left, top, width, height } = e.currentTarget.getBoundingClientRect()
+            const x = e.clientX - left
+            const y = e.clientY - top
+            const xPercent = (x / width) * 100
+            const yPercent = (y / height) * 100
+            zoomImageRef.current.style.transformOrigin = `${xPercent}% ${yPercent}%`
+        }
+    }
 
     const addItemToCart = useCartStore((state) => state.addItem);
 
     const handleAddToCartButtonClick = () => {
         console.log("teste")
         const selectedSize = selectedProduct?.category?.categorySizes.find(size => size.id === selectedSizeId)
-        if(selectedSize && selectedProduct) {
+        if (selectedSize && selectedProduct) {
             addItemToCart(selectedProduct, selectedSize)
         } else {
             alert("SELECIONE UM TAMANHO")
@@ -30,27 +54,48 @@ const ProductDetail = () => {
     useEffect(() => {
         const fetchSelectedProduct = async () => {
             try {
-                if(productId){
+                if (productId) {
                     const result = await getProductById(productId)
                     setSelectedProduct(result)
                 }
             } catch (error) {
-                console.log(error)   
+                console.log(error)
             }
         }
         fetchSelectedProduct()
     }, [])
 
     useEffect(() => {
-        console.log(selectedProduct?.category)
+        setSelectedProductImage(selectedProduct?.productImages[0].url ?? null)
     }, [selectedProduct])
 
 
     return (
         <div className="px-6 md:px-16 lg:px-32 xl:px-64 py-16">
             <div className="flex flex-col lg:flex-row gap-4 mb-32">
-                <div className="w-full lg:w-3/5 overflow-hidden border">
-                    <img src={selectedProduct?.productImages[0].url} alt="" className="w-full h-full object-cover" />
+                <div className="w-full lg:w-3/5">
+                    <div className="overflow-hidden border relative"
+                    onMouseEnter={handleImageZoomIn}
+                    onMouseLeave={handleImageZoomOut}
+                    onMouseMove={handleImageZoom}
+                    >
+                        <img src={selectedProductImage ?? ""} alt="" className="w-full h-full object-cover" />
+                        { zoomImage && (
+                            <img 
+                            src={selectedProductImage ?? ""} 
+                            alt="" 
+                            className="w-full h-full object-cover absolute scale-[200%] top-10" 
+                            ref={zoomImageRef}
+                            />
+                        )}
+                    </div>
+                    <div className="mt-2 flex gap-2">
+                        {selectedProduct?.productImages.map(image => (
+                            <div className="w-32 h-32 border overflow-hidden cursor-pointer" key={image.id}>
+                                <img src={image.url} alt="" className="w-full h-full object-cover" onClick={() => setSelectedProductImage(image.url)} />
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <div className="flex-1 p-4 flex flex-col justify-between">
                     <div>

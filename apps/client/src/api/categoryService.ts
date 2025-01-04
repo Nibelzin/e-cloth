@@ -27,9 +27,12 @@ export async function getCategories(
 
   const query = `?${queryParams.toString()}`;
 
+
   const response = await fetch(`${apiUrl}/api/search/category${query}`, {
     method: "GET",
   });
+
+  console.log(await response.json())
 
   if (!response.ok) throw new Error("Erro ao buscar categorias");
 

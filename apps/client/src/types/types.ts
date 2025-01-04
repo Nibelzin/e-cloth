@@ -158,3 +158,5 @@ export enum SortingTypes {
   CategoryAsc = 'CategoryAsc',
   CategoryDesc = 'CategoryDesc'
 }
+
+

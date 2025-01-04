@@ -160,7 +160,7 @@ export class SearchService {
     });
 
     return {
-      formattedCategories,
+      categories: formattedCategories,
       total: numOfCategories,
     };
   }
