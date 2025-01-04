@@ -9,7 +9,7 @@ export async function getProductById(productId: string) {
 
   if (!response.ok) throw new Error("Erro ao buscar produto");
 
-  const result = await response.json();
+  const result: Product = await response.json();
 
   return result;
 }

@@ -13,6 +13,7 @@ import { Toaster } from 'react-hot-toast'
 import UsersManagement from './pages/admin/UsersManagement.tsx'
 import ProductManagement from './pages/admin/ProductManagement.tsx'
 import AdminDashboard from './pages/admin/AdminDashboard.tsx'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -20,6 +21,7 @@ if (!PUBLISHABLE_KEY) {
   throw new Error('Missing Publishable Key')
 }
 
+const queryClient = new QueryClient()
 const router = createBrowserRouter([
   {
     path: "/",
@@ -41,19 +43,19 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <AdminLayout/>,
+    element: <AdminLayout />,
     children: [
       {
         path: "/admin",
-        element: <AdminDashboard/>
+        element: <AdminDashboard />
       },
       {
         path: "/admin/products",
-        element: <ProductManagement/>
+        element: <ProductManagement />
       },
       {
         path: "/admin/users",
-        element: <UsersManagement/>
+        element: <UsersManagement />
       }
     ]
   }
@@ -61,24 +63,26 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ClerkProvider 
-    publishableKey={PUBLISHABLE_KEY} 
-    afterSignOutUrl="/" 
-    appearance={{
-      variables: {
-        borderRadius: "0.125rem"
-      },
-      layout: {
-        shimmer: false,
-        animations: false
-      },
-      elements: {
-        userButtonTrigger: "focus:shadow-none",
-        modalBackdrop: "z-40"
-      }
-    }}
-    localization={ptBR}>
-      <RouterProvider router={router} />
+    <ClerkProvider
+      publishableKey={PUBLISHABLE_KEY}
+      afterSignOutUrl="/"
+      appearance={{
+        variables: {
+          borderRadius: "0.125rem"
+        },
+        layout: {
+          shimmer: false,
+          animations: false
+        },
+        elements: {
+          userButtonTrigger: "focus:shadow-none",
+          modalBackdrop: "z-40"
+        }
+      }}
+      localization={ptBR}>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
     </ClerkProvider>
     <Toaster
       toastOptions={{
@@ -88,6 +92,6 @@ createRoot(document.getElementById('root')!).render(
         },
         position: "top-right"
       }}
-      />
+    />
   </StrictMode>,
 )
