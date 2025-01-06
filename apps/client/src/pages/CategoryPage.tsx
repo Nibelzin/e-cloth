@@ -1,16 +1,22 @@
+import { useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
-import { getProducts } from "../api/productService";
 import { useQuery } from "@tanstack/react-query";
+import { getProductsByCategory } from "../api/productService";
 
-const Home = () => {
+const CategoryPage = () => {
+
+    const { category } = useParams();
 
     const { isPending, data } = useQuery({
-        queryKey: ['products'],
-        queryFn: () => getProducts()
+        queryKey: ['category', category],
+        queryFn: () => getProductsByCategory(category || "")
     })
+
+    console.log(data)
 
     return (
         <div className="px-4 md:px-16 lg:px-32 xl:px-44 py-16">
+            <p className="font-semibold text-neutral-500 text-lg capitalize">{category}</p>
             <h1 className="text-2xl font-bold mb-8">{data?.total} Produtos</h1>
             <div className="w-full flex justify-center">
                 {isPending ? (
@@ -32,4 +38,4 @@ const Home = () => {
     );
 }
 
-export default Home;
+export default CategoryPage;

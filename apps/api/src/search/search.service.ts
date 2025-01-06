@@ -9,7 +9,7 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class SearchService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async searchProductsByCategory(
     categoryName: string,
@@ -27,14 +27,43 @@ export class SearchService {
       orderBy = { price: 'desc' };
     }
 
-    return this.prisma.product.findMany({
+    const products = await this.prisma.product.findMany({
       take,
       skip,
       orderBy,
       where: {
         category: { name: { equals: categoryName, mode: 'insensitive' } },
       },
+      include: {
+        category: true,
+        productImages: {
+          select: {
+            id: true,
+            url: true,
+            alt: true,
+            position: true,
+          },
+        },
+        productStock: {
+          select: {
+            id: true,
+            quantity: true,
+            updatedAt: true,
+          },
+        },
+      },
     });
+
+    const numOfProducts = await this.prisma.product.count({
+      where: {
+        category: { name: { equals: categoryName, mode: 'insensitive' } },
+      },
+    });
+
+    return {
+      products,
+      total: numOfProducts,
+    };
   }
 
   async searchAllProducts(query: GetProductsQueryDTO) {

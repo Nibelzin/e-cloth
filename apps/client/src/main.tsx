@@ -14,6 +14,7 @@ import UsersManagement from './pages/admin/UsersManagement.tsx'
 import ProductManagement from './pages/admin/ProductManagement.tsx'
 import AdminDashboard from './pages/admin/AdminDashboard.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import CategoryPage from './pages/CategoryPage.tsx'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -21,7 +22,6 @@ if (!PUBLISHABLE_KEY) {
   throw new Error('Missing Publishable Key')
 }
 
-const queryClient = new QueryClient()
 const router = createBrowserRouter([
   {
     path: "/",
@@ -38,6 +38,10 @@ const router = createBrowserRouter([
       {
         path: "/product/:id",
         element: <ProductDetail />
+      },
+      {
+        path: "/category/:category",
+        element: <CategoryPage />
       }
     ]
   },
@@ -80,9 +84,7 @@ createRoot(document.getElementById('root')!).render(
         }
       }}
       localization={ptBR}>
-      <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
-      </QueryClientProvider>
     </ClerkProvider>
     <Toaster
       toastOptions={{

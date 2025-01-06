@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import AdditionalInfo from "./AdditionalInfo";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { getCategories } from "../api/categoryService";
 
 const categoriesMock = [
     "Todos os Produtos",
@@ -17,9 +19,6 @@ const categoriesMock = [
 
 
 const Header = () => {
-
-
-
     const [openSearchBar, setOpenSearchBar] = useState(false)
     const [openMenuSheet, setOpenMenuSheet] = useState(false)
     const [detectClickOustide, setdetectClickOustide] = useState(false)
@@ -30,8 +29,11 @@ const Header = () => {
     const searchRef = useRef<HTMLInputElement>(null)
     const navigate = useNavigate()
 
-
-
+    const { isPending, data, error } = useQuery({
+        queryKey: ['category'],
+        queryFn: () => getCategories(),
+        placeholderData: keepPreviousData
+    })
 
     const handleSearchBarButtonClick = () => {
         setOpenSearchBar(!openSearchBar)
@@ -144,7 +146,7 @@ const Header = () => {
                 <div className={`fixed h-full w-full ${openSearchBar ? "visible" : "invisible"}`} onClick={() => setOpenSearchBar(false)}>
                 </div>
             </div>
-            <CategoryBar categories={categoriesMock} />
+            <CategoryBar categories={data?.categories} isPending={isPending} />
             <nav>
                 <div className={`h-full fixed bg-white w-5/6 border-r z-20 py-16 transition-transform ${openMenuSheet ? 'translate-x-0' : '-translate-x-full'}`}>
                     <div className="p-4">
@@ -168,7 +170,7 @@ const Header = () => {
                                         userButtonPopoverActions: "border-none"
                                     },
                                     layout: {
-                                        
+
                                     }
                                 }}>
                                     <UserButton.UserProfilePage label="Informações Adicionais" url="custom" labelIcon={<HiOutlineDotsHorizontal />}>
