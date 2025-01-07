@@ -26,7 +26,7 @@ const ProductDetail = () => {
 
     const { isPending: isRecomendationsPending, data: recomendedProducts } = useQuery({
         queryKey: ['recomendedProducts'],
-        queryFn: () => getProducts(8)
+        queryFn: () => getProducts({ itemsPerPage: 8 }),
     })
 
     const handleImageZoomIn = () => {

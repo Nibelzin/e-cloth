@@ -14,11 +14,15 @@ export async function getProductById(productId: string) {
   return result;
 }
 
+type getProductsQuery = {
+  itemsPerPage?: number;
+  currentPage?: number;
+  term?: string;
+  sorting?: SortingTypes;
+}
+
 export async function getProducts(
-  itemsPerPage?: number,
-  currentPage?: number,
-  term?: string,
-  sorting?: SortingTypes 
+  { itemsPerPage, currentPage, term, sorting }: getProductsQuery
 ) {
   const queryParams = new URLSearchParams();
 

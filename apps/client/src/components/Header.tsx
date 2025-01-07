@@ -3,12 +3,16 @@ import { HiMenu, HiOutlineDotsHorizontal, HiOutlineSearch } from "react-icons/hi
 import { HiChevronRight, HiOutlineShoppingBag } from "react-icons/hi2";
 import CategoryBar from "./CategoryBar";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import AdditionalInfo from "./AdditionalInfo";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCategories } from "../api/categoryService";
+import { getProducts } from "../api/productService";
+import { useDebounce } from "../hooks/useDebounce";
+import { getFormattedPrice } from "../lib/utils";
+import Loading from "react-loading";
 
 const categoriesMock = [
     "Todos os Produtos",
@@ -22,9 +26,16 @@ const Header = () => {
     const [openSearchBar, setOpenSearchBar] = useState(false)
     const [openMenuSheet, setOpenMenuSheet] = useState(false)
     const [detectClickOustide, setdetectClickOustide] = useState(false)
+    const [search, setSearch] = useState("")
+    const [isInputFocused, setIsInputFocused] = useState(false)
+    const [isMobileInputFocused, setIsMobileInputFocused] = useState(false)
+
+    const debouncedSearch = useDebounce(search, 1000)
 
     const cartItems = useCartStore((state) => state.cart)
     const numOfCartItems = cartItems.reduce((quantity, product) => quantity += product.quantity, 0)
+
+    const queryClient = useQueryClient()
 
     const searchRef = useRef<HTMLInputElement>(null)
     const navigate = useNavigate()
@@ -32,17 +43,47 @@ const Header = () => {
     const { isPending, data, error } = useQuery({
         queryKey: ['category'],
         queryFn: () => getCategories(),
-        placeholderData: keepPreviousData
+        placeholderData: keepPreviousData,
     })
+
+    const { isPending: isSearchPending, data: searchData, error: searchError } = useQuery({
+        queryKey: ['search', debouncedSearch],
+        queryFn: () => getProducts({ term: search, itemsPerPage: 2 }),
+        placeholderData: keepPreviousData,
+        enabled: search !== "",
+    })
+
+    const showSearchSuggestions = !isSearchPending && search !== "" && isInputFocused && (searchData && searchData.total > 0)
 
     const handleSearchBarButtonClick = () => {
         setOpenSearchBar(!openSearchBar)
+
         if (openMenuSheet) {
             setOpenMenuSheet(false)
         }
         if (openSearchBar === false && searchRef.current) {
             searchRef.current.focus();
         }
+    }
+
+    const handleSearch = () => {
+        if (search) {
+            navigate(`/search/${search}`)
+        } else {
+            navigate("/")
+        }
+    }
+
+    const handleInputBlur = () => {
+        setTimeout(() => {
+            setIsInputFocused(false)
+        }, 150)
+    }
+
+    const handleMobileInputBlur = () => {
+        setTimeout(() => {
+            setOpenSearchBar(false)
+        }, 100)
     }
 
     const handleMenuButtonClick = () => {
@@ -55,6 +96,7 @@ const Header = () => {
     const handleResize = () => {
         setOpenMenuSheet(false)
         setOpenSearchBar(false)
+        setIsMobileInputFocused(false)
     }
 
     const handleRedirect = (page: string) => {
@@ -79,6 +121,21 @@ const Header = () => {
         window.addEventListener('resize', handleResize)
     }, [])
 
+    useEffect(() => {
+        if (search === "") {
+            queryClient.resetQueries({ queryKey: ['search'] })
+        }
+    }, [debouncedSearch])
+
+    useEffect(() => {
+        if (openSearchBar) {
+            setIsMobileInputFocused(true)
+        } else {
+            setTimeout(() => {
+                setIsMobileInputFocused(false)
+            }, 50)
+        }
+    }, [openSearchBar])
 
     return (
         <>
@@ -94,11 +151,48 @@ const Header = () => {
                         </button>
                     </div>
                     <div className="flex items-center gap-12">
-                        <div className="hidden bg-gray-200 rounded-full px-4 lg:flex gap-2 w-48 items-center overflow-hidden">
-                            <div>
-                                <FaMagnifyingGlass size={15} className="text-gray-500" />
+                        <div className="relative">
+                            <div className="hidden bg-gray-200 rounded-full px-4 lg:flex gap-2 w-48 items-center overflow-hidden">
+                                <div>
+                                    <FaMagnifyingGlass size={15} className="text-gray-500" />
+                                </div>
+                                <input
+                                    type="text"
+                                    className="bg-transparent p-2 font-semibold focus:outline-none focus:ring-0"
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    placeholder="Pesquisar"
+                                    onFocus={() => setIsInputFocused(true)}
+                                    onBlur={() => handleInputBlur()}
+                                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                                />
                             </div>
-                            <input type="text" className="bg-transparent p-2 font-semibold focus:outline-none focus:ring-0" placeholder="Pesquisar" />
+                            {showSearchSuggestions && (
+                                <div className="absolute bg-white w-[20rem] -right-10 border top-11 rounded-sm">
+                                    {searchData?.products.map(product => (
+                                        <Link to={`/product/${product.id}`}>
+                                            <div className="m-2 flex gap-2 items-center p-2 hover:bg-neutral-100 cursor-pointer rounded-sm" onClick={() => console.log("TESTE")}>
+                                                <div className="w-16 h-16 border">
+                                                    <img src={product.productImages[0].url} alt="Search Image" className="object-cover w-full h-full" />
+                                                </div>
+                                                <div>
+                                                    <p>{product.name}</p>
+                                                    <div>
+                                                        {product.promotionPrice ? (
+                                                            <div className="flex flex-col">
+                                                                <p className="text-sm line-through">{getFormattedPrice(product.price)}</p>
+                                                                <p>{getFormattedPrice(product.promotionPrice)}</p>
+                                                            </div>
+                                                        ) : (
+                                                            <p>{getFormattedPrice(product.price)}</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="hidden lg:block">
@@ -133,17 +227,70 @@ const Header = () => {
                         </div>
                     </div>
                 </div>
-            </header>
+            </header >
             <div className="lg:hidden">
-                <div className={`px-6 md:px-16 lg:px-32 py-4 fixed mt-16 bg-white w-full border-b transition-transform z-10 ${openSearchBar ? "translate-y-0" : "-translate-y-full"}`}>
-                    <div className=" bg-gray-200 px-4 flex gap-2 items-center">
-                        <div>
-                            <FaMagnifyingGlass size={15} className="text-gray-500" />
+                <div className="relative">
+                    <div className={`px-6 md:px-16 lg:px-32 py-4 fixed mt-16 bg-white w-full border-b transition-transform z-20 ${openSearchBar ? "translate-y-0" : "-translate-y-full"}`}>
+                        <div className=" bg-gray-200 px-4 flex gap-2 items-center">
+                            <div>
+                                <FaMagnifyingGlass size={15} className="text-gray-500" />
+                            </div>
+                            <input
+                                ref={searchRef}
+                                type="text"
+                                className="bg-gray-200 p-2 w-full font-semibold focus:outline-none focus:ring-0"
+                                placeholder="O que você deseja?"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                onBlur={() => handleMobileInputBlur()}
+                                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                            />
                         </div>
-                        <input ref={searchRef} type="text" className="bg-gray-200 p-2 w-full font-semibold focus:outline-none focus:ring-0" placeholder="O que você deseja?" />
                     </div>
-                </div>
-                <div className={`fixed h-full w-full ${openSearchBar ? "visible" : "invisible"}`} onClick={() => setOpenSearchBar(false)}>
+                    <div className={`fixed top-30 w-full h-[21rem] bg-white border-b  z-10 ${isMobileInputFocused ? "visible" : "invisible -translate-y-64"} transition-all`}>
+                        {search === "" || searchData?.products.length === 0 ?
+                            (
+                                <div className="w-full h-full flex justify-center items-center pt-36">
+                                    <p>{search === "" ? "Pesquise para ter sugestões" : "Sem sugestões"}</p>
+                                </div>
+                            )
+                            :
+                            (
+                                <div className="pt-36 relative">
+                                    {isSearchPending && (
+                                        <div className="w-full h-[20rem] flex justify-center items-center absolute top-4 left-0 bg-white opacity-30 z-10">
+                                            <div className="pt-28">
+                                                <Loading type="bars" color="black" height={50} width={50} />
+                                            </div>
+                                        </div>
+                                    )}
+                                    {searchData?.products.map(product => (
+                                        <Link to={`/product/${product.id}`}>
+                                            <div className="m-2 flex gap-2 items-center p-2 hover:bg-neutral-100 cursor-pointer rounded-sm" onClick={() => console.log("TESTE")}>
+                                                <div className="w-16 h-16 border">
+                                                    <img src={product.productImages[0].url} alt="Search Image" className="object-cover w-full h-full" />
+                                                </div>
+                                                <div>
+                                                    <p>{product.name}</p>
+                                                    <div>
+                                                        {product.promotionPrice ? (
+                                                            <div className="flex flex-col">
+                                                                <p className="text-sm line-through">{getFormattedPrice(product.price)}</p>
+                                                                <p>{getFormattedPrice(product.promotionPrice)}</p>
+                                                            </div>
+                                                        ) : (
+                                                            <p>{getFormattedPrice(product.price)}</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )
+                        }
+
+                    </div>
                 </div>
             </div>
             <CategoryBar categories={data?.categories} isPending={isPending} />
