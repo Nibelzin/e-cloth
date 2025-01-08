@@ -13,6 +13,7 @@ import { getProducts } from "../api/productService";
 import { useDebounce } from "../hooks/useDebounce";
 import { getFormattedPrice } from "../lib/utils";
 import Loading from "react-loading";
+import CheckoutBar from "./CheckoutBar";
 
 const categoriesMock = [
     "Todos os Produtos",
@@ -21,8 +22,11 @@ const categoriesMock = [
     "Bonés"
 ]
 
+interface HeaderProps {
+    checkout?: boolean
+}
 
-const Header = () => {
+const Header = ({ checkout }: HeaderProps) => {
     const [openSearchBar, setOpenSearchBar] = useState(false)
     const [openMenuSheet, setOpenMenuSheet] = useState(false)
     const [detectClickOustide, setdetectClickOustide] = useState(false)
@@ -293,7 +297,11 @@ const Header = () => {
                     </div>
                 </div>
             </div>
-            <CategoryBar categories={data?.categories} isPending={isPending} />
+            {checkout ? (
+                <CheckoutBar/>
+            ) : (
+                <CategoryBar categories={data?.categories} isPending={isPending} />
+            )}
             <nav>
                 <div className={`h-full fixed bg-white w-5/6 border-r z-20 py-16 transition-transform ${openMenuSheet ? 'translate-x-0' : '-translate-x-full'}`}>
                     <div className="p-4">
