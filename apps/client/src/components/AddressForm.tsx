@@ -5,14 +5,16 @@ import { useEffect, useState } from "react";
 import ReactLoading from 'react-loading';
 import { Address, AddressFields, AddressFormValues, AddressToAdd } from "../types/types";
 import { addUserAddress, editUserAddress } from "../api/userService";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface AddressFormProps {
     closeForm: (refetch?: boolean, editMode?: boolean) => void
     mode?: "add" | "edit",
     addressToEdit?: Address
+    noLabel?: boolean
 }
 
-const AddressForm = ({ closeForm, mode = "add", addressToEdit }: AddressFormProps) => {
+const AddressForm = ({ closeForm, mode = "add", addressToEdit, noLabel }: AddressFormProps) => {
 
     const { user } = useUser()
     const { register, handleSubmit, setValue, formState: { errors }, clearErrors } = useForm<AddressFormValues>()
@@ -92,7 +94,7 @@ const AddressForm = ({ closeForm, mode = "add", addressToEdit }: AddressFormProp
     return (
         <div className="shadow-md border p-4">
             <form onSubmit={handleSubmit(onSubmit)}>
-                <h2 className="text-sm font-bold text-dark mb-4">{mode === "add" ? "Adicionar Endereço" : "Editar Endereço"}</h2>
+                {!noLabel && <h2 className="text-sm font-bold text-dark mb-4">{mode === "add" ? "Adicionar Endereço" : "Editar Endereço"}</h2>}
                 <div className="mb-4">
                     <Input
                         label="CEP *"
@@ -109,10 +111,10 @@ const AddressForm = ({ closeForm, mode = "add", addressToEdit }: AddressFormProp
                     {errors.postalCode && <p className="text-xs text-red-500 mt-1">{errors.postalCode.message?.toString()}</p>}
                 </div>
                 <div className="flex gap-2 mb-4">
-                    <div>
+                    <div className="w-full">
                         <Input label="Estado *" register={register} name="state" disabled onChange={e => handleInputChange(e, "state")} />
                     </div>
-                    <div>
+                    <div className="w-full">
                         <Input label="Cidade *" register={register} name="city" disabled />
                     </div>
                 </div>
@@ -130,7 +132,7 @@ const AddressForm = ({ closeForm, mode = "add", addressToEdit }: AddressFormProp
                     {errors.district && <p className="text-xs text-red-500 mt-1">{errors.district.message?.toString()}</p>}
                 </div>
                 <div className="flex gap-2 mb-4">
-                    <div>
+                    <div className="w-full">
                         <Input
                             label="Rua/Avenida *"
                             register={register}
@@ -143,7 +145,7 @@ const AddressForm = ({ closeForm, mode = "add", addressToEdit }: AddressFormProp
                         />
                         {errors.street && <p className="text-xs text-red-500 mt-1">{errors.street.message?.toString()}</p>}
                     </div>
-                    <div>
+                    <div className="w-full">
                         <Input
                             label="Número *"
                             register={register}

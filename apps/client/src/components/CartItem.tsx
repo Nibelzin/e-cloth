@@ -5,9 +5,10 @@ import { ProductInCart } from "../types/types";
 
 interface CartItemProps {
     item: ProductInCart
+    showMode?: boolean
 }
 
-const CartItem = ({ item }: CartItemProps) => {
+const CartItem = ({ item, showMode }: CartItemProps) => {
 
     const addItem = useCartStore((state) => state.addItem)
     const removeItem = useCartStore((state) => state.removeItem)
@@ -26,23 +27,30 @@ const CartItem = ({ item }: CartItemProps) => {
                         </div>
                     </div>
                     <div className="flex flex-col md:flex-row items-center gap-12">
-                        <div className="border flex">
-                            <button className="border-r flex items-center w-8 justify-center p-2" onClick={() => removeItem(item, item.size)}>
-                                {item.quantity > 1 ? (
-                                    <p className="font-semibold">-</p>
-                                ) : (
-                                    <div>
-                                        <HiOutlineTrash size={15} color="red" />
-                                    </div>
-                                )}
-                            </button>
-                            <div className="flex justify-center p-2 w-8">
-                                <p className="font-semibold">{item.quantity}</p>
+                        {showMode ? (
+                            <div>
+                                <p className="font-semibold text-lg">{item.quantity} UND </p>
                             </div>
-                            <button className="border-l flex w-8 justify-center p-2" onClick={() => addItem(item, item.size)}>
-                                <p className="font-semibold">+</p>
-                            </button>
-                        </div>
+                        ) : (
+
+                            <div className="border flex">
+                                <button className="border-r flex items-center w-8 justify-center p-2" onClick={() => removeItem(item, item.size)}>
+                                    {item.quantity > 1 ? (
+                                        <p className="font-semibold">-</p>
+                                    ) : (
+                                        <div>
+                                            <HiOutlineTrash size={15} color="red" />
+                                        </div>
+                                    )}
+                                </button>
+                                <div className="flex justify-center p-2 w-8">
+                                    <p className="font-semibold">{item.quantity}</p>
+                                </div>
+                                <button className="border-l flex w-8 justify-center p-2" onClick={() => addItem(item, item.size)}>
+                                    <p className="font-semibold">+</p>
+                                </button>
+                            </div>
+                        )}
                         <div className="text-end">
                             {item.promotionPrice && item.quantity === 1 ? (
                                 <>

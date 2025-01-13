@@ -20,12 +20,6 @@ enum OrderStatus {
   SHIPPED
 }
 
-enum PaymentMethod {
-  CREDIT_CARD
-  PAYPAL
-  BANK_TRANSFER
-}
-
 model User {
   id        String  @id @default(uuid())
   clerkId   String  @unique
@@ -43,15 +37,12 @@ model Order {
   orderDate       DateTime @default(now())
   status          OrderStatus
   totalPrice      Decimal
-  paymentMethod   PaymentMethod
-  paymentIntentId String
+  paymentIntentId String?
   shippingAddressId String
-  billingAddressId  String
   user User @relation(fields: [userId], references: [id])
   orderItems OrderItem[]
 
-  shippingAddress Address @relation(name: "shipping_address", fields: [shippingAddressId], references: [id])
-  billingAddress Address @relation(name: "billing_address", fields: [billingAddressId], references: [id])
+  shippingAddress Address @relation("shipping_address", fields: [shippingAddressId], references: [id])
 }
 
 model OrderItem{
@@ -84,7 +75,6 @@ model Address{
   user User @relation(fields: [userId], references: [id])
 
   orders_shipping Order[] @relation("shipping_address")
-  orders_billing Order[] @relation("billing_address")
 }
 
 model Product{

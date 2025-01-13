@@ -159,4 +159,19 @@ export enum SortingTypes {
   CategoryDesc = 'CategoryDesc'
 }
 
+export enum OrderStatus {
+  "PENDING",
+  "COMPLETED",
+  "CANCELED",
+  "SHIPPED"
+}
+
+export interface Order {
+  id?: string
+  userId: string
+  orderDate: Date
+  status: OrderStatus
+  totalPrice: number
+}
+
 

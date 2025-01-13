@@ -76,6 +76,7 @@ const Header = ({ checkout }: HeaderProps) => {
         } else {
             navigate("/")
         }
+        setOpenSearchBar(false)
     }
 
     const handleInputBlur = () => {
@@ -122,7 +123,14 @@ const Header = ({ checkout }: HeaderProps) => {
     }, [openMenuSheet]);
 
     useEffect(() => {
-        window.addEventListener('resize', handleResize)
+
+        if (window.innerWidth > 1024) {
+            window.addEventListener('resize', handleResize)
+        }
+
+        return () => {
+            window.removeEventListener('resize', handleResize)
+        }
     }, [])
 
     useEffect(() => {
@@ -143,7 +151,7 @@ const Header = ({ checkout }: HeaderProps) => {
 
     return (
         <>
-            <header className={`w-full  fixed top-0 z-30 bg-white ${!openSearchBar && "border-b"}`}>
+            <header className={`w-full  fixed top-0 z-40 bg-white ${!openSearchBar && "border-b"}`}>
                 <div className="h-16 flex items-center justify-between px-4 md:px-16 lg:px-32 xl:px-44 py-4">
                     <div className="flex gap-4 items-center">
                         <button className="lg:hidden hover:bg-neutral-100 p-2 rounded-sm transition-colors" onClick={handleMenuButtonClick}>
@@ -234,7 +242,7 @@ const Header = ({ checkout }: HeaderProps) => {
             </header >
             <div className="lg:hidden">
                 <div className="relative">
-                    <div className={`px-6 md:px-16 lg:px-32 py-4 fixed mt-16 bg-white w-full border-b transition-transform z-20 ${openSearchBar ? "translate-y-0" : "-translate-y-full"}`}>
+                    <div className={`px-6 md:px-16 lg:px-32 py-4 fixed mt-16 bg-white w-full border-b transition-transform z-30 ${openSearchBar ? "translate-y-0" : "-translate-y-full"}`}>
                         <div className=" bg-gray-200 px-4 flex gap-2 items-center">
                             <div>
                                 <FaMagnifyingGlass size={15} className="text-gray-500" />
@@ -251,7 +259,7 @@ const Header = ({ checkout }: HeaderProps) => {
                             />
                         </div>
                     </div>
-                    <div className={`fixed top-30 w-full h-[21rem] bg-white border-b  z-10 ${isMobileInputFocused ? "visible" : "invisible -translate-y-64"} transition-all`}>
+                    <div className={`fixed top-30 w-full h-[21rem] bg-white border-b  z-20 ${isMobileInputFocused ? "visible" : "invisible -translate-y-64"} transition-all`}>
                         {search === "" || searchData?.products.length === 0 ?
                             (
                                 <div className="w-full h-full flex justify-center items-center pt-36">
@@ -298,7 +306,7 @@ const Header = ({ checkout }: HeaderProps) => {
                 </div>
             </div>
             {checkout ? (
-                <CheckoutBar/>
+                <CheckoutBar />
             ) : (
                 <CategoryBar categories={data?.categories} isPending={isPending} />
             )}

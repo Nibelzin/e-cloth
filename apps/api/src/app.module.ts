@@ -12,6 +12,9 @@ import { AddressModule } from './address/address.module';
 import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
 import { SearchModule } from './search/search.module';
+import { StripeService } from './stripe/stripe.service';
+import { OrderService } from './order/order.service';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -28,9 +31,10 @@ import { SearchModule } from './search/search.module';
     AddressModule,
     ProductModule,
     CategoryModule,
-    SearchModule
+    SearchModule,
+    OrderModule
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [AppService, PrismaService, StripeService, OrderService],
 })
 export class AppModule {}

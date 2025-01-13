@@ -7,6 +7,7 @@ interface DialogProps extends PropsWithChildren {
     closeDialog: () => void;
     dialogAction?: () => void;
     deletion?: boolean;
+    className?: string;
 }
 
 type DialogContext = {
@@ -27,7 +28,7 @@ const useDialogContext = () => {
     return context;
 }
 
-const Dialog = ({ children, open, dialogAction, closeDialog, deletion, loading }: DialogProps) => {
+const Dialog = ({ children, open, dialogAction, closeDialog, deletion, loading, className }: DialogProps) => {
 
     const [isOpen, setIsOpen] = useState(open);
     const [animate, setAnimate] = useState(false);
@@ -52,7 +53,7 @@ const Dialog = ({ children, open, dialogAction, closeDialog, deletion, loading }
             >
                 <div className="w-full h-full bg-black/80" onClick={() => closeDialog()}>
                 </div>
-                <div className={`w-full space-y-4 p-4 rounded-md max-w-lg absolute top-[50%] right-[50%] -translate-y-[50%] translate-x-[50%] bg-white border ${animate ? "scale-100" : "scale-90"} transition-all duration-100`}>
+                <div className={`min-w-[32rem] max-w-full p-4 rounded-md absolute top-[50%] right-[50%] -translate-y-[50%] translate-x-[50%] bg-white border ${animate ? "scale-100" : "scale-90"} ${className} transition-all duration-100`}>
                     {children}
                 </div>
             </div>
@@ -62,7 +63,7 @@ const Dialog = ({ children, open, dialogAction, closeDialog, deletion, loading }
 
 Dialog.Title = function Title({ children }: { children: React.ReactNode }) {
     return (
-        <div>
+        <div className="mb-2">
             <h1 className="font-semibold text-lg">{children}</h1>
         </div>
     )
@@ -76,15 +77,23 @@ Dialog.Description = function Description({ children }: { children: React.ReactN
     )
 }
 
-Dialog.ActionButtons = function ActionButtons() {
+Dialog.Body = function Body({ children }: { children?: React.ReactNode }) {
+    return (
+        <div>
+            {children}
+        </div>
+    )
+}
+
+Dialog.ActionButtons = function ActionButtons({ primaryButtonLabel }: { primaryButtonLabel?: string }) {
     const { closeDialog, dialogAction, deletion, loading } = useDialogContext();
 
     return (
-        <div className="flex flex-col gap-2 justify-end">
+        <div className="flex flex-col mt-4 gap-2 justify-end">
             {deletion ? (
                 <button className='p-2 bg-red-500 text-white rounded-sm font-semibold hover:bg-red-600 transition-colors flex items-center justify-center h-10' onClick={() => dialogAction && dialogAction()}>{loading ? <ReactLoading type="spin" width={15} height={15} /> : "Excluir"}</button>
             ) : (
-                <button disabled={loading} className='p-2 bg-black text-white rounded-sm font-semibold hover:bg-neutral-900 transition-colors h-10' onClick={() => dialogAction && dialogAction()}>{loading ? <ReactLoading type="spin" width={15} height={15} /> : "Salvar"}</button>
+                <button disabled={loading} className='p-2 bg-black text-white rounded-sm font-semibold hover:bg-neutral-900 transition-colors h-10' onClick={() => dialogAction && dialogAction()}>{loading ? <ReactLoading type="spin" width={15} height={15} /> : primaryButtonLabel ?? "Salvar"}</button>
             )}
             <button className='p-2 border rounded-sm hover:bg-neutral-100 transition-colors' onClick={() => closeDialog()}>Cancelar</button>
         </div>

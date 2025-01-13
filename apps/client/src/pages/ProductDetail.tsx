@@ -6,6 +6,7 @@ import { useCartStore } from "../store/cartStore";
 import { useEffect, useRef, useState } from "react";
 import { getProductById, getProducts } from "../api/productService";
 import { useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 
 
@@ -59,7 +60,7 @@ const ProductDetail = () => {
         if (selectedSize && selectedProduct) {
             addItemToCart(selectedProduct, selectedSize)
         } else {
-            alert("SELECIONE UM TAMANHO")
+            toast.error("Selecione um tamanho")
         }
     }
 

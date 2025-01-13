@@ -9,6 +9,7 @@ import { Address } from "../types/types";
 import { useUserStore } from "../store/userStore";
 import { getFormattedPhoneNumber } from "../lib/utils";
 import PhoneForm from "./PhoneForm";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 
@@ -32,6 +33,8 @@ const AdditionalInfo = () => {
     const [addressToEdit, setAddressToEdit] = useState<Address | undefined>(undefined)
 
     const dropdownsRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+
+    const queryClient = useQueryClient()
 
     const handleSetAddressAsDefaultButtonClick = async (addressId: string) => {
         if (user) {
@@ -76,6 +79,7 @@ const AdditionalInfo = () => {
             await deleteUserAddress(addressId)
             fetchUser(user.id, setAddressLoading)
         }
+        queryClient.invalidateQueries({ queryKey: ["user"] })
     }
 
     const handleDeletePhoneNumberButtonClick = async () => {
