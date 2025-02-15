@@ -34,7 +34,7 @@ const CheckoutBar = () => {
                 </div>
                 <hr className="w-16 mb-6" />
                 <div className="space-y-1 flex flex-col items-center relative mb-5">
-                    <div className="border p-2 rounded-full w-12 h-12 flex justify-center items-center">
+                    <div className={`border p-2 rounded-full w-12 h-12 flex justify-center items-center ${location.pathname === "/cart/checkout" ? "bg-black border-black text-white" : "text-black"}`}>
                         <FaCreditCard size={20} />
                     </div>
                     <p className="text-sm absolute top-12">Pagamento</p>

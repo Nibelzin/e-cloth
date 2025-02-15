@@ -1,4 +1,4 @@
-import { Order } from "../types/types";
+import { Order, OrderStatus } from "../types/types";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -34,4 +34,34 @@ export async function createOrder(orderData: Order) {
     const result = await response.json();
 
     return result;
+}
+
+export async function updateOrderStatus(orderId: string, status: OrderStatus) {
+
+    const response = await fetch(`${apiUrl}/api/order/${orderId}/status`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ status })
+    });
+
+    if (!response.ok) throw new Error("Erro ao atualizar status do pedido");
+
+    const result = await response.json();
+
+    return result;
+}
+
+export async function getOrderById(orderId: string) {
+
+    const response = await fetch(`${apiUrl}/api/order/${orderId}`, {
+        method: "GET"
+    });
+
+    if (!response.ok) throw new Error("Erro ao buscar pedido");
+
+    const order: Order = await response.json();
+
+    return order;
 }

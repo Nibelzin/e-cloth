@@ -18,6 +18,7 @@ import CategoryPage from './pages/CategoryPage.tsx'
 import CheckoutLayout from './layout/CheckoutLayout.tsx'
 import Delivery from './pages/Delivery.tsx'
 import Checkout from './pages/Checkout.tsx'
+import OrderConfirmation from './pages/OrderConfirmation.tsx'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -43,7 +44,7 @@ const router = createBrowserRouter([
       {
         path: "/cart/checkout",
         element: <Checkout />
-      }
+      },
     ]
   },
   {
@@ -69,6 +70,10 @@ const router = createBrowserRouter([
       {
         path: "/search/:term",
         element: <Home />
+      },
+      {
+        path: "/cart/checkout/confirmation",
+        element: <OrderConfirmation/>
       }
     ]
   },

@@ -1,6 +1,6 @@
 import { CardElement, useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 import { useEffect, useState } from 'react';
-import { createOrder, createPaymentIntent } from '../api/orderService';
+import { createOrder, createPaymentIntent, updateOrderStatus } from '../api/orderService';
 import { Address, OrderStatus, ProductInCart, User } from '../types/types';
 import { useUser } from '@clerk/clerk-react';
 import toast from 'react-hot-toast';
@@ -27,13 +27,17 @@ const CheckoutForm = ({ amount, formRef, loading, setLoading, userData, userAddr
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         try {
-            if (!userData?.id || !userAddress?.id) return;
+            if (!userData?.id) return;
 
             event.preventDefault();
             setLoading(true)
 
             if (!stripe || !elements) {
                 throw new Error('Stripe.js has not loaded yet.');
+            }
+
+            if (!userAddress?.id) {
+                throw new Error('Endereço de entrega não selecionado');
             }
 
             const { error: submitError } = await elements.submit();
@@ -43,21 +47,20 @@ const CheckoutForm = ({ amount, formRef, loading, setLoading, userData, userAddr
                 return;
             }
 
-            const { client_secret:clientSecret, id:paymentIntentId } = await createPaymentIntent(amount);
+            const { client_secret: clientSecret, id: paymentIntentId } = await createPaymentIntent(amount);
 
             if (!clientSecret || !paymentIntentId) {
                 throw new Error('Erro ao criar pagamento');
             }
 
             const order = await createOrder({
-                paymentIntentId: paymentIntentId!,
+                paymentIntentId: paymentIntentId,
                 orderDate: new Date(),
-                status: OrderStatus.PENDING,
+                status: OrderStatus.COMPLETED,
                 totalPrice: totalProductPrice,
                 userId: userData.id,
                 shippingAddressId: userAddress.id,
                 orderItems: products.map(product => ({
-                    id: product.id,
                     price: product.price,
                     productId: product.id,
                     quantity: product.quantity,
@@ -69,14 +72,17 @@ const CheckoutForm = ({ amount, formRef, loading, setLoading, userData, userAddr
                 clientSecret: clientSecret!,
                 elements,
                 confirmParams: {
-                    return_url: `http://localhost:5173/cart/checkout?amount=${amount}`,
+                    return_url: `http://localhost:5173/cart/checkout/confirmation?order=${order.id}`,
                 }
             })
 
             if (error) {
+                await updateOrderStatus(order.id, OrderStatus.CANCELED);
                 setError(error.message);
                 throw new Error(error.message);
             }
+
+
         } catch (error: any) {
             toast.error(error.message);
         } finally {

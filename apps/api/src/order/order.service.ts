@@ -8,6 +8,26 @@ export class OrderService {
 
     constructor(private prisma: PrismaService) { }
 
+    async getOrderById(orderId: string) {
+        return this.prisma.order.findUnique({
+            where: {
+                id: orderId
+            },
+            include: {
+                orderItems: {
+                    include: {
+                        product: {
+                            include: {
+                                productImages: true
+                            }
+                        },
+                        size: true
+                    }
+                }
+            }
+        })
+    }
+
     async createOrder(data: OrderDTO) {
         return this.prisma.order.create({
             data: {
@@ -35,6 +55,17 @@ export class OrderService {
                         }
                     })
                 },
+            }
+        })
+    }
+
+    async updateOrderStatus(orderId: string, status: OrderStatus) {
+        return this.prisma.order.update({
+            where: {
+                id: orderId
+            },
+            data: {
+                status: status
             }
         })
     }

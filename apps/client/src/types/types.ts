@@ -183,6 +183,8 @@ export interface OrderItem {
   sizeId: string
   quantity: number
   price: number
+  size?: Size
+  product?: Product
 }
 
 

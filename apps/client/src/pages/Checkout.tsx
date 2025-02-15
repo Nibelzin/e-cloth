@@ -121,7 +121,7 @@ const Checkout = () => {
                         <p className="font-semibold">Total:</p>
                         <p className="text-xl font-semibold">{getFormattedPrice(totalProductprice)}</p>
                     </div>
-                    <button className="bg-black p-2 w-full rounded-full text-white" disabled={selectedAddress === null} onClick={() => handlePayButtonClick()}>{loading === true ? "CARREGANDO" : "Pagar"}</button>
+                    <button className="bg-black p-2 w-full rounded-full text-white" onClick={() => handlePayButtonClick()}>{loading === true ? "CARREGANDO" : "Pagar"}</button>
                 </div>
             </div>
         </div>
