@@ -53,7 +53,7 @@ const Dialog = ({ children, open, dialogAction, closeDialog, deletion, loading, 
             >
                 <div className="w-full h-full bg-black/80" onClick={() => closeDialog()}>
                 </div>
-                <div className={`min-w-[32rem] max-w-full p-4 rounded-md absolute top-[50%] right-[50%] -translate-y-[50%] translate-x-[50%] bg-white border ${animate ? "scale-100" : "scale-90"} ${className} transition-all duration-100`}>
+                <div className={`max-w-full p-4 rounded-md absolute top-[50%] right-[50%] -translate-y-[50%] translate-x-[50%] bg-white border ${animate ? "scale-100" : "scale-90"} ${className} transition-all duration-100`}>
                     {children}
                 </div>
             </div>

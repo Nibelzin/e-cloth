@@ -1,5 +1,4 @@
 import { RedirectToSignIn, SignedOut, useAuth, useUser } from "@clerk/clerk-react";
-import CartItem from "../components/CartItem";
 import { getFormattedPrice } from "../lib/utils";
 import { useCartStore } from "../store/cartStore";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -11,6 +10,7 @@ import CheckoutForm from "../components/CheckoutForm";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useAddressStore } from "../store/addressStore";
+import ReactLoading from "react-loading";
 
 const STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY
 
@@ -28,8 +28,13 @@ const Checkout = () => {
     const navigate = useNavigate()
 
     const cartItems = useCartStore((state) => state.cart)
-    const totalProductprice = cartItems.reduce((value, product) => product.promotionPrice && product.quantity === 1 ? value += product.promotionPrice : value += product.price * product.quantity
-        , 0)
+    const totalProductprice = cartItems.reduce((value, product) => {
+        if (product.promotionPrice && product.quantity === 1) {
+            return value + (product.promotionPrice * product.quantity);
+        } else {
+            return value + (product.price * product.quantity);
+        }
+    }, 0);
 
     const { user: clerkUser } = useUser()
     const queryClient = useQueryClient()
@@ -94,14 +99,14 @@ const Checkout = () => {
                         <div className="flex flex-col gap-4 flex-1">
                             <Elements stripe={stripe} options={{
                                 mode: 'payment',
-                                amount: totalProductprice * 100,
+                                amount: Math.floor(totalProductprice * 100),
                                 currency: 'brl',
                             }}>
                                 <CheckoutForm
                                     totalProductPrice={totalProductprice}
                                     products={cartItems}
                                     userData={userData}
-                                    amount={totalProductprice * 100}
+                                    amount={Math.floor(totalProductprice * 100)}
                                     formRef={formRef}
                                     loading={loading}
                                     setLoading={setLoading}
@@ -121,7 +126,7 @@ const Checkout = () => {
                         <p className="font-semibold">Total:</p>
                         <p className="text-xl font-semibold">{getFormattedPrice(totalProductprice)}</p>
                     </div>
-                    <button className="bg-black p-2 w-full rounded-full text-white" onClick={() => handlePayButtonClick()}>{loading === true ? "CARREGANDO" : "Pagar"}</button>
+                    <button className="bg-black p-2 w-full flex justify-center rounded-full text-white" onClick={() => handlePayButtonClick()}>{loading === true ? <ReactLoading type="spin" width={15} height={15} /> : "Pagar"}</button>
                 </div>
             </div>
         </div>

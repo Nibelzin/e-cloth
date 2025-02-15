@@ -7,8 +7,12 @@ const Cart = () => {
 
     const cartItems = useCartStore((state) => state.cart)
 
-    const totalProductprice = cartItems.reduce((value, product) => product.promotionPrice && product.quantity === 1 ? value += product.promotionPrice : value += product.price * product.quantity
-        , 0)
+    const totalProductprice = cartItems.reduce((value, product) => {
+        if (product.promotionPrice && product.quantity === 1) {
+            return Number(value + product.promotionPrice);
+        }
+        return Number(value + (product.price * product.quantity));
+    }, 0);
 
     const navigate = useNavigate()
 

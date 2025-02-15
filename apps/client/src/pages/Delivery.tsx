@@ -20,8 +20,15 @@ const Delivery = () => {
     const navigate = useNavigate()
 
     const cartItems = useCartStore((state) => state.cart)
-    const totalProductprice = cartItems.reduce((value, product) => product.promotionPrice && product.quantity === 1 ? value += product.promotionPrice : value += product.price * product.quantity
-        , 0)
+    const totalProductprice = cartItems.reduce((value, product) => {
+        if (product.promotionPrice && product.quantity === 1) {
+            return value + (product.promotionPrice * product.quantity);
+        } else {
+            return value + (product.price * product.quantity);
+        }
+    }, 0);
+
+    console.log(totalProductprice)
 
     const { user: clerkUser } = useUser()
     const queryClient = useQueryClient()

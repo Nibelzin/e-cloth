@@ -8,7 +8,8 @@ const OrderStatusToChip = ({ status }: OrderStatusToChipProps) => {
     switch (status) {
         case OrderStatus.PENDING:
             return (
-                <div>
+                <div className="bg-yellow-500 text-white px-2 rounded-full">
+                    Pendente
                 </div>
             )
         case OrderStatus.COMPLETED:
