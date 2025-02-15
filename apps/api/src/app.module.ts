@@ -15,6 +15,7 @@ import { SearchModule } from './search/search.module';
 import { StripeService } from './stripe/stripe.service';
 import { OrderService } from './order/order.service';
 import { OrderModule } from './order/order.module';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { OrderModule } from './order/order.module';
     ProductModule,
     CategoryModule,
     SearchModule,
-    OrderModule
+    OrderModule,
+    StripeModule
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, StripeService, OrderService],

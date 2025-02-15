@@ -160,10 +160,10 @@ export enum SortingTypes {
 }
 
 export enum OrderStatus {
-  "PENDING",
-  "COMPLETED",
-  "CANCELED",
-  "SHIPPED"
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+  CANCELED = 'CANCELED',
+  SHIPPED = 'SHIPPED'
 }
 
 export interface Order {
@@ -172,6 +172,17 @@ export interface Order {
   orderDate: Date
   status: OrderStatus
   totalPrice: number
+  paymentIntentId: string
+  shippingAddressId: string
+  orderItems: OrderItem[]
+}
+
+export interface OrderItem {
+  id?: string
+  productId: string
+  sizeId: string
+  quantity: number
+  price: number
 }
 
 

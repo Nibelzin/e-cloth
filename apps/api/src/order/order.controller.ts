@@ -8,6 +8,9 @@ export class OrderController {
 
     @Post()
     async createOrder(@Body() data: OrderDTO) {
+
+        console.log(data)
+
         try {
             return this.orderService.createOrder(data)
         } catch(error) {

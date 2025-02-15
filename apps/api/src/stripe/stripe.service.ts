@@ -6,11 +6,19 @@ import Stripe from 'stripe';
 export class StripeService {
     private stripe: Stripe;
 
-    constructor(private readonly configService: ConfigService){
+    constructor(private readonly configService: ConfigService) {
         this.stripe = new Stripe(this.configService.get('STRIPE_SECRET_KEY'))
     }
 
     getStripeClient() {
         return this.stripe;
+    }
+
+    createPaymentIntent({ amount }: { amount: number }) {
+        return this.stripe.paymentIntents.create({
+            amount: amount,
+            currency: 'BRL',
+            automatic_payment_methods: { enabled: true }
+        })
     }
 }

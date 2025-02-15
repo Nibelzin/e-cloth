@@ -4,7 +4,9 @@ import { getUserAddresses } from "../api/userService";
 
 interface AddressState {
   addresses: Address[];
+  selectedAddress: Address | null;
   setAddresses: (newAddresses: Address[]) => void;
+  setSelectedAddress: (address: Address) => void;
   fetchAddresses: (
     userId: string,
     setLoading?: (value: boolean) => void
@@ -12,8 +14,10 @@ interface AddressState {
 }
 
 export const useAddressStore = create<AddressState>()((set) => ({
+  selectedAddress: null,
   addresses: [],
   setAddresses: (newAddresses) => set({ addresses: newAddresses }),
+  setSelectedAddress: (address) => set({ selectedAddress: address }),
   fetchAddresses: async (
     userId: string,
     setLoading?: (value: boolean) => void

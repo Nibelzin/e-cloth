@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import { Address } from "../types/types";
 import Dialog from "../components/Dialog";
 import AddressForm from "../components/AddressForm";
+import { useNavigate } from "react-router-dom";
+import { useAddressStore } from "../store/addressStore";
 
 const Delivery = () => {
 
@@ -15,12 +17,15 @@ const Delivery = () => {
     const [addAddressMode, setAddAddressMode] = useState(false)
     const [selectedAddress, setSelectedAddress] = useState<Address | null>(null)
 
+    const navigate = useNavigate()
+
     const cartItems = useCartStore((state) => state.cart)
     const totalProductprice = cartItems.reduce((value, product) => product.promotionPrice && product.quantity === 1 ? value += product.promotionPrice : value += product.price * product.quantity
         , 0)
 
     const { user: clerkUser } = useUser()
     const queryClient = useQueryClient()
+    const addressStore = useAddressStore()
 
     const { isPending, data: userData, error } = useQuery({
         queryKey: ["user"],
@@ -28,6 +33,12 @@ const Delivery = () => {
     })
 
     const mainUserAddress = userData?.addresses?.find(address => address.isDefault) || null
+
+    const handleGoToCheckout = () => {
+        if (!selectedAddress) return
+        addressStore.setSelectedAddress(selectedAddress)
+        navigate("/cart/checkout")
+    }
 
     const handleAddressModeClose = () => {
         setAddAddressMode(false)
@@ -85,7 +96,7 @@ const Delivery = () => {
                             <h2 className="text-2xl font-semibold mb-2">Produtos</h2>
                             <div className="flex flex-col gap-4 flex-1">
                                 {cartItems.map(product => (
-                                    <CartItem item={product} showMode />
+                                    <CartItem item={product} showMode key={product.id}/>
                                 ))}
                             </div>
                         </div>
@@ -100,7 +111,7 @@ const Delivery = () => {
                             <p className="font-semibold">Total:</p>
                             <p className="text-xl font-semibold">{getFormattedPrice(totalProductprice)}</p>
                         </div>
-                        <button className="bg-black p-2 w-full rounded-full text-white">Continuar</button>
+                        <button className="bg-black p-2 w-full rounded-full text-white" disabled={selectedAddress ===  null} onClick={() => handleGoToCheckout()}>Continuar</button>
                     </div>
                 </div>
             </div>

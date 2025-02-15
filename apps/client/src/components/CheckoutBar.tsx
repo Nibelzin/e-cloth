@@ -24,7 +24,11 @@ const CheckoutBar = () => {
                 <hr className="w-16 mb-6" />
                 <div className="space-y-1 flex flex-col items-center relative mb-5 cursor-pointer" onClick={() => navigate("/cart/delivery")}>
                     <div className={`border p-2 rounded-full w-12 h-12 flex justify-center items-center ${location.pathname === "/cart/delivery" ? "bg-black border-black text-white" : "text-black"}`}>
-                        <FaTruck size={20} />
+                        {location.pathname.includes("checkout") ? (
+                            <FaCheck />
+                        ) : (
+                            <FaTruck size={20} />
+                        )}
                     </div>
                     <p className={`text-sm absolute top-12 ${location.pathname === "/cart/delivery" && "font-semibold"}`}>Entrega</p>
                 </div>
