@@ -19,6 +19,7 @@ import CheckoutLayout from './layout/CheckoutLayout.tsx'
 import Delivery from './pages/Delivery.tsx'
 import Checkout from './pages/Checkout.tsx'
 import OrderConfirmation from './pages/OrderConfirmation.tsx'
+import MyOrders from './pages/MyOrders.tsx'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -74,6 +75,10 @@ const router = createBrowserRouter([
       {
         path: "/cart/checkout/confirmation",
         element: <OrderConfirmation/>
+      },
+      {
+        path: "/my-orders",
+        element: <MyOrders/>
       }
     ]
   },

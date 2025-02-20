@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { Address, AddressToAdd, User } from "../types/types";
+import { Address, AddressToAdd, Order, OrderQuery, User } from "../types/types";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -34,6 +34,24 @@ export async function addUserAddress(addressToAdd: AddressToAdd) {
     console.error(error)
     toast.error("Erro ao adicionar endereço");
   }
+}
+
+export async function getUserOrders(userId: string, page: string, limit: string) {
+  const queryParams = new URLSearchParams();
+  queryParams.append("page", page);
+  queryParams.append("limit", limit);
+
+  const query = `?${queryParams.toString()}`;
+
+  const response = await fetch(`${apiUrl}/api/user/${userId}/orders${query}`, {
+    method: "GET",
+  });
+  if (!response.ok) throw new Error("Erro ao buscar pedidos deste usuário");
+
+  const orders: OrderQuery = await response.json();
+
+  console.log(orders)
+  return orders;
 }
 
 export async function editUserAddress(address: Address) {

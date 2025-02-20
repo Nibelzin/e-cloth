@@ -19,6 +19,7 @@
     "@stripe/react-stripe-js": "^3.1.1",
     "@stripe/stripe-js": "^5.5.0",
     "@tanstack/react-query": "^5.62.15",
+    "date-fns": "^4.1.0",
     "motion": "^11.11.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

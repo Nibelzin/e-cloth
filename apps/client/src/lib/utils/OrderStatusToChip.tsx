@@ -18,6 +18,12 @@ const OrderStatusToChip = ({ status }: OrderStatusToChipProps) => {
                     Confirmado
                 </div>
             )
+        case OrderStatus.CANCELED:
+            return (
+                <div className="bg-gray-500 text-white px-2 rounded-full">
+                    Cancelado
+                </div>
+            )
     }
 }
  

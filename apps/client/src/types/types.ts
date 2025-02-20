@@ -174,7 +174,13 @@ export interface Order {
   totalPrice: number
   paymentIntentId: string
   shippingAddressId: string
+  shippingAddress?: Address
   orderItems: OrderItem[]
+}
+
+export interface OrderQuery {
+  orders: Order[]
+  total: number
 }
 
 export interface OrderItem {

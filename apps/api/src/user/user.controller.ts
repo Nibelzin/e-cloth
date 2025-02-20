@@ -8,15 +8,18 @@ import {
   NotFoundException,
   Param,
   Put,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AddressService } from 'src/address/address.service';
+import { OrderService } from 'src/order/order.service';
 
 @Controller('user')
 export class UserController {
   constructor(
     private userService: UserService,
     private addressService: AddressService,
+    private orderService: OrderService
   ) {}
 
   @Get()
@@ -34,6 +37,19 @@ export class UserController {
       return await this.userService.getUserById(id);
     } catch (error) {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Get(':id/orders')
+  async getUserOrders(@Param('id') clerkId: string, @Query('page') page: string, @Query('limit') limit: string) {
+    try {
+      return this.orderService.getOrdersByUserId(clerkId, page, limit);
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Usuário não encontrado');
+      } else {
+        throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
   }
 

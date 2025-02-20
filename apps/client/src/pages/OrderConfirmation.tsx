@@ -55,7 +55,7 @@ const OrderConfirmation = () => {
                                         <p className="font-semibold mb-2">Itens do Pedido:</p>
                                         <div className="space-y-4">
                                             {data?.orderItems.map((orderItem: OrderItem) => (
-                                                <div className="border p-2">
+                                                <div id={orderItem.id} className="border p-2">
                                                     <div className="flex gap-2">
                                                         <div className="w-16 h-16">
                                                             <img src={orderItem.product?.productImages[0].url} className="w-full h-full object-contain" />
