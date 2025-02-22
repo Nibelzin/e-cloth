@@ -9,7 +9,7 @@ interface OrderCardProps {
 
 const OrderCard = ({ order }: OrderCardProps) => {
     return (
-        <div className="w-full border p-4 mt-8 space-y-2">
+        <div className={`w-full border p-4 space-y-2`}>
             <div className="flex flex-col lg:flex-row w-full gap-6 h-full">
                 <div className="w-full">
                     <div className="flex flex-col lg:flex-row justify-between items-start">
@@ -23,7 +23,7 @@ const OrderCard = ({ order }: OrderCardProps) => {
                                 <p>{format(order.orderDate, "dd/MM/yyyy HH:mm")}</p>
                             </div>
                         </div>
-                        <button className="text-blue-500 mb-4">Mais detalhes</button>
+                        <a href={`/my-orders/${order.id}`} className="text-blue-500 mb-4">Mais detalhes</a>
                     </div>
                     <div>
                         <p className="font-semibold mb-2">Itens do Pedido:</p>

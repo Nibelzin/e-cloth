@@ -1,4 +1,4 @@
-import { FaMagnifyingGlass } from "react-icons/fa6";
+import { FaBoxArchive, FaMagnifyingGlass } from "react-icons/fa6";
 import { HiMenu, HiOutlineDotsHorizontal, HiOutlineSearch } from "react-icons/hi";
 import { HiChevronRight, HiOutlineShoppingBag } from "react-icons/hi2";
 import CategoryBar from "./CategoryBar";
@@ -220,6 +220,13 @@ const Header = ({ checkout }: HeaderProps) => {
                                         <UserButton.UserProfilePage label="Informações Adicionais" url="custom" labelIcon={<HiOutlineDotsHorizontal />}>
                                             <AdditionalInfo />
                                         </UserButton.UserProfilePage>
+                                        <UserButton.MenuItems>
+                                            <UserButton.Link
+                                                label="Meus Pedidos"
+                                                labelIcon={<FaBoxArchive />}
+                                                href="/my-orders"
+                                            />
+                                        </UserButton.MenuItems>
                                     </UserButton>
                                 </SignedIn>
                             </div>
@@ -339,6 +346,13 @@ const Header = ({ checkout }: HeaderProps) => {
                                     <UserButton.UserProfilePage label="Informações Adicionais" url="custom" labelIcon={<HiOutlineDotsHorizontal />}>
                                         <AdditionalInfo />
                                     </UserButton.UserProfilePage>
+                                    <UserButton.MenuItems>
+                                        <UserButton.Link
+                                            label="Meus Pedidos"
+                                            labelIcon={<FaBoxArchive />}
+                                            href="/my-orders"
+                                        />
+                                    </UserButton.MenuItems>
                                 </UserButton>
                             </div>
                         </SignedIn>

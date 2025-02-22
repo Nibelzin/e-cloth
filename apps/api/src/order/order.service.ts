@@ -67,7 +67,8 @@ export class OrderService {
                         },
                         size: true
                     }
-                }
+                },
+                shippingAddress: true
             }
         })
     }
