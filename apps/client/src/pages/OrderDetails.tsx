@@ -70,10 +70,16 @@ const OrderDetails = () => {
                                             <p>Valor dos produtos:</p>
                                             <p>{getFormattedPrice(order?.totalPrice)}</p>
                                         </div>
+                                        {order?.discount && (
+                                            <div className="flex justify-between">
+                                                <p>Desconto:</p>
+                                                <p>-{getFormattedPrice(order.discount)}</p>
+                                            </div>
+                                        )}
                                         <hr />
                                         <div className="flex justify-between">
                                             <p className="font-semibold">Total:</p>
-                                            <p className="text-xl font-semibold">{getFormattedPrice(order?.totalPrice)}</p>
+                                            <p className="text-xl font-semibold">{getFormattedPrice(order?.discount ? order.totalPrice - order.discount : order?.totalPrice)}</p>
                                         </div>
                                     </div>
                                 </div>

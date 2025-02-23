@@ -97,7 +97,7 @@ const CategoriesTable = ({ editCategory }: CategoriesTableProps) => {
                         categories.map((category, index) => (
                             <tr key={category.id} className={`${index % 2 === 0 && "bg-neutral-100"}`}>
                                 <td className="py-2 px-4">{category.name}</td>
-                                <td className="py-2 px-4">{getArrayAsString(category.categorySizes.map(categorySize => categorySize.size.size))}</td>
+                                <td className="py-2 px-4">{getArrayAsString(category.categorySizes.map(categorySize => categorySize.size))}</td>
                                 <td className="py-2 px-4">{category._count?.products} Produtos</td>
                                 <td className="py-2 px-4">
                                     <button className="text-blue-500" onClick={() => editCategory(category.id)}>Editar</button>

@@ -6,6 +6,8 @@ import { getFormattedPrice } from "../lib/utils";
 import OrderStatusToChip from "../lib/utils/OrderStatusToChip";
 import { useCartStore } from "../store/cartStore";
 import { useEffect } from "react";
+import { useUser } from "@clerk/clerk-react";
+import { getUserById } from "../api/userService";
 
 const OrderConfirmation = () => {
     const location = useLocation()
@@ -14,11 +16,19 @@ const OrderConfirmation = () => {
     const redirectStatus = queryParams.get("redirect_status");
 
     const cart = useCartStore()
+    const { user: clerkUser } = useUser();
 
-    const { isPending, data } = useQuery({
+    const { isPending, data: order } = useQuery({
         queryKey: ['order'],
         queryFn: () => getOrderById(orderId || "")
     })
+
+    const { isPending: isUserDataPending, data: userData } = useQuery({
+        queryKey: ["user"],
+        queryFn: () => getUserById(clerkUser?.id!),
+    })
+
+    const isUserOrder: boolean = userData?.id === order?.userId
 
 
     useEffect(() => {
@@ -26,9 +36,6 @@ const OrderConfirmation = () => {
             cart.clearCart()
         }
     }, [redirectStatus])
-
-
-    console.log(data)
 
     return (
         <div className="px-6 md:px-16 lg:px-32 xl:px-64 mt-20">
@@ -39,59 +46,80 @@ const OrderConfirmation = () => {
                         <div className="w-80">
                             <img src="/succesful-purchase.svg" alt="Voltar" className=" w-full h-full select-none" />
                         </div>
-                        <div className="w-full border p-4 mt-8 space-y-2">
-                            <div className="flex flex-col lg:flex-row w-full gap-6 h-full">
-                                <div className="w-full">
-                                    <p className="font-semibold text-lg">Detalhes do Pedido</p>
-                                    <div>
-                                        <p className="font-semibold">Id do Pedido:</p>
-                                        <p>{data?.id}</p>
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold">Método de Pagamento</p>
-                                        <p>Cartão de Crédito</p>
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold mb-2">Itens do Pedido:</p>
-                                        <div className="space-y-4">
-                                            {data?.orderItems.map((orderItem: OrderItem) => (
-                                                <div id={orderItem.id} className="border p-2">
-                                                    <div className="flex gap-2">
-                                                        <div className="w-16 h-16">
-                                                            <img src={orderItem.product?.productImages[0].url} className="w-full h-full object-contain" />
-                                                        </div>
-                                                        <div>
-                                                            <p>{orderItem.product?.name}</p>
-                                                            <p>Qtd: {orderItem.quantity}</p>
-                                                            <p>Tamanho: {orderItem.size?.size}</p>
+                        {
+                            isPending || isUserDataPending ? (
+                                <div></div>
+                            ) : (
+                                isUserOrder ? (
+                                    order && (
+                                        <div className="w-full border p-4 mt-8 space-y-2">
+                                            <div className="flex flex-col lg:flex-row w-full gap-6 h-full">
+                                                <div className="w-full space-y-2">
+                                                    <div className="flex justify-between">
+                                                        <p className="font-semibold text-lg">Detalhes do Pedido</p>
+                                                        <a href={`/my-orders/${order.id}`} className="text-blue-500 mb-4">Mais Detalhes</a>
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold">Id do Pedido:</p>
+                                                        <p>{order.id}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold">Método de Pagamento</p>
+                                                        <p>Cartão de Crédito</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold mb-2">Itens do Pedido:</p>
+                                                        <div className="space-y-4">
+                                                            {order?.orderItems.map((orderItem: OrderItem) => (
+                                                                <div id={orderItem.id} className="border p-2">
+                                                                    <div className="flex gap-2">
+                                                                        <div className="w-16 h-16">
+                                                                            <img src={orderItem.product?.productImages[0].url} className="w-full h-full object-contain" />
+                                                                        </div>
+                                                                        <div>
+                                                                            <p>{orderItem.product?.name}</p>
+                                                                            <p>Qtd: {orderItem.quantity}</p>
+                                                                            <p>Tamanho: {orderItem.size?.size}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
                                                         </div>
                                                     </div>
                                                 </div>
-                                            ))}
+                                                <div className="border w-full lg:w-96 p-4 flex flex-col justify-between bg-white">
+                                                    <div>
+                                                        <div className="flex justify-between mb-4">
+                                                            <p>Status do Pedido:</p>
+                                                            <OrderStatusToChip status={order.status} />
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <div className="flex justify-between">
+                                                            <p>Valor dos produtos:</p>
+                                                            <p>{getFormattedPrice(order.totalPrice)}</p>
+                                                        </div>
+                                                        {order.discount && (
+                                                            <div className="flex justify-between">
+                                                                <p>Desconto:</p>
+                                                                <p>-{getFormattedPrice(order.discount)}</p>
+                                                            </div>
+                                                        )}
+                                                        <hr />
+                                                        <div className="flex justify-between">
+                                                            <p className="font-semibold">Total:</p>
+                                                            <p className="text-xl font-semibold">{getFormattedPrice(order.discount ? order.totalPrice - order.discount : order.totalPrice)}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div className="border w-full lg:w-96 p-4 flex flex-col justify-between bg-white">
-                                    <div>
-                                        <div className="flex justify-between mb-4">
-                                            <p>Status do Pedido:</p>
-                                            <OrderStatusToChip status={data?.status} />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between">
-                                            <p>Valor dos produtos:</p>
-                                            <p>{getFormattedPrice(data?.totalPrice)}</p>
-                                        </div>
-                                        <hr />
-                                        <div className="flex justify-between">
-                                            <p className="font-semibold">Total:</p>
-                                            <p className="text-xl font-semibold">{getFormattedPrice(data?.totalPrice)}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                    )
+                                ) : (
+                                    <div>Voce não tem permissão pra ver detalhes desse pedido</div>
+                                )
+                            )
+                        }
                     </div>
                 </div>
             </div>

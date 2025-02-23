@@ -15,9 +15,10 @@ datasource db {
 
 enum OrderStatus {
   PENDING
-  COMPLETED
+  CONFIRMED
   CANCELED
   SHIPPED
+  DELIVERED
 }
 
 model User {
@@ -37,6 +38,7 @@ model Order {
   orderDate       DateTime @default(now())
   status          OrderStatus
   totalPrice      Decimal
+  discount        Decimal?
   paymentIntentId String?
   shippingAddressId String
   user User @relation(fields: [userId], references: [id])

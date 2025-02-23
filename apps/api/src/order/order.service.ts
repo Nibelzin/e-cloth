@@ -1,12 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { OrderDTO } from './dto/order.dto';
 import { OrderStatus } from '@prisma/client';
+import { ProductService } from 'src/product/product.service';
 
 @Injectable()
 export class OrderService {
 
-    constructor(private prisma: PrismaService) { }
+    constructor(private prisma: PrismaService, private productService: ProductService) { }
 
     async getOrdersByUserId(clerkId: string, page: string, limit: string) {
 
@@ -37,6 +38,9 @@ export class OrderService {
                     }
                 },
                 shippingAddress: true
+            },
+            orderBy: {
+                orderDate: 'desc'
             }
         })
 
@@ -84,6 +88,7 @@ export class OrderService {
                 orderDate: data.orderDate,
                 status: data.status,
                 totalPrice: data.totalPrice,
+                discount: data.discount,
                 paymentIntentId: data.paymentIntentId,
                 shippingAddress: {
                     connect: {
@@ -102,6 +107,31 @@ export class OrderService {
                 },
             }
         })
+    }
+
+    async confirmOrder(orderId: string) {
+        const order = await this.prisma.order.findUnique({
+            where: {
+                id: orderId
+            },
+            include: {
+                orderItems: true
+            }
+        })
+
+        if (!order) {
+            throw new NotFoundException('Pedido não encontrado');
+        }
+
+        if (order.status !== OrderStatus.PENDING) {
+            throw new BadRequestException('Pedido já processado');
+        }
+
+        for (const item of order.orderItems) {
+            await this.productService.decreaseProductStock(item.productId, item.quantity);
+        }
+
+        return this.updateOrderStatus(orderId, OrderStatus.CONFIRMED);
     }
 
     async updateOrderStatus(orderId: string, status: OrderStatus) {

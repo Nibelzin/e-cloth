@@ -20,12 +20,13 @@ const Delivery = () => {
     const navigate = useNavigate()
 
     const cartItems = useCartStore((state) => state.cart)
+    let discount = 0;
+
     const totalProductprice = cartItems.reduce((value, product) => {
         if (product.promotionPrice && product.quantity === 1) {
-            return value + (product.promotionPrice * product.quantity);
-        } else {
-            return value + (product.price * product.quantity);
+            discount += product.price - product.promotionPrice;
         }
+        return Number(value + (product.price * product.quantity));
     }, 0);
 
     console.log(totalProductprice)
@@ -74,6 +75,20 @@ const Delivery = () => {
         )
     }
 
+    if (cartItems.length === 0) return (
+        <div className="px-6 md:px-16 lg:px-32 xl:px-64 py-16 h-full">
+            <div className="w-full h-full flex flex-col space-y-6 justify-center items-center">
+                <div className="w-80">
+                    <img src="empty-cart.svg" alt="Voltar" className=" w-full h-full select-none" />
+                </div>
+                <div>
+                    <p className="text-center text-2xl font-bold">Seu carrinho está vazio...</p>
+                    <p>Adicione produtos para continuar sua compra</p>
+                </div>
+            </div>
+        </div>
+    )
+
     return (
         <>
             <div className="px-6 md:px-16 lg:px-32 xl:px-64 mt-20">
@@ -103,7 +118,7 @@ const Delivery = () => {
                             <h2 className="text-2xl font-semibold mb-2">Produtos</h2>
                             <div className="flex flex-col gap-4 flex-1">
                                 {cartItems.map(product => (
-                                    <CartItem item={product} showMode key={product.id}/>
+                                    <CartItem item={product} showMode key={product.id} />
                                 ))}
                             </div>
                         </div>
@@ -113,12 +128,18 @@ const Delivery = () => {
                             <p>Valor dos produtos:</p>
                             <p>{getFormattedPrice(totalProductprice)}</p>
                         </div>
+                        {discount > 0 && (
+                            <div className="flex justify-between">
+                                <p>Desconto:</p>
+                                <p>-{getFormattedPrice(discount)}</p>
+                            </div>
+                        )}
                         <hr />
                         <div className="flex justify-between">
                             <p className="font-semibold">Total:</p>
-                            <p className="text-xl font-semibold">{getFormattedPrice(totalProductprice)}</p>
+                            <p className="text-xl font-semibold">{getFormattedPrice(totalProductprice - discount)}</p>
                         </div>
-                        <button className="bg-black p-2 w-full rounded-full text-white" disabled={selectedAddress ===  null} onClick={() => handleGoToCheckout()}>Continuar</button>
+                        <button className="bg-black p-2 w-full rounded-full text-white" disabled={selectedAddress === null} onClick={() => handleGoToCheckout()}>Continuar</button>
                     </div>
                 </div>
             </div>

@@ -12,7 +12,7 @@ const OrderStatusToChip = ({ status }: OrderStatusToChipProps) => {
                     Pendente
                 </div>
             )
-        case OrderStatus.COMPLETED:
+        case OrderStatus.CONFIRMED:
             return (
                 <div className="bg-green-500 text-white px-2 rounded-full">
                     Confirmado

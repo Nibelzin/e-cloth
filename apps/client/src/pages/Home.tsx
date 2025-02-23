@@ -12,12 +12,14 @@ const Home = () => {
         queryFn: () => getProducts({ term })
     })
 
+    const availableProducts = data?.products.filter(product => product.productStock!.quantity > 0);
+
     return (
         <div className="px-4 md:px-16 lg:px-32 xl:px-44 py-16">
             {term ? (
                 <>
                     <p className="font-semibold text-neutral-500 text-lg">Resultados para: {term}</p>
-                    <h1 className="text-2xl font-bold mb-8">{data?.total} Produtos</h1>
+                    <h1 className="text-2xl font-bold mb-8">{availableProducts?.length} Produtos</h1>
                 </>
             ) : (
                 <h1 className="text-2xl font-bold mb-8">PRINCIPAIS PRODUTOS</h1>
@@ -31,7 +33,7 @@ const Home = () => {
                     </div>
                 ) : (
                     <div className="w-fit grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 lg:gap-4 gap-y-3 gap-x-3">
-                        {data?.products.map(product => (
+                        {availableProducts?.map(product => (
                             <ProductCard key={product.id} product={product} />
                         ))}
                     </div>

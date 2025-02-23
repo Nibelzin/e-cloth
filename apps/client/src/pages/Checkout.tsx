@@ -28,13 +28,16 @@ const Checkout = () => {
     const navigate = useNavigate()
 
     const cartItems = useCartStore((state) => state.cart)
+    let discount = 0;
+
     const totalProductprice = cartItems.reduce((value, product) => {
         if (product.promotionPrice && product.quantity === 1) {
-            return value + (product.promotionPrice * product.quantity);
-        } else {
-            return value + (product.price * product.quantity);
+            discount += product.price - product.promotionPrice
         }
+        return Number(value + (product.price * product.quantity));
     }, 0);
+
+    const finalPrice = totalProductprice - (discount ?? 0)
 
     const { user: clerkUser } = useUser()
     const queryClient = useQueryClient()
@@ -71,6 +74,20 @@ const Checkout = () => {
         )
     }
 
+    if (cartItems.length === 0) return (
+        <div className="px-6 md:px-16 lg:px-32 xl:px-64 py-16 h-full">
+            <div className="w-full h-full flex flex-col space-y-6 justify-center items-center">
+                <div className="w-80">
+                    <img src="empty-cart.svg" alt="Voltar" className=" w-full h-full select-none" />
+                </div>
+                <div>
+                    <p className="text-center text-2xl font-bold">Seu carrinho está vazio...</p>
+                    <p>Adicione produtos para continuar sua compra</p>
+                </div>
+            </div>
+        </div>
+    )
+
     return (
         <div className="px-6 md:px-16 lg:px-32 xl:px-64 mt-20">
 
@@ -99,14 +116,15 @@ const Checkout = () => {
                         <div className="flex flex-col gap-4 flex-1">
                             <Elements stripe={stripe} options={{
                                 mode: 'payment',
-                                amount: Math.floor(totalProductprice * 100),
+                                amount: Math.floor(finalPrice * 100),
                                 currency: 'brl',
                             }}>
                                 <CheckoutForm
                                     totalProductPrice={totalProductprice}
+                                    discount={discount}
                                     products={cartItems}
                                     userData={userData}
-                                    amount={Math.floor(totalProductprice * 100)}
+                                    amount={Math.floor(finalPrice * 100)}
                                     formRef={formRef}
                                     loading={loading}
                                     setLoading={setLoading}
@@ -121,10 +139,16 @@ const Checkout = () => {
                         <p>Valor dos produtos:</p>
                         <p>{getFormattedPrice(totalProductprice)}</p>
                     </div>
+                    {discount && (
+                        <div className="flex justify-between">
+                            <p>Desconto:</p>
+                            <p>-{getFormattedPrice(discount)}</p>
+                        </div>
+                    )}
                     <hr />
                     <div className="flex justify-between">
                         <p className="font-semibold">Total:</p>
-                        <p className="text-xl font-semibold">{getFormattedPrice(totalProductprice)}</p>
+                        <p className="text-xl font-semibold">{getFormattedPrice(finalPrice)}</p>
                     </div>
                     <button className="bg-black p-2 w-full flex justify-center rounded-full text-white" onClick={() => handlePayButtonClick()}>{loading === true ? <ReactLoading type="spin" width={15} height={15} /> : "Pagar"}</button>
                 </div>

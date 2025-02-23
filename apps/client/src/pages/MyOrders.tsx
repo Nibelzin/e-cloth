@@ -43,19 +43,35 @@ const MyOrders = () => {
                             }
                         </div>
                     ) : (
-                        <div className="flex flex-col space-y-8">
-                            {data?.orders.map(order => (
-                                <OrderCard key={order.id} order={order} />
-                            ))}
-                        </div>
+                        data?.orders.length === 0 ? (
+                            <div className="w-full h-full flex flex-col space-y-6 mt-16 justify-center items-center">
+                                <div className="w-80">
+                                    <img src="no-orders.svg" alt="Voltar" className=" w-full h-full select-none" />
+                                </div>
+                                <div>
+                                    <p className="text-center text-2xl font-bold">Você ainda não fez nenhuma compra</p>
+                                    <p className="text-center">Começe a comprar para ver seus pedidos!</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col space-y-8">
+                                {data?.orders.map(order => (
+                                    <OrderCard key={order.id} order={order} />
+                                ))}
+                            </div>
+                        )
                     )
                 }
             </div>
             <div className="flex justify-center gap-2 mt-8">
-                <button className="border w-12 h-12 flex justify-center items-center cursor-pointer"
-                    onClick={() => handlePageChange(currPage - 1)}>
-                    <FaChevronLeft />
-                </button>
+                {
+                    data?.orders.length === 0 ? null : (
+                        <button className="border w-12 h-12 flex justify-center items-center cursor-pointer"
+                            onClick={() => handlePageChange(currPage - 1)}>
+                            <FaChevronLeft />
+                        </button>
+                    )
+                }
                 {
                     isPending ? (
                         <>
@@ -79,13 +95,17 @@ const MyOrders = () => {
                             </>
                         )
                 }
-                <button className="border w-12 h-12 flex justify-center items-center cursor-pointer"
-                    onClick={() => handlePageChange(currPage + 1)}
-                >
-                    <FaChevronRight />
-                </button>
+                {
+                    data?.orders.length === 0 ? null : (
+                        <button className="border w-12 h-12 flex justify-center items-center cursor-pointer"
+                            onClick={() => handlePageChange(currPage + 1)}
+                        >
+                            <FaChevronRight />
+                        </button>
+                    )
+                }
             </div>
-        </div>
+        </div >
     );
 }
 

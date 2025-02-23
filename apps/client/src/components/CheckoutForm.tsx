@@ -1,14 +1,14 @@
-import { CardElement, useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
-import { useEffect, useState } from 'react';
-import { createOrder, createPaymentIntent, updateOrderStatus } from '../api/orderService';
+import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
+import { useState } from 'react';
+import { confirmOrder, createOrder, createPaymentIntent, updateOrderStatus } from '../api/orderService';
 import { Address, OrderStatus, ProductInCart, User } from '../types/types';
-import { useUser } from '@clerk/clerk-react';
 import toast from 'react-hot-toast';
 
 interface CheckoutFormProps {
     amount: number;
     formRef: React.RefObject<HTMLFormElement>;
     loading: boolean;
+    discount: number;
     setLoading: (loading: boolean) => void;
     products: ProductInCart[];
     totalProductPrice: number;
@@ -16,7 +16,7 @@ interface CheckoutFormProps {
     userData?: User;
 }
 
-const CheckoutForm = ({ amount, formRef, loading, setLoading, userData, userAddress, products, totalProductPrice }: CheckoutFormProps) => {
+const CheckoutForm = ({ amount, formRef, loading, setLoading, userData, userAddress, products, totalProductPrice, discount }: CheckoutFormProps) => {
 
     const [error, setError] = useState<string | undefined>(undefined);
 
@@ -56,8 +56,9 @@ const CheckoutForm = ({ amount, formRef, loading, setLoading, userData, userAddr
             const order = await createOrder({
                 paymentIntentId: paymentIntentId,
                 orderDate: new Date(),
-                status: OrderStatus.COMPLETED,
+                status: OrderStatus.PENDING,
                 totalPrice: totalProductPrice,
+                discount: discount > 0 ? discount : undefined,
                 userId: userData.id,
                 shippingAddressId: userAddress.id,
                 orderItems: products.map(product => ({
@@ -68,6 +69,9 @@ const CheckoutForm = ({ amount, formRef, loading, setLoading, userData, userAddr
                 }))
             })
 
+            // TODO: CONFIRMAR PAGAMENTO POR MEIO DE WEBHOOK
+            await confirmOrder(order.id);
+
             const { error } = await stripe.confirmPayment({
                 clientSecret: clientSecret!,
                 elements,
@@ -75,6 +79,7 @@ const CheckoutForm = ({ amount, formRef, loading, setLoading, userData, userAddr
                     return_url: `http://localhost:5173/cart/checkout/confirmation?order=${order.id}`,
                 }
             })
+
 
             if (error) {
                 await updateOrderStatus(order.id, OrderStatus.CANCELED);

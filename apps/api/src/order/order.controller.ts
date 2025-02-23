@@ -9,11 +9,17 @@ export class OrderController {
 
     @Post()
     async createOrder(@Body() data: OrderDTO) {
-
-        console.log(data)
-
         try {
             return this.orderService.createOrder(data)
+        } catch(error) {
+            throw new HttpException(error, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Put('/:orderId/confirm')
+    async confirmOrder(@Param('orderId') orderId: string) {
+        try {
+            return this.orderService.confirmOrder(orderId)
         } catch(error) {
             throw new HttpException(error, HttpStatus.BAD_REQUEST);
         }

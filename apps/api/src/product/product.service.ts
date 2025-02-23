@@ -32,6 +32,7 @@ export class ProductService {
         category: true,
         price: true,
         promotionPrice: true,
+        productStock: true
       },
     });
   }
@@ -176,6 +177,26 @@ export class ProductService {
     };
 
     return updatedProductAndImagesToRemove;
+  }
+
+  async decreaseProductStock(productId: string, quantity: number) {
+    const product = await this.prisma.product.findUnique({
+      where: { id: productId },
+      select: {
+        productStock: true,
+      },
+    });
+
+    const updatedProductStock = await this.prisma.productStock.update({
+      where: { id: product.productStock.id },
+      data: {
+        quantity: {
+          decrement: quantity,
+        },
+      },
+    });
+
+    return updatedProductStock;
   }
 
   async softDeleteProduct(productId: string) {

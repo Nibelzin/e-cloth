@@ -39,7 +39,7 @@ const ProductsTable = ({ editProduct }: ProductsTableProps) => {
         const fetchProducts = async () => {
             setLoading(true)
             try {
-                const result = await getProducts(itemsPerPage, currentPage, searchTerm, sorting)
+                const result = await getProducts({ itemsPerPage, currentPage, term: searchTerm, sorting })
                 setNumOfProducts(result.total)
                 await setProducts(result.products)
             } catch (error) {

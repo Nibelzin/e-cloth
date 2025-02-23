@@ -6,13 +6,15 @@ import { useCartStore } from "../store/cartStore";
 const Cart = () => {
 
     const cartItems = useCartStore((state) => state.cart)
+    let discount = 0;
 
     const totalProductprice = cartItems.reduce((value, product) => {
         if (product.promotionPrice && product.quantity === 1) {
-            return Number(value + product.promotionPrice);
+            discount += product.price - product.promotionPrice;
         }
         return Number(value + (product.price * product.quantity));
     }, 0);
+
 
     const navigate = useNavigate()
 
@@ -47,10 +49,16 @@ const Cart = () => {
                         <p>Valor dos produtos:</p>
                         <p>{getFormattedPrice(totalProductprice)}</p>
                     </div>
+                    {discount > 0 && (
+                        <div className="flex justify-between">
+                            <p>Desconto:</p>
+                            <p>-{getFormattedPrice(discount)}</p>
+                        </div>
+                    )}
                     <hr />
                     <div className="flex justify-between">
                         <p className="font-semibold">Total:</p>
-                        <p className="text-xl font-semibold">{getFormattedPrice(totalProductprice)}</p>
+                        <p className="text-xl font-semibold">{getFormattedPrice(totalProductprice - discount)}</p>
                     </div>
                     <button className="bg-black p-2 w-full rounded-full text-white" onClick={() => navigate("/cart/delivery")}>Continuar</button>
                 </div>

@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import ReactLoading from 'react-loading';
 import { Address, AddressFields, AddressFormValues, AddressToAdd } from "../types/types";
 import { addUserAddress, editUserAddress } from "../api/userService";
-import { useQueryClient } from "@tanstack/react-query";
 
 interface AddressFormProps {
     closeForm: (refetch?: boolean, editMode?: boolean) => void

@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 const ProductDetail = () => {
     const [selectedSizeId, setSelectedSizeId] = useState<string | undefined>(undefined)
     const [selectedProductImage, setSelectedProductImage] = useState<string | null>(null)
+    const [quantityInStock, setQuantityInStock] = useState<number>(0)
 
     const [zoomImage, setZoomImage] = useState<boolean>(false)
     const zoomImageRef = useRef<HTMLImageElement>(null)
@@ -52,13 +53,22 @@ const ProductDetail = () => {
         }
     }
 
-    const addItemToCart = useCartStore((state) => state.addItem);
+    const cartStore = useCartStore();
+    const quantityInCart = cartStore.cart.reduce((acc, item) => {
+        if (item.id === selectedProduct?.id) {
+            return acc + item.quantity
+        }
+        return acc
+    }, 0)
 
     const handleAddToCartButtonClick = () => {
         console.log("teste")
         const selectedSize = selectedProduct?.category?.categorySizes.find(size => size.id === selectedSizeId)
         if (selectedSize && selectedProduct) {
-            addItemToCart(selectedProduct, selectedSize)
+            cartStore.addItem(selectedProduct, selectedSize)
+            if (quantityInStock > 0) {
+                setQuantityInStock(quantityInStock - 1)
+            }
         } else {
             toast.error("Selecione um tamanho")
         }
@@ -66,6 +76,8 @@ const ProductDetail = () => {
 
     useEffect(() => {
         setSelectedProductImage(selectedProduct?.productImages[0].url ?? null)
+        const quantity = selectedProduct?.productStock?.quantity! - quantityInCart
+        setQuantityInStock(quantity || 0)
     }, [selectedProduct])
 
     useEffect(() => {
@@ -139,7 +151,7 @@ const ProductDetail = () => {
                                 </div>
                             </div>
                         </div>
-                        <button className="bg-black p-4 hover:bg-neutral-800 rounded-full transition-all text-white" onClick={handleAddToCartButtonClick}>Adicionar ao carrinho</button>
+                        <button disabled={quantityInStock === 0} className="bg-black p-4 hover:bg-neutral-800 rounded-full transition-all text-white disabled:bg-neutral-500" title={quantityInStock === 0 ? "Não ha mais produtos em estoque!" : undefined} onClick={handleAddToCartButtonClick}>Adicionar ao carrinho</button>
                     </div>
                 </div>
             )}

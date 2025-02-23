@@ -7,6 +7,7 @@ export class OrderDTO {
     orderDate: Date
     status: OrderStatus
     totalPrice: number
+    discount?: number
     paymentIntentId: string
     shippingAddressId: string
     orderItems: OrderItemDTO[]

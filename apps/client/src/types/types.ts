@@ -55,9 +55,7 @@ export interface CategoryDTO {
   id: string;
   name: string;
   categorySizes: {
-    size: {
-      size: string;
-    }
+    size: string
   }[];
   _count? : {
     products: number
@@ -161,9 +159,10 @@ export enum SortingTypes {
 
 export enum OrderStatus {
   PENDING = 'PENDING',
-  COMPLETED = 'COMPLETED',
+  CONFIRMED = 'CONFIRMED',
   CANCELED = 'CANCELED',
-  SHIPPED = 'SHIPPED'
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED'
 }
 
 export interface Order {
@@ -172,6 +171,7 @@ export interface Order {
   orderDate: Date
   status: OrderStatus
   totalPrice: number
+  discount?: number
   paymentIntentId: string
   shippingAddressId: string
   shippingAddress?: Address

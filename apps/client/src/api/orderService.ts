@@ -36,6 +36,19 @@ export async function createOrder(orderData: Order) {
     return result;
 }
 
+export async function confirmOrder(orderId: string) {
+    
+    const response = await fetch(`${apiUrl}/api/order/${orderId}/confirm`, {
+        method: "PUT"
+    });
+
+    if (!response.ok) throw new Error("Erro ao confirmar pedido");
+
+    const result = await response.json();
+
+    return result;
+}
+
 export async function updateOrderStatus(orderId: string, status: OrderStatus) {
 
     const response = await fetch(`${apiUrl}/api/order/${orderId}/status`, {
